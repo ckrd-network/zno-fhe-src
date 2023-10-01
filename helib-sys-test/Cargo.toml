@@ -1,5 +1,5 @@
 [package]
-name = "helib-test"
+name = "helib-sys-test"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -9,24 +9,19 @@ documentation.workspace = true
 homepage.workspace = true
 repository.workspace = true
 license.workspace = true
-license-file.workspace = true
 readme.workspace = true
 categories.workspace = true
 keywords.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-flate2 = { workspace = true, optional = true }
-libc = { workspace = true }
-tar = { workspace = true, optional = true }
+[build-dependencies]
+ctest2 = "0.4"
 
-[[bin]]
-name = "package"
-required-features = ["package"]
+[dependencies]
+helib-sys = { path = "../helib-sys" }
+libc = { workspace = true }
 
 [features]
-package = ["tar", "flate2"]
-
-[build-dependencies]
-helib-src = { path = "../helib-src" }
+bindgen = ['helib-sys/bindgen']
+vendored = ['helib-sys/vendored']

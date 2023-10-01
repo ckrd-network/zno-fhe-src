@@ -11,7 +11,7 @@ In theory you aren't interacting with this too much!
 - HELib
 
 ```shell
-git subrepo clone https://github.com/openssl/openssl.git helib-src/openssl --branch 7b649c7 --method rebase
+git subrepo clone https://github.com/openssl/openssl.git helib-src/openssl --branch=7b649c73a2b99b52d45fc0600ee1ecf156113deb --method=rebase
 ```
 
 git config user.email "mark@ckrd.io"
@@ -32,6 +32,20 @@ The crate versions follow the X.Y.Z+B pattern:
 - The minor Y and patch Z versions are incremented when making changes to the crate, either upstream update or internal changes.
 - `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this field is actually ignored in comparisons and only there for documentation.
 
+## Upstream - Parameters
+
+Install SageMath. Run script.
+
+```shell
+curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh
+sh Mambaforge-$(uname)-$(uname -m).sh
+mamba create -n sage sage python=3.11
+pushd ~/src
+  git clone https://github.com/Crypto-TII/fhegen.git
+popd
+~/mambaforge/envs/sage/bin/sage --python ~/src/fhegen/src/interactive.py
+```
+
 ## References
 
 [Parameter Repository](https://github.com/Crypto-TII/fhegen)
@@ -44,6 +58,17 @@ The crate versions follow the X.Y.Z+B pattern:
       year = {2022},
       note = {\url{https://eprint.iacr.org/2022/706}},
       url = {https://eprint.iacr.org/2022/706}
+}
+```
+
+```latex
+@misc{cryptoeprint:2023/600,
+      author = {Beatrice Biasioli and Chiara Marcolla and Marco Calderini and Johannes Mono},
+      title = {Improving and Automating BFV Parameters Selection: An Average-Case Approach},
+      howpublished = {Cryptology ePrint Archive, Paper 2023/600},
+      year = {2023},
+      note = {\url{https://eprint.iacr.org/2023/600}},
+      url = {https://eprint.iacr.org/2023/600}
 }
 ```
 

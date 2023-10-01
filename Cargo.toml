@@ -3,7 +3,8 @@ resolver = "2"
 members = [
   "helib-src",
   "helib-sys",
-  "helib-test",
+  "helib-src-test",
+  "helib-sys-test",
   # "helib-tool",
   # "openfhe-src",
   # "openfhe-sys",
@@ -25,7 +26,6 @@ documentation = "https://docs.rs/ckrd-zink-fhe-src"
 homepage = "https://github.com/ckrd-network/zink-fhe-src"
 repository = "https://github.com/ckrd-network/zink-fhe-src"
 license = "Apache-2.0/MIT"
-license-file = "LICENSE"
 readme = "README.md"
 categories = ["cryptography"]
 keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
@@ -33,12 +33,16 @@ keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
 [workspace.dependencies]
 helib-src = { path = "helib-src" }
 helib-test = { path = "helib-test" }
+bindgen = { version = "0.64.0",  features = ["experimental"] }
+bssl-sys = { version = "0.1.0"}
 cc = "1.0.79"
 dirs = "5.0.1"
-regex = { version = "1.6.0", default-features = false, features = ["std"] }
-libc = { version = "0.2"  }
 flate2 = { version = "1.0" }
+libc = { version = "0.2"  }
+pkg-config = "0.3.9"
+regex = { version = "1.6.0", default-features = false, features = ["std"] }
 tar = { version = "0.4", default-features = false }
+vcpkg = "0.2.8"
 
 [package]
 name = "zink-fhe-src"
@@ -53,7 +57,6 @@ documentation.workspace = true
 homepage.workspace = true
 repository.workspace = true
 license.workspace = true
-license-file.workspace = true
 readme.workspace = true
 categories.workspace = true
 keywords.workspace = true

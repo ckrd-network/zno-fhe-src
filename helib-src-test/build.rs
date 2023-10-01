@@ -1,4 +1,4 @@
-extern crate openssl_src;
+extern crate helib_src;
 
 use std::env;
 use std::fs::File;
@@ -7,7 +7,7 @@ use std::path::PathBuf;
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    let artifacts = openssl_src::Build::new().build();
+    let artifacts = helib_src::Build::new().build();
     artifacts.print_cargo_metadata();
 
     let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -25,6 +25,6 @@ fn main() {
         .unwrap();
     File::create(out_dir.join("openssl-src-version"))
         .unwrap()
-        .write_all(openssl_src::version().as_bytes())
+        .write_all(helib_src::version().as_bytes())
         .unwrap();
 }

@@ -1,0 +1,32 @@
+[package]
+name = "helib-test"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+license-file.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+flate2 = { workspace = true, optional = true }
+libc = { workspace = true }
+tar = { workspace = true, optional = true }
+
+[[bin]]
+name = "package"
+required-features = ["package"]
+
+[features]
+package = ["tar", "flate2"]
+
+[build-dependencies]
+helib-src = { path = "../helib-src" }

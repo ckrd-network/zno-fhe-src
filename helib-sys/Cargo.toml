@@ -1,0 +1,26 @@
+[package]
+name = "helib-sys"
+version.workspace = true
+authors.workspace = true
+
+edition.workspace = true
+rust-version.workspace = true
+
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+license-file.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+dirs.workspace = true
+# helib-src.workspace = true

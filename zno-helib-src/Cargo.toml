@@ -16,43 +16,43 @@ keywords.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 exclude = [
-  'openssl/fuzz/corpora/*',
-  'openssl/pyca-cryptography/*',
-  'openssl/wycheproof/*',
-  'openssl/boringssl/*',
-  'openssl/krb5/*',
-  'openssl/test/recipes/*',
-  'openssl/gost-engine/*',
-  'openssl/demos/*',
-  'openssl/tlslite-ng/*',
-  'openssl/tlsfuzzer/*',
-  'openssl/python-ecdsa/*',
-  'openssl/oqs-provider/*',
+  'helib/benchmarks/*',
+  'helib/ci/*',
+  'helib/cmake/*',
+  'helib/docker/*',
+  'helib/boringssl/*',
+  'helib/documentation/*',
+  'helib/examples/*',
+  'helib/misc/*',
+  'helib/utils/*',
 ]
 
 [features]
-default = []
-# Enables compilation of the legacy provider, which must be loaded at runtime to use various
-# uncommon or insecure algorithms.
-legacy = []
-# Enables compilation of some older algorithms: md2 (hash), rc5 (block cypher) and enabled use of
-# some weaker algorithms in SSL connections. These are generally not recommended for use.
-weak-crypto = []
-# Enables compilation of the Camellia symmetric key block cypher. Since hardware acceleration for
-# it is not available on most systems, this is not as used as AES.
-camellia = []
+default = ['package', 'release-with-dbg-info', 'no-fetch-gmp']
+# This option bundles HElib and its dependencies (NTL and GMP) in one directory
+# which can then be moved around freely on the system.
+package = ['release-with-dbg-info']
+# Choose the type of build.
+release-with-dbg-info = ['debug-module']
+debug = ['debug-module']
+release = []
+min-size-rel = []
 # Enables compilation of International Data Encryption Algorithm (IDEA), a symmetric key block
 # cypher sometimes used as an AES128 alternative.
-idea = []
-# Enables compilation of SEED, a symmetric key block cypher mostly used in South Korea, but
-# otherwise not widely supported.
-seed = []
-# Forces configuring Engine module support.
-force-engine = []
-
-# [workspace]
-# members = ['testcrate']
-# exclude = ['target']
+test = []
+# Activate the debug module when building HElib (defines the HELIB_DEBUG macro).
+# When the debug module is active, this generates extra information used for
+# debugging purposes.
+# HELIB_DEBUG will propagate to programs using HElib, when using cmake.
+# When this is enabled, programs using HElib will generate a warning during
+# configuration. This warning is to remind the user that use of the debug
+# module can cause issues, such as sigsegv, if initialized incorrectly.
+debug-module = []
+# Whether or not to fetch and build GMP. Upstream default is ON.
+# Here the default is OFF, so there should either exist a system-installed GMP
+# library, or `GMP_DIR` should point to a valid GMP prefix.
+no-fetch-gmp = []
 
 [dependencies]
-cc.workspace = true
+cmake.workspace = true
+cxx.workspace = true

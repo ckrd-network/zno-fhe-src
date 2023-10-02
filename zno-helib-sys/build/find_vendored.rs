@@ -1,8 +1,8 @@
-use openssl_src;
+use zno_helib_src;
 use std::path::PathBuf;
 
-pub fn get_openssl(_target: &str) -> (Vec<PathBuf>, PathBuf) {
-    let artifacts = openssl_src::Build::new().build();
+pub fn get_lib(_target: &str) -> (Vec<PathBuf>, PathBuf) {
+    let artifacts = zno_helib_src::Build::new().build();
     println!("cargo:vendored=1");
     println!(
         "cargo:root={}",

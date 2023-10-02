@@ -34,12 +34,17 @@ keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
 [workspace.dependencies]
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
-bindgen = { version = "0.64.0",  features = ["experimental"] }
+autocxx = "0.26.0"
+autocxx-build = "0.26.0"
+# bindgen = { version = "0.64.0",  features = ["experimental"] }
 bssl-sys = { version = "0.1.0"}
 cc = "1.0.79"
+cmake = "0.1"
+cxx = "1.0"
 dirs = "5.0.1"
 flate2 = { version = "1.0" }
 libc = { version = "0.2"  }
+miette = { version = "5", features = ["fancy"] } # optional but gives nicer error messages!
 pkg-config = "0.3.9"
 regex = { version = "1.6.0", default-features = false, features = ["std"] }
 tar = { version = "0.4", default-features = false }

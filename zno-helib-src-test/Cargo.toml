@@ -28,4 +28,4 @@ libc = { workspace = true }
 tar = { workspace = true, optional = true }
 
 [features]
-package = ["tar", "flate2"]
+package = []

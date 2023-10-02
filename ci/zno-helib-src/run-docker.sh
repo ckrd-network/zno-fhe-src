@@ -3,7 +3,7 @@
 target=$1
 
 if [ ! -d ci/docker/$1 ]; then
-  exec ci/run.sh $1
+  exec ci/zno-helib-src/run.sh $1
 fi
 
 set -ex

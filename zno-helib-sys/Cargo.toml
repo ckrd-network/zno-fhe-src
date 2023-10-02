@@ -21,21 +21,29 @@ build = "build/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc.workspace = true
-bssl-sys = { workspace = true, optional = true }
+autocxx.workspace = true
+cxx.workspace = true
+# libc.workspace = true
 
 [build-dependencies]
 zno-helib-src = { workspace = true, optional = true }
-bindgen = { workspace = true, optional = true, features = ["experimental"] }
-cc.workspace = true
+autocxx-build.workspace = true
+miette.workspace = true
+# bindgen = { workspace = true, optional = true, features = ["experimental"] }
+# cc.workspace = true
 dirs.workspace = true
 pkg-config.workspace = true
 vcpkg.workspace = true
 
 [features]
+autocxx = []
 vendored = ['zno-helib-src']
-unstable_boringssl = ['bssl-sys']
 
-# We don't actually use metadeps for annoying reasons but this is still here for tooling
+# This is here for tooling.
+# GMP version to be used (and eventually downloaded) if `package` feature.
+#   - Can be found at FETCHED_GMP_VERSION in CMakeLists.txt.
+# NTL version to be used (and eventually downloaded) if `package` feature.
+#   - Can be found at FETCHED_NTL_VERSION in CMakeLists.txt.
 [package.metadata.pkg-config]
-openssl = "1.0.1"
+gmp = "6.2.1"
+ntl = "11.5.1"

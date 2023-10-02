@@ -19,9 +19,9 @@ if [ "$target" = "x86_64-unknown-linux-gnu" ] ; then
   #   crate.io's limit.
   # * Make sure that the package crate itself works.
   #
-  # A lot of OpenSSL's source code is excluded on crates.io because it makes the
-  # crate file much too large, so the test here should inform us if we're
-  # missing anything actually required to build OpenSSL.
+  # HElib's source code can be excluded on crates.io if it makes the
+  # crate file too large. The test here should inform us if we're
+  # missing anything actually required to build HElib.
   rm -rf target/ci
   cargo package --allow-dirty --target-dir target/ci
   crate=$(ls target/ci/package/*.crate)
@@ -32,7 +32,7 @@ if [ "$target" = "x86_64-unknown-linux-gnu" ] ; then
     exit 1
   fi
   rm "$crate"
-  cd target/ci/package/openssl-src-*
+  cd target/ci/package/helib-src-*
   cp -r "$test_dir" .
   cargo test --manifest-path "$test_dir/Cargo.toml" --target "$target" -vv
 fi

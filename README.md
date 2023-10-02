@@ -11,11 +11,8 @@ In theory you should not need to interact with this repository.
 ### HElib
 
 ```shell
-git subrepo clone https://github.com/openssl/openssl.git zno-helib-src/openssl --branch=7b649c73a2b99b52d45fc0600ee1ecf156113deb --method=rebase
+git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --branch=v2.3.0 --method=rebase
 ```
-
-git config user.email "mark@ckrd.io"
-git config user.name "Mark Van de Vyver"
 
 ## Versioning
 

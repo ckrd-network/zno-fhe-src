@@ -31,7 +31,7 @@ pub struct Artifacts {
 impl Build {
     pub fn new() -> Build {
         Build {
-            out_dir: env::var_os("OUT_DIR").map(|s| PathBuf::from(s).join("openssl-build")),
+            out_dir: env::var_os("OUT_DIR").map(|s| PathBuf::from(s).join("helib-build")),
             target: env::var("TARGET").ok(),
             host: env::var("HOST").ok(),
         }
@@ -73,7 +73,7 @@ impl Build {
                 // a message to stdout, let user know asm is force enabled
                 println!(
                     "{}: nasm.exe is force enabled by the \
-                    'OPENSSL_RUST_USE_NASM' env var.",
+                    'ZN2_RUST_USE_NASM' env var.",
                     env!("CARGO_PKG_NAME")
                 );
                 true
@@ -81,7 +81,7 @@ impl Build {
                 // a message to stdout, let user know asm is force disabled
                 println!(
                     "{}: nasm.exe is force disabled by the \
-                    'OPENSSL_RUST_USE_NASM' env var.",
+                    'ZN2_RUST_USE_NASM' env var.",
                     env!("CARGO_PKG_NAME")
                 );
                 false
@@ -96,7 +96,7 @@ impl Build {
 
     #[cfg(windows)]
     fn is_nasm_ready(&self) -> bool {
-        self.check_env_var("OPENSSL_RUST_USE_NASM")
+        self.check_env_var("ZN2_RUST_USE_NASM")
             .unwrap_or_else(|| {
                 // On Windows, use cmd `where` command to check if nasm is installed
                 let wherenasm = Command::new("cmd")
@@ -226,7 +226,7 @@ impl Build {
         if target.contains("msvc") {
             // On MSVC we need nasm.exe to compile the assembly files.
             // ASM compiling will be enabled if nasm.exe is installed, unless
-            // the environment variable `OPENSSL_RUST_USE_NASM` is set.
+            // the environment variable `ZN2_RUST_USE_NASM` is set.
             if self.is_nasm_ready() {
                 // a message to stdout, let user know asm is enabled
                 println!(

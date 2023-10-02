@@ -1,0 +1,27 @@
+[package]
+name = "zno-helib-sys-test"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+ctest2 = "0.4"
+
+[dependencies]
+zno-helib-sys = { path = "../zno-helib-sys" }
+libc = { workspace = true }
+
+[features]
+bindgen = ['zno-helib-sys/bindgen']
+vendored = ['zno-helib-sys/vendored']

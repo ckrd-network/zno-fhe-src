@@ -1,0 +1,41 @@
+[package]
+name = "zno-helib-sys"
+version.workspace = true
+authors.workspace = true
+
+edition.workspace = true
+rust-version.workspace = true
+
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+links = "openssl"
+build = "build/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc.workspace = true
+bssl-sys = { workspace = true, optional = true }
+
+[build-dependencies]
+zno-helib-src = { workspace = true, optional = true }
+bindgen = { workspace = true, optional = true, features = ["experimental"] }
+cc.workspace = true
+dirs.workspace = true
+pkg-config.workspace = true
+vcpkg.workspace = true
+
+[features]
+vendored = ['zno-helib-src']
+unstable_boringssl = ['bssl-sys']
+
+# We don't actually use metadeps for annoying reasons but this is still here for tooling
+[package.metadata.pkg-config]
+openssl = "1.0.1"

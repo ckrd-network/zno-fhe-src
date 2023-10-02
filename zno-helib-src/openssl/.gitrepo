@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/openssl/openssl.git
+	branch = 7b649c73a2b99b52d45fc0600ee1ecf156113deb
+	commit = 7b649c73a2b99b52d45fc0600ee1ecf156113deb
+	parent = 52baa938fa496c56b05f850336d51f1acc2d6597
+	method = rebase
+	cmdver = 0.4.5

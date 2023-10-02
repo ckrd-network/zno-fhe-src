@@ -34,7 +34,7 @@ keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
 [workspace.dependencies]
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
-bindgen = { version = "0.64.0",  features = ["experimental"] }
+bindgen = { version = "0.68.1",  features = ["experimental"] }
 bssl-sys = { version = "0.1.0"}
 cc = "1.0.79"
 dirs = "5.0.1"

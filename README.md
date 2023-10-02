@@ -32,7 +32,29 @@ The crate versions follow the X.Y.Z+B pattern:
 - The minor Y and patch Z versions are incremented when making changes to the crate, either upstream update or internal changes.
 - `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this field is actually ignored in comparisons and only there for documentation.
 
-## Upstream - Parameters
+## Upstream
+
+### HELib
+
+```shell
+git subrepo clone
+```
+
+#### Test
+ 
+```shell
+pushd zink-fhe-src
+  target=x86_64-unknown-linux-gnu
+  test_dir="$(pwd)/helib-src-test"
+
+  set -ex
+
+  cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv &>log.txt
+  cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release &>log-release.txt
+popd
+```
+
+## Parameter Selection
 
 Install SageMath. Run script.
 
@@ -48,7 +70,7 @@ popd
 
 ## References
 
-[Parameter Repository](https://github.com/Crypto-TII/fhegen)
+[Parameter selection repository](https://github.com/Crypto-TII/fhegen)
 
 ```latex
 @misc{cryptoeprint:2022/706,
@@ -72,7 +94,7 @@ popd
 }
 ```
 
-[Comparison Repository](https://github.com/iliailia/comparison-circuit-over-fq)
+[Comparison repository](https://github.com/iliailia/comparison-circuit-over-fq)
 
 ```latex
 @misc{cryptoeprint:2021/315,

@@ -1,15 +1,15 @@
 [package]
-name = "zink-fhe-src"
+name = "zno-fhe-src"
 
 # [features]
-# helib = ["helib-sys"]
+# helib = ["zno-helib-sys"]
 # openfhe = ["openfhe-sys"]
 # seal = ["seal-sys"]
 
 # [dependencies.helib-sys]
 # # version = "0.0.1"
 # optional = true
-# path = "helib-sys"
+# path = "zno-helib-sys"
 
 # [dependencies.openfhe-sys]
 # # version = "0.0.1"
@@ -24,9 +24,9 @@ name = "zink-fhe-src"
 # [workspace]
 # resolver = "2"
 # members = [
-#   "helib-src",
-#   "helib-sys",
-#   "helib-tool",
+#   "zno-helib-src",
+#   "zno-helib-sys",
+#   "zno-helib-tool",
 #   "openfhe-src",
 #   "openfhe-sys",
 #   "openfhe-tool",

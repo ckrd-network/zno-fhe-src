@@ -1,17 +1,17 @@
-# zink-fhe-src
+# zno-fhe-src
 
-Source code crate for the Zink-FHE system crate.
+Source code crates for the ZnO-FHE crate.
 
 This crate contains the logic to build HELib, OpenFHE and SEAL.
-It is intended to be consumed by the `zink-fhe-sys` crate.
-In theory you aren't interacting with this too much!
+It is intended to be consumed by the `zno-fhe` crate.
+In theory you should not need to interact with this repository.
 
 ## Source
 
-- HELib
+### HElib
 
 ```shell
-git subrepo clone https://github.com/openssl/openssl.git helib-src/openssl --branch=7b649c73a2b99b52d45fc0600ee1ecf156113deb --method=rebase
+git subrepo clone https://github.com/openssl/openssl.git zno-helib-src/openssl --branch=7b649c73a2b99b52d45fc0600ee1ecf156113deb --method=rebase
 ```
 
 git config user.email "mark@ckrd.io"
@@ -41,11 +41,11 @@ git subrepo clone
 ```
 
 #### Test
- 
+
 ```shell
-pushd zink-fhe-src
+pushd zno-fhe-src
   target=x86_64-unknown-linux-gnu
-  test_dir="$(pwd)/helib-src-test"
+  test_dir="$(pwd)/zno-helib-src-test"
 
   set -ex
 

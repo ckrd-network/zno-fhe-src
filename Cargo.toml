@@ -1,18 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-  "helib-src",
-  "helib-sys",
-  "helib-src-test",
-  "helib-sys-test",
-  # "helib-tool",
-  # "openfhe-src",
-  # "openfhe-sys",
-  # "openfhe-tool",
-  # "seal-src",
-  # "seal-sys",
-  # "seal-tool",
+  "zno-helib-src-test",
+  "zno-helib-src",
+  "zno-helib-sys-test",
+  "zno-helib-sys",
+  # "zno-helib-tool",
+  # "zno-openfhe-src",
+  # "zno-openfhe-sys",
+  # "zno-openfhe-tool",
+  # "zno-seal-src",
+  # "zno-seal-sys",
+  # "zno-seal-tool",
 ]
+exclude = ['target']
 
 [workspace.package]
 version = "0.0.1"
@@ -22,17 +23,17 @@ edition = "2021"
 rust-version = "1.72.0"
 
 description = "The package provides a FHE source of choice."
-documentation = "https://docs.rs/ckrd-zink-fhe-src"
-homepage = "https://github.com/ckrd-network/zink-fhe-src"
-repository = "https://github.com/ckrd-network/zink-fhe-src"
+documentation = "https://docs.rs/ckrd-network/zno-fhe-src"
+homepage = "https://github.com/ckrd-network/zno-fhe-src"
+repository = "https://github.com/ckrd-network/zno-fhe-src"
 license = "Apache-2.0/MIT"
 readme = "README.md"
 categories = ["cryptography"]
 keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
 
 [workspace.dependencies]
-helib-src = { path = "helib-src" }
-helib-test = { path = "helib-test" }
+zno-helib-src = { path = "zno-helib-src" }
+zno-helib-src-test = { path = "zno-helib-src-test" }
 bindgen = { version = "0.64.0",  features = ["experimental"] }
 bssl-sys = { version = "0.1.0"}
 cc = "1.0.79"
@@ -45,7 +46,7 @@ tar = { version = "0.4", default-features = false }
 vcpkg = "0.2.8"
 
 [package]
-name = "zink-fhe-src"
+name = "zno-fhe-src"
 version.workspace = true
 authors.workspace = true
 
@@ -62,8 +63,8 @@ categories.workspace = true
 keywords.workspace = true
 
 # [features]
-# helib = ["helib-sys"]
-# openfhe = ["openfhe-sys"]
-# seal = ["seal-sys"]
+# helib = ["helib"]
+# openfhe = ["openfhe"]
+# seal = ["seal"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

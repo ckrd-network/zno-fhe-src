@@ -6,12 +6,33 @@ This crate contains the logic to build HELib, OpenFHE and SEAL.
 It is intended to be consumed by the `zno-fhe` crate.
 In theory you should not need to interact with this repository.
 
-## Source
+## FHE Libraries
 
 ### HElib
 
 ```shell
-git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --branch=v2.3.0 --method=rebase
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/zno-helib-src-test"
+sys_dir="$(pwd)/zno-helib-sys-test"
+
+cargo build --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
+cargo build --manifest-path "$sys_dir/Cargo.toml" --feature "vendored" --target $target -vvv &>log-sys.txt
+
+```
+
+#### Test
+
+```shell
+target=x86_64-unknown-linux-gnu
+test_dir="$(pwd)/zno-helib-src-test"
+
+set -ex
+
+cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv &>log-test.txt
+cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release &>log-test-release.txt
+
+set +ex
+
 ```
 
 ## Versioning
@@ -24,32 +45,20 @@ This crate follows the minor and patch versions for each maintained major versio
 
 The crate versions follow the X.Y.Z+B pattern:
 
-- The major version X is the upstream OpenSSL API/ABI compatibility version:
-        300 for 3.Y.Z
+- The major version X is the upstream API/ABI compatibility version:
+        3YZ for 3.Y.Z
 - The minor Y and patch Z versions are incremented when making changes to the crate, either upstream update or internal changes.
 - `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this field is actually ignored in comparisons and only there for documentation.
 
-## Upstream
+## Upstream Sources
 
 ### HELib
 
 ```shell
-git subrepo clone
+git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --branch=v2.3.0 --method=rebase
 ```
 
-#### Test
 
-```shell
-pushd zno-fhe-src
-  target=x86_64-unknown-linux-gnu
-  test_dir="$(pwd)/zno-helib-src-test"
-
-  set -ex
-
-  cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv &>log.txt
-  cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release &>log-release.txt
-popd
-```
 
 ## Parameter Selection
 

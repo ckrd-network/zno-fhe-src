@@ -1,4 +1,6 @@
-extern crate cc;
+// extern crate cc;
+extern crate cmake;
+// use cmake::Config;
 
 use std::env;
 use std::ffi::OsStr;
@@ -7,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub fn source_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("openssl")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("helib")
 }
 
 pub fn version() -> &'static str {
@@ -73,7 +75,7 @@ impl Build {
                 // a message to stdout, let user know asm is force enabled
                 println!(
                     "{}: nasm.exe is force enabled by the \
-                    'ZN2_RUST_USE_NASM' env var.",
+                    'ZNO_RUST_USE_NASM' env var.",
                     env!("CARGO_PKG_NAME")
                 );
                 true
@@ -81,7 +83,7 @@ impl Build {
                 // a message to stdout, let user know asm is force disabled
                 println!(
                     "{}: nasm.exe is force disabled by the \
-                    'ZN2_RUST_USE_NASM' env var.",
+                    'ZNO_RUST_USE_NASM' env var.",
                     env!("CARGO_PKG_NAME")
                 );
                 false
@@ -96,7 +98,7 @@ impl Build {
 
     #[cfg(windows)]
     fn is_nasm_ready(&self) -> bool {
-        self.check_env_var("ZN2_RUST_USE_NASM")
+        self.check_env_var("ZNO_RUST_USE_NASM")
             .unwrap_or_else(|| {
                 // On Windows, use cmd `where` command to check if nasm is installed
                 let wherenasm = Command::new("cmd")
@@ -131,120 +133,125 @@ impl Build {
         fs::create_dir_all(&inner_dir).unwrap();
         cp_r(&source_dir(), &inner_dir);
 
-        let perl_program =
-            env::var("OPENSSL_SRC_PERL").unwrap_or(env::var("PERL").unwrap_or("perl".to_string()));
-        let mut configure = Command::new(perl_program);
-        configure.arg("./Configure");
+
+        let configure = cmake::Config::new(inner_dir.clone())
+            .define("PACKAGE_BUILD", "ON")
+            .define("CMAKE_INSTALL_PREFIX", &format!("{}", install_dir.display()))
+            .build();
+
+        // let perl_program =
+        //     env::var("HELIB_SRC_PERL").unwrap_or(env::var("PERL").unwrap_or("perl".to_string()));
+        // let mut configure = Command::new(perl_program);
+        // configure.arg("./Configure");
+
 
         // Change the install directory to happen inside of the build directory.
-        if host.contains("pc-windows-gnu") {
-            configure.arg(&format!("--prefix={}", sanitize_sh(&install_dir)));
-        } else {
-            configure.arg(&format!("--prefix={}", install_dir.display()));
-        }
+        // if host.contains("pc-windows-gnu") {
+        //     configure.build_arg(&format!("--prefix={}", sanitize_sh(&install_dir)));
+        // } else {
+        //     configure.build_arg(&format!("--prefix={}", install_dir.display()));
+        // }
 
-        // Specify that openssl directory where things are loaded at runtime is
-        // not inside our build directory. Instead this should be located in the
-        // default locations of the OpenSSL build scripts.
-        if target.contains("windows") {
-            configure.arg("--openssldir=SYS$MANAGER:[OPENSSL]");
-        } else {
-            configure.arg("--openssldir=/usr/local/ssl");
-        }
+        // // Specify the directory where things are loaded at runtime is
+        // // not inside our build directory. Instead this should be located in the
+        // // default locations of the build scripts.
+        // if target.contains("windows") {
+        //     configure.arg("--openssldir=SYS$MANAGER:[OPENSSL]");
+        // } else {
+        //     configure.arg("--openssldir=/usr/local/ssl");
+        // }
 
-        configure
-            // No shared objects, we just want static libraries
-            .arg("no-dso")
-            .arg("no-shared")
-            // Should be off by default on OpenSSL 1.1.0, but let's be extra sure
-            .arg("no-ssl3")
-            // No need to build tests, we won't run them anyway
-            .arg("no-tests")
-            // Nothing related to zlib please
-            .arg("no-comp")
-            .arg("no-zlib")
-            .arg("no-zlib-dynamic")
-            // Avoid multilib-postfix for build targets that specify it
-            .arg("--libdir=lib");
+        // configure
+        //     // No shared objects, we just want static libraries
+        //     .arg("no-dso")
+        //     .arg("no-shared")
+        //     // Should be off by default on OpenSSL 1.1.0, but let's be extra sure
+        //     .arg("no-ssl3")
+        //     // No need to build tests, we won't run them anyway
+        //     .arg("no-tests")
+        //     // Nothing related to zlib please
+        //     .arg("no-comp")
+        //     .arg("no-zlib")
+        //     .arg("no-zlib-dynamic")
+        //     // Avoid multilib-postfix for build targets that specify it
+        //     .arg("--libdir=lib");
 
-        if cfg!(not(feature = "legacy")) {
-            configure.arg("no-legacy");
-        }
+        // if cfg!(not(feature = "legacy")) {
+        //     configure.arg("no-legacy");
+        // }
 
-        if cfg!(feature = "weak-crypto") {
-            configure
-                .arg("enable-md2")
-                .arg("enable-rc5")
-                .arg("enable-weak-ssl-ciphers");
-        } else {
-            configure
-                .arg("no-md2")
-                .arg("no-rc5")
-                .arg("no-weak-ssl-ciphers");
-        }
+        // if cfg!(feature = "weak-crypto") {
+        //     configure
+        //         .arg("enable-md2")
+        //         .arg("enable-rc5")
+        //         .arg("enable-weak-ssl-ciphers");
+        // } else {
+        //     configure
+        //         .arg("no-md2")
+        //         .arg("no-rc5")
+        //         .arg("no-weak-ssl-ciphers");
+        // }
 
-        if cfg!(not(feature = "camellia")) {
-            configure.arg("no-camellia");
-        }
+        // if cfg!(not(feature = "camellia")) {
+        //     configure.arg("no-camellia");
+        // }
 
-        if cfg!(not(feature = "idea")) {
-            configure.arg("no-idea");
-        }
+        // if cfg!(not(feature = "idea")) {
+        //     configure.arg("no-idea");
+        // }
 
-        if cfg!(not(feature = "seed")) {
-            configure.arg("no-seed");
-        }
+        // if cfg!(not(feature = "seed")) {
+        //     configure.arg("no-seed");
+        // }
 
-        if target.contains("musl") {
-            // Engine module fails to compile on musl (it needs linux/version.h
-            // right now) but we don't actually need this most of the time.
-            // Disable engine module unless force-engine feature specified
-            if !cfg!(feature = "force-engine") {
-                configure.arg("no-engine");
-            }
-        } else if target.contains("windows") {
-            // We can build the engine feature, but the build doesn't seem
-            // to correctly pick up crypt32.lib functions such as
-            // `__imp_CertOpenStore` when building the capieng engine.
-            // Let's disable just capieng.
-            configure.arg("no-capieng");
-        }
+        // if target.contains("musl") {
+        //     // Engine module fails to compile on musl (it needs linux/version.h
+        //     // right now) but we don't actually need this most of the time.
+        //     // Disable engine module unless force-engine feature specified
+        //     if !cfg!(feature = "force-engine") {
+        //         configure.arg("no-engine");
+        //     }
+        // } else if target.contains("windows") {
+        //     // We can build the engine feature, but the build doesn't seem
+        //     // to correctly pick up crypt32.lib functions such as
+        //     // `__imp_CertOpenStore` when building the capieng engine.
+        //     // Let's disable just capieng.
+        //     configure.arg("no-capieng");
+        // }
 
-        if target.contains("musl") {
-            // MUSL doesn't implement some of the libc functions that the async
-            // stuff depends on, and we don't bind to any of that in any case.
-            configure.arg("no-async");
-        }
+        // if target.contains("musl") {
+        //     // MUSL doesn't implement some of the libc functions that the async
+        //     // stuff depends on, and we don't bind to any of that in any case.
+        //     configure.arg("no-async");
+        // }
 
-        // On Android it looks like not passing no-stdio may cause a build
-        // failure (#13), but most other platforms need it for things like
-        // loading system certificates so only disable it on Android.
-        if target.contains("android") {
-            configure.arg("no-stdio");
-        }
+        // // On Android it looks like not passing no-stdio may cause a build
+        // // failure (#13), but most other platforms need it for things like
+        // // loading system certificates so only disable it on Android.
+        // if target.contains("android") {
+        //     configure.arg("no-stdio");
+        // }
 
-        if target.contains("msvc") {
-            // On MSVC we need nasm.exe to compile the assembly files.
-            // ASM compiling will be enabled if nasm.exe is installed, unless
-            // the environment variable `ZN2_RUST_USE_NASM` is set.
-            if self.is_nasm_ready() {
-                // a message to stdout, let user know asm is enabled
-                println!(
-                    "{}: Enable the assembly language routines in building OpenSSL.",
-                    env!("CARGO_PKG_NAME")
-                );
-            } else {
-                configure.arg("no-asm");
-            }
-        }
+        // if target.contains("msvc") {
+        //     // On MSVC we need nasm.exe to compile the assembly files.
+        //     // ASM compiling will be enabled if nasm.exe is installed, unless
+        //     // the environment variable `ZNO_RUST_USE_NASM` is set.
+        //     if self.is_nasm_ready() {
+        //         // a message to stdout, let user know asm is enabled
+        //         println!(
+        //             "{}: Enable the assembly language routines in building HElib.",
+        //             env!("CARGO_PKG_NAME")
+        //         );
+        //     } else {
+        //         configure.build_arg(r#"no-asm"#);
+        //     }
+        // }
 
         let os = match target {
             "aarch64-apple-darwin" => "darwin64-arm64-cc",
             // Note that this, and all other android targets, aren't using the
             // `android64-aarch64` (or equivalent) builtin target. That
-            // apparently has a crazy amount of build logic in OpenSSL 1.1.1
-            // that bypasses basically everything `cc` does, so let's just cop
-            // out and say it's linux and hope it works.
+            // So let's just cop out, say it's linux and hope it works.
             "aarch64-linux-android" => "linux-aarch64",
             "aarch64-unknown-freebsd" => "BSD-generic64",
             "aarch64-unknown-linux-gnu" => "linux-aarch64",
@@ -336,223 +343,223 @@ impl Build {
 
         let mut ios_isysroot: std::option::Option<String> = None;
 
-        configure.arg(os);
+        // configure.arg(os);
 
         // If we're not on MSVC we configure cross compilers and cross tools and
         // whatnot. Note that this doesn't happen on MSVC b/c things are pretty
         // different there and this isn't needed most of the time anyway.
         if !target.contains("msvc") {
-            let mut cc = cc::Build::new();
-            cc.target(target).host(host).warnings(false).opt_level(2);
-            let compiler = cc.get_compiler();
-            configure.env("CC", compiler.path());
-            let path = compiler.path().to_str().unwrap();
+            let mut cc = cmake::Config::new(inner_dir.clone());
+            cc.target(target).host(host);
+            // let compiler = cc.get_compiler();
+            // configure.env("CC", compiler.path());
+            // let path = compiler.path().to_str().unwrap();
 
             // Both `cc::Build` and `./Configure` take into account
             // `CROSS_COMPILE` environment variable. So to avoid double
             // prefix, we unset `CROSS_COMPILE` for `./Configure`.
-            configure.env_remove("CROSS_COMPILE");
+            // configure.env_remove("CROSS_COMPILE");
 
-            let ar = cc.get_archiver();
-            configure.env("AR", ar.get_program());
-            if ar.get_args().count() != 0 {
-                // On some platforms (like emscripten on windows), the ar to use may not be a
-                // single binary, but instead a multi-argument command like `cmd /c emar.bar`.
-                // We can't convey that through `AR` alone, and so also need to set ARFLAGS.
-                configure.env(
-                    "ARFLAGS",
-                    ar.get_args().collect::<Vec<_>>().join(OsStr::new(" ")),
-                );
-            }
-            let ranlib = cc.get_ranlib();
-            // OpenSSL does not support RANLIBFLAGS. Jam the flags in RANLIB.
-            let mut args = vec![ranlib.get_program()];
-            args.extend(ranlib.get_args());
-            configure.env("RANLIB", args.join(OsStr::new(" ")));
+            // let ar = cc.get_archiver();
+            // configure.env("AR", ar.get_program());
+            // if ar.get_args().count() != 0 {
+            //     // On some platforms (like emscripten on windows), the ar to use may not be a
+            //     // single binary, but instead a multi-argument command like `cmd /c emar.bar`.
+            //     // We can't convey that through `AR` alone, and so also need to set ARFLAGS.
+            //     configure.env(
+            //         "ARFLAGS",
+            //         ar.get_args().collect::<Vec<_>>().join(OsStr::new(" ")),
+            //     );
+            // }
+            // let ranlib = cc.get_ranlib();
+            // // OpenSSL does not support RANLIBFLAGS. Jam the flags in RANLIB.
+            // let mut args = vec![ranlib.get_program()];
+            // args.extend(ranlib.get_args());
+            // configure.env("RANLIB", args.join(OsStr::new(" ")));
 
             // Make sure we pass extra flags like `-ffunction-sections` and
             // other things like ARM codegen flags.
             let mut skip_next = false;
             let mut is_isysroot = false;
-            for arg in compiler.args() {
-                // For whatever reason `-static` on MUSL seems to cause
-                // issues...
-                if target.contains("musl") && arg == "-static" {
-                    continue;
-                }
+            // for arg in compiler.args() {
+            //     // For whatever reason `-static` on MUSL seems to cause
+            //     // issues...
+            //     if target.contains("musl") && arg == "-static" {
+            //         continue;
+            //     }
 
-                // cc includes an `-arch` flag for Apple platforms, but we've
-                // already selected an arch implicitly via the target above, and
-                // OpenSSL contains about the conflict if both are specified.
-                if target.contains("apple") {
-                    if arg == "-arch" {
-                        skip_next = true;
-                        continue;
-                    }
-                }
+            //     // cc includes an `-arch` flag for Apple platforms, but we've
+            //     // already selected an arch implicitly via the target above, and
+            //     // OpenSSL contains about the conflict if both are specified.
+            //     if target.contains("apple") {
+            //         if arg == "-arch" {
+            //             skip_next = true;
+            //             continue;
+            //         }
+            //     }
 
-                // cargo-lipo specifies this but OpenSSL complains
-                if target.contains("apple-ios") {
-                    if arg == "-isysroot" {
-                        is_isysroot = true;
-                        continue;
-                    }
+            //     // cargo-lipo specifies this but OpenSSL complains
+            //     if target.contains("apple-ios") {
+            //         if arg == "-isysroot" {
+            //             is_isysroot = true;
+            //             continue;
+            //         }
 
-                    if is_isysroot {
-                        is_isysroot = false;
-                        ios_isysroot = Some(arg.to_str().unwrap().to_string());
-                        continue;
-                    }
-                }
+            //         if is_isysroot {
+            //             is_isysroot = false;
+            //             ios_isysroot = Some(arg.to_str().unwrap().to_string());
+            //             continue;
+            //         }
+            //     }
 
-                if skip_next {
-                    skip_next = false;
-                    continue;
-                }
+            //     if skip_next {
+            //         skip_next = false;
+            //         continue;
+            //     }
 
-                configure.arg(arg);
-            }
+            //     configure.arg(arg);
+            // }
 
-            if os.contains("iossimulator") {
-                if let Some(ref isysr) = ios_isysroot {
-                    configure.env(
-                        "CC",
-                        &format!(
-                            "xcrun -sdk iphonesimulator cc -isysroot {}",
-                            sanitize_sh(&Path::new(isysr))
-                        ),
-                    );
-                }
-            }
+            // if os.contains("iossimulator") {
+            //     if let Some(ref isysr) = ios_isysroot {
+            //         configure.env(
+            //             "CC",
+            //             &format!(
+            //                 "xcrun -sdk iphonesimulator cc -isysroot {}",
+            //                 sanitize_sh(&Path::new(isysr))
+            //             ),
+            //         );
+            //     }
+            // }
 
-            if target == "x86_64-pc-windows-gnu" {
-                // For whatever reason OpenSSL 1.1.1 fails to build on
-                // `x86_64-pc-windows-gnu` in our docker container due to an
-                // error about "too many sections". Having no idea what this
-                // error is about some quick googling yields
-                // https://github.com/cginternals/glbinding/issues/135 which
-                // mysteriously mentions `-Wa,-mbig-obj`, passing a new argument
-                // to the assembler. Now I have no idea what `-mbig-obj` does
-                // for Windows nor why it would matter, but it does seem to fix
-                // compilation issues.
-                //
-                // Note that another entirely unrelated issue -
-                // https://github.com/assimp/assimp/issues/177 - was fixed by
-                // splitting a large file, so presumably OpenSSL has a large
-                // file soemwhere in it? Who knows!
-                configure.arg("-Wa,-mbig-obj");
-            }
+            // if target == "x86_64-pc-windows-gnu" {
+            //     // For whatever reason OpenSSL 1.1.1 fails to build on
+            //     // `x86_64-pc-windows-gnu` in our docker container due to an
+            //     // error about "too many sections". Having no idea what this
+            //     // error is about some quick googling yields
+            //     // https://github.com/cginternals/glbinding/issues/135 which
+            //     // mysteriously mentions `-Wa,-mbig-obj`, passing a new argument
+            //     // to the assembler. Now I have no idea what `-mbig-obj` does
+            //     // for Windows nor why it would matter, but it does seem to fix
+            //     // compilation issues.
+            //     //
+            //     // Note that another entirely unrelated issue -
+            //     // https://github.com/assimp/assimp/issues/177 - was fixed by
+            //     // splitting a large file, so presumably OpenSSL has a large
+            //     // file soemwhere in it? Who knows!
+            //     configure.build_arg("-Wa,-mbig-obj");
+            // }
 
-            if target.contains("pc-windows-gnu") && path.ends_with("-gcc") {
-                // As of OpenSSL 1.1.1 the build system is now trying to execute
-                // `windres` which doesn't exist when we're cross compiling from
-                // Linux, so we may need to instruct it manually to know what
-                // executable to run.
-                let windres = format!("{}-windres", &path[..path.len() - 4]);
-                configure.env("WINDRES", &windres);
-            }
+            // if target.contains("pc-windows-gnu") && path.ends_with("-gcc") {
+            //     // As of OpenSSL 1.1.1 the build system is now trying to execute
+            //     // `windres` which doesn't exist when we're cross compiling from
+            //     // Linux, so we may need to instruct it manually to know what
+            //     // executable to run.
+            //     let windres = format!("{}-windres", &path[..path.len() - 4]);
+            //     configure.env("WINDRES", &windres);
+            // }
 
-            if target.contains("emscripten") {
-                // As of OpenSSL 1.1.1 the source apparently wants to include
-                // `stdatomic.h`, but this doesn't exist on Emscripten. After
-                // reading OpenSSL's source where the error is, we define this
-                // magical (and probably
-                // compiler-internal-should-not-be-user-defined) macro to say
-                // "no atomics are available" and avoid including such a header.
-                configure.arg("-D__STDC_NO_ATOMICS__");
-            }
+            // if target.contains("emscripten") {
+            //     // As of OpenSSL 1.1.1 the source apparently wants to include
+            //     // `stdatomic.h`, but this doesn't exist on Emscripten. After
+            //     // reading OpenSSL's source where the error is, we define this
+            //     // magical (and probably
+            //     // compiler-internal-should-not-be-user-defined) macro to say
+            //     // "no atomics are available" and avoid including such a header.
+            //     configure.build_arg("-D__STDC_NO_ATOMICS__");
+            // }
 
-            if target.contains("wasi") {
-                configure.args([
-                    // Termios isn't available whatsoever on WASM/WASI so we disable that
-                    "no-ui-console",
-                    // WASI doesn't support UNIX sockets so we preemptively disable it
-                    "no-sock",
-                    // WASI doesn't have a concept of syslog, so we disable it
-                    "-DNO_SYSLOG",
-                    // WASI doesn't support (p)threads. Disabling preemptively.
-                    "no-threads",
-                    // WASI/WASM aren't really friends with ASM, so we disable it as well.
-                    "no-asm",
-                    // Disables the AFALG engine (AFALG-ENGine)
-                    // Since AFALG depends on `AF_ALG` support on the linux kernel side
-                    // it makes sense that we can't use it.
-                    "no-afalgeng",
-                    "-DOPENSSL_NO_AFALGENG=1",
-                    // wasm lacks signal support; to enable minimal signal emulation, compile with
-                    // -D_WASI_EMULATED_SIGNAL and link with -lwasi-emulated-signal
-                    // The link argument is output in the `Artifacts::print_cargo_metadata` method
-                    "-D_WASI_EMULATED_SIGNAL",
-                    // WASI lacks process-associated clocks; to enable emulation of the `times` function using the wall
-                    // clock, which isn't sensitive to whether the program is running or suspended, compile with
-                    // -D_WASI_EMULATED_PROCESS_CLOCKS and link with -lwasi-emulated-process-clocks
-                    // The link argument is output in the `Artifacts::print_cargo_metadata` method
-                    "-D_WASI_EMULATED_PROCESS_CLOCKS",
-                    // WASI lacks a true mmap; to enable minimal mmap emulation, compile
-                    // with -D_WASI_EMULATED_MMAN and link with -lwasi-emulated-mman
-                    // The link argument is output in the `Artifacts::print_cargo_metadata` method
-                    "-D_WASI_EMULATED_MMAN",
-                    // WASI lacks process identifiers; to enable emulation of the `getpid` function using a
-                    // placeholder value, which doesn't reflect the host PID of the program, compile with
-                    // -D_WASI_EMULATED_GETPID and link with -lwasi-emulated-getpid
-                    // The link argument is output in the `Artifacts::print_cargo_metadata` method
-                    "-D_WASI_EMULATED_GETPID",
-                ]);
-            }
+            // if target.contains("wasi") {
+            //     configure.build_arg([
+            //         // Termios isn't available whatsoever on WASM/WASI so we disable that
+            //         "no-ui-console",
+            //         // WASI doesn't support UNIX sockets so we preemptively disable it
+            //         "no-sock",
+            //         // WASI doesn't have a concept of syslog, so we disable it
+            //         "-DNO_SYSLOG",
+            //         // WASI doesn't support (p)threads. Disabling preemptively.
+            //         "no-threads",
+            //         // WASI/WASM aren't really friends with ASM, so we disable it as well.
+            //         "no-asm",
+            //         // Disables the AFALG engine (AFALG-ENGine)
+            //         // Since AFALG depends on `AF_ALG` support on the linux kernel side
+            //         // it makes sense that we can't use it.
+            //         "no-afalgeng",
+            //         "-DOPENSSL_NO_AFALGENG=1",
+            //         // wasm lacks signal support; to enable minimal signal emulation, compile with
+            //         // -D_WASI_EMULATED_SIGNAL and link with -lwasi-emulated-signal
+            //         // The link argument is output in the `Artifacts::print_cargo_metadata` method
+            //         "-D_WASI_EMULATED_SIGNAL",
+            //         // WASI lacks process-associated clocks; to enable emulation of the `times` function using the wall
+            //         // clock, which isn't sensitive to whether the program is running or suspended, compile with
+            //         // -D_WASI_EMULATED_PROCESS_CLOCKS and link with -lwasi-emulated-process-clocks
+            //         // The link argument is output in the `Artifacts::print_cargo_metadata` method
+            //         "-D_WASI_EMULATED_PROCESS_CLOCKS",
+            //         // WASI lacks a true mmap; to enable minimal mmap emulation, compile
+            //         // with -D_WASI_EMULATED_MMAN and link with -lwasi-emulated-mman
+            //         // The link argument is output in the `Artifacts::print_cargo_metadata` method
+            //         "-D_WASI_EMULATED_MMAN",
+            //         // WASI lacks process identifiers; to enable emulation of the `getpid` function using a
+            //         // placeholder value, which doesn't reflect the host PID of the program, compile with
+            //         // -D_WASI_EMULATED_GETPID and link with -lwasi-emulated-getpid
+            //         // The link argument is output in the `Artifacts::print_cargo_metadata` method
+            //         "-D_WASI_EMULATED_GETPID",
+            //     ]);
+            // }
 
-            if target.contains("musl") {
-                // Hack around openssl/openssl#7207 for now
-                configure.arg("-DOPENSSL_NO_SECURE_MEMORY");
-            }
+            // if target.contains("musl") {
+            //     // Hack around openssl/openssl#7207 for now
+            //     configure.define("-DOPENSSL_NO_SECURE_MEMORY");
+            // }
         }
 
         // And finally, run the perl configure script!
-        configure.current_dir(&inner_dir);
-        self.run_command(configure, "configuring OpenSSL build");
+        // configure.current_dir(&inner_dir);
+        // self.run_command(configure, "configuring OpenSSL build");
 
-        // On MSVC we use `nmake.exe` with a slightly different invocation, so
-        // have that take a different path than the standard `make` below.
-        if target.contains("msvc") {
-            let mut build =
-                cc::windows_registry::find(target, "nmake.exe").expect("failed to find nmake");
-            build.arg("build_libs").current_dir(&inner_dir);
-            self.run_command(build, "building OpenSSL");
+        // // On MSVC we use `nmake.exe` with a slightly different invocation, so
+        // // have that take a different path than the standard `make` below.
+        // if target.contains("msvc") {
+        //     let mut build =
+        //         cc::windows_registry::find(target, "nmake.exe").expect("failed to find nmake");
+        //     build.arg("build_libs").current_dir(&inner_dir);
+        //     self.run_command(build, "building OpenSSL");
 
-            let mut install =
-                cc::windows_registry::find(target, "nmake.exe").expect("failed to find nmake");
-            install.arg("install_dev").current_dir(&inner_dir);
-            self.run_command(install, "installing OpenSSL");
-        } else {
-            let mut depend = self.cmd_make();
-            depend.arg("depend").current_dir(&inner_dir);
-            self.run_command(depend, "building OpenSSL dependencies");
+        //     let mut install =
+        //         cc::windows_registry::find(target, "nmake.exe").expect("failed to find nmake");
+        //     install.arg("install_dev").current_dir(&inner_dir);
+        //     self.run_command(install, "installing OpenSSL");
+        // } else {
+        //     let mut depend = self.cmd_make();
+        //     depend.arg("depend").current_dir(&inner_dir);
+        //     self.run_command(depend, "building OpenSSL dependencies");
 
-            let mut build = self.cmd_make();
-            build.arg("build_libs").current_dir(&inner_dir);
-            if !cfg!(windows) {
-                if let Some(s) = env::var_os("CARGO_MAKEFLAGS") {
-                    build.env("MAKEFLAGS", s);
-                }
-            }
+        //     let mut build = self.cmd_make();
+        //     build.arg("build_libs").current_dir(&inner_dir);
+        //     if !cfg!(windows) {
+        //         if let Some(s) = env::var_os("CARGO_MAKEFLAGS") {
+        //             build.env("MAKEFLAGS", s);
+        //         }
+        //     }
 
-            if let Some(ref isysr) = ios_isysroot {
-                let components: Vec<&str> = isysr.split("/SDKs/").collect();
-                build.env("CROSS_TOP", components[0]);
-                build.env("CROSS_SDK", components[1]);
-            }
+        //     if let Some(ref isysr) = ios_isysroot {
+        //         let components: Vec<&str> = isysr.split("/SDKs/").collect();
+        //         build.env("CROSS_TOP", components[0]);
+        //         build.env("CROSS_SDK", components[1]);
+        //     }
 
-            self.run_command(build, "building OpenSSL");
+        //     self.run_command(build, "building OpenSSL");
 
-            let mut install = self.cmd_make();
-            install.arg("install_dev").current_dir(&inner_dir);
-            self.run_command(install, "installing OpenSSL");
-        }
+        //     let mut install = self.cmd_make();
+        //     install.arg("install_dev").current_dir(&inner_dir);
+        //     self.run_command(install, "installing OpenSSL");
+        // }
 
-        let libs = if target.contains("msvc") {
-            vec!["libssl".to_string(), "libcrypto".to_string()]
-        } else {
-            vec!["ssl".to_string(), "crypto".to_string()]
-        };
+        // let libs = if target.contains("msvc") {
+        //     vec!["libssl".to_string(), "libcrypto".to_string()]
+        // } else {
+        //     vec!["ssl".to_string(), "crypto".to_string()]
+        // };
 
         fs::remove_dir_all(&inner_dir).unwrap();
 
@@ -560,7 +567,7 @@ impl Build {
             lib_dir: install_dir.join("lib"),
             bin_dir: install_dir.join("bin"),
             include_dir: install_dir.join("include"),
-            libs: libs,
+            libs: vec![],
             target: target.to_string(),
         }
     }

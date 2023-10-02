@@ -4,14 +4,14 @@ use std::process::{self, Command};
 
 use super::env;
 
-pub fn get_openssl(target: &str) -> (Vec<PathBuf>, PathBuf) {
-    let lib_dir = env("OPENSSL_LIB_DIR").map(PathBuf::from);
-    let include_dir = env("OPENSSL_INCLUDE_DIR").map(PathBuf::from);
+pub fn get_lib(target: &str) -> (Vec<PathBuf>, PathBuf) {
+    let lib_dir = env("HELIB_LIB_DIR").map(PathBuf::from);
+    let include_dir = env("HELIB_INCLUDE_DIR").map(PathBuf::from);
 
     match (lib_dir, include_dir) {
         (Some(lib_dir), Some(include_dir)) => (vec![lib_dir], include_dir),
         (lib_dir, include_dir) => {
-            let openssl_dir = env("OPENSSL_DIR").unwrap_or_else(|| find_openssl_dir(target));
+            let openssl_dir = env("HELIB_DIR").unwrap_or_else(|| find_openssl_dir(target));
             let openssl_dir = Path::new(&openssl_dir);
             let lib_dir = lib_dir.map(|d| vec![d]).unwrap_or_else(|| {
                 let mut lib_dirs = vec![];
@@ -105,21 +105,18 @@ fn find_openssl_dir(target: &str) -> OsString {
     let mut msg = format!(
         "
 
-Could not find directory of OpenSSL installation, and this `-sys` crate cannot
-proceed without this knowledge. If OpenSSL is installed and this crate had
-trouble finding it,  you can set the `OPENSSL_DIR` environment variable for the
+Could not find directory of HElib installation, and this `-sys` crate cannot
+proceed without this knowledge. If HElib is installed and this crate had
+trouble finding it,  you can set the `HELIB_DIR` environment variable for the
 compilation process.
 
-Make sure you also have the development packages of openssl installed.
-For example, `libssl-dev` on Ubuntu or `openssl-devel` on Fedora.
-
 If you're in a situation where you think the directory *should* be found
-automatically, please open a bug at https://github.com/sfackler/rust-openssl
+automatically, please open a bug at https://github.com/ckrd-network/zno-fhe-src
 and include information about your system as well as this message.
 
 $HOST = {}
 $TARGET = {}
-openssl-sys = {}
+zno-helib-sys = {}
 
 ",
         host,
@@ -128,16 +125,15 @@ openssl-sys = {}
     );
 
     if host.contains("apple-darwin") && target.contains("apple-darwin") {
-        let system = Path::new("/usr/lib/libssl.0.9.8.dylib");
+        let system = Path::new("/usr/lib/helib.dylib");
         if system.exists() {
             msg.push_str(
                 "
 
-openssl-sys crate build failed: no supported version of OpenSSL found.
+zno-helib-sys crate build failed: no supported version of HElib found.
 
 Ways to fix it:
-- Use the `vendored` feature of openssl-sys crate to build OpenSSL from source.
-- Use Homebrew to install the `openssl` package.
+- Use the `vendored` feature of zno-helib-sys crate to build HElib from source.
 
 ",
             );
@@ -151,8 +147,8 @@ Ways to fix it:
         msg.push_str(
             "
 It looks like you're compiling on Linux and also targeting Linux. Currently this
-requires the `pkg-config` utility to find OpenSSL but unfortunately `pkg-config`
-could not be found. If you have OpenSSL installed you can likely fix this by
+requires the `pkg-config` utility to find HElib but unfortunately `pkg-config`
+could not be found. If you have HElib installed you can likely fix this by
 installing `pkg-config`.
 
 ",
@@ -162,10 +158,12 @@ installing `pkg-config`.
     if host.contains("windows") && target.contains("windows-gnu") {
         msg.push_str(
             "
-It looks like you're compiling for MinGW but you may not have either OpenSSL or
-pkg-config installed. You can install these two dependencies with:
+It looks like you're compiling for MinGW but you may not have either HElib or
+pkg-config installed.
 
-pacman -S openssl-devel pkg-config
+Ways to fix it:
+- pacman -S pkg-config
+- Use the `vendored` feature of zno-helib-sys crate to build HElib from source.
 
 and try building this crate again.
 
@@ -176,12 +174,9 @@ and try building this crate again.
     if host.contains("windows") && target.contains("windows-msvc") {
         msg.push_str(
             "
-It looks like you're compiling for MSVC but we couldn't detect an OpenSSL
-installation. If there isn't one installed then you can try the rust-openssl
-README for more information about how to download precompiled binaries of
-OpenSSL:
-
-https://github.com/sfackler/rust-openssl#windows
+It looks like you're compiling for MSVC but we couldn't detect an HElib
+installation. If there isn't one installed then you can try the zno-fhe-src
+README for more information.
 
 ",
         );
@@ -190,7 +185,7 @@ https://github.com/sfackler/rust-openssl#windows
     panic!("{}", msg);
 }
 
-/// Attempt to find OpenSSL through pkg-config.
+/// Attempt to find HElib through pkg-config.
 ///
 /// Note that if this succeeds then the function does not return as pkg-config
 /// typically tells us all the information that we need.
@@ -208,7 +203,7 @@ fn try_pkg_config() {
 
     let lib = match pkg_config::Config::new()
         .print_system_libs(false)
-        .probe("openssl")
+        .probe("helib")
     {
         Ok(lib) => lib,
         Err(e) => {
@@ -226,7 +221,7 @@ fn try_pkg_config() {
     process::exit(0);
 }
 
-/// Attempt to find OpenSSL through vcpkg.
+/// Attempt to find HElib through vcpkg.
 ///
 /// Note that if this succeeds then the function does not return as vcpkg
 /// should emit all of the cargo metadata that we need.
@@ -241,11 +236,11 @@ fn try_vcpkg() {
 
     let lib = match vcpkg::Config::new()
         .emit_includes(true)
-        .find_package("openssl")
+        .find_package("helib")
     {
         Ok(lib) => lib,
         Err(e) => {
-            println!("note: vcpkg did not find openssl: {}", e);
+            println!("note: vcpkg did not find helib: {}", e);
             return;
         }
     };

@@ -23,5 +23,5 @@ zno-helib-sys = { path = "../zno-helib-sys" }
 libc = { workspace = true }
 
 [features]
-bindgen = ['zno-helib-sys/bindgen']
+autocxx = ['zno-helib-sys/autocxx']
 vendored = ['zno-helib-sys/vendored']

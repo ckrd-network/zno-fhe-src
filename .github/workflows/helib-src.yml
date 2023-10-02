@@ -1,9 +1,9 @@
 name: ci-zno-helib-src
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 defaults:
   run:

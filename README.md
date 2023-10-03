@@ -6,6 +6,21 @@ This crate contains the logic to build HELib, OpenFHE and SEAL.
 It is intended to be consumed by the `zno-fhe` crate.
 In theory you should not need to interact with this repository.
 
+Add these features to the FHE crate that exposes the libraries:
+
+```toml
+# Build and test all of the above.
+all = ['tests', 'examples', 'utils', 'benchmarks']
+# Build the HElib Google benchmark directory.
+benchmarks = []
+# Build and test the HElib examples directory.
+examples = []
+# Run the HElib Google tests.
+tests = []
+# Build and test the HElib utils directory.
+utils = []
+```
+
 ## FHE Libraries
 
 ### HElib

@@ -3,7 +3,7 @@
 target=$1
 
 if [ ! -d ci/docker/$1 ]; then
-  exec ci/zno-helib-src/run.sh $1
+  exec ci/zno-helib-src/run.sh $target
 fi
 
 set -ex
@@ -11,7 +11,7 @@ set -ex
 docker build \
   --rm \
   --tag ci-zno-helib-src \
-  ci/zno-helib-src/docker/$1
+  ci/zno-helib-src/docker/$target
 
 docker run \
   --rm \

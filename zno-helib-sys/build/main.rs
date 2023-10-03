@@ -64,9 +64,16 @@ fn check_fhe_kind() {
 
 fn main() -> miette::Result<()> {
 
+    let artifacts = zno_helib_src::Build::new().build();
+    artifacts.print_cargo_metadata();
+
     let target = env::var("TARGET").unwrap();
 
-    let (lib_dirs, include_dir) = find_lib(&target);
+    let (libs, lib_dirs, include_dir) = (
+        artifacts.libs(),
+        vec![artifacts.lib_dir().to_path_buf()],
+        artifacts.include_dir().to_path_buf(),
+    );
 
     if !lib_dirs.iter().all(|p| Path::new(p).exists()) {
         panic!("HElib library directory does not exist: {:?}", lib_dirs);
@@ -86,7 +93,8 @@ fn main() -> miette::Result<()> {
     }
     println!("cargo:include={}", include_dir.to_string_lossy());
 
-    let version = postprocess(&[include_dir]);
+    // Run autocxx if the feature is enabled.
+    postprocess(&[include_dir]);
 
     // let libs_env = env("OPENSSL_LIBS");
     // let libs = match libs_env.as_ref().and_then(|s| s.to_str()) {
@@ -106,10 +114,11 @@ fn main() -> miette::Result<()> {
     //     },
     // };
 
-    // let kind = determine_mode(&lib_dirs, &libs);
-    // for lib in libs.into_iter() {
-    //     println!("cargo:rustc-link-lib={}={}", kind, lib);
-    // }
+    println!("cargo:rustc-link-search=native={}", include_dir.to_string_lossy());
+    let kind = determine_mode(&lib_dirs, libs);
+    for lib in libs.into_iter() {
+        println!("cargo:rustc-link-lib={}={}", kind, lib);
+    }
 
     // if kind == "static" && target.contains("windows") {
     //     println!("cargo:rustc-link-lib=dylib=gdi32");
@@ -123,21 +132,26 @@ fn main() -> miette::Result<()> {
     Ok(())
 }
 
-fn postprocess(include_dirs: &[PathBuf]) -> Version {
+fn postprocess(include_dirs: &[PathBuf]) {
 
     // Adjust to parse HElib version
     // let version = validate_headers(include_dirs);
 
 
     #[cfg(feature = "autocxx")]
-    run_autocxx::run(&include_dirs);
+
+    let mut b = autocxx_build::Builder::new("src/main.rs", include_dirs).build().unwrap();
+        // This assumes all your C++ bindings are in main.rs
+    b.flag_if_supported("-std=c++14")
+     .compile("autocxx-demo");
+    // run_autocxx::run(&include_dirs);
 
 
-    version
+    // version
 }
 
-/// Validates the header files found in `include_dir` and then returns the
-/// version string of HElib.
+// Validates the header files found in `include_dir` and then returns the
+// version string of HElib.
 // #[allow(clippy::unusual_byte_groupings)]
 // fn validate_headers(include_dirs: &[PathBuf]) -> Version {
 //     // Take a look at
@@ -330,55 +344,55 @@ fn postprocess(include_dirs: &[PathBuf]) -> Version {
 //     (major << 28) | (minor << 20) | (patch << 4)
 // }
 
-// /// Given a libdir (where artifacts are located) as well as the name
-// /// of the libraries we're linking to, figure out whether we should link them
-// /// statically or dynamically.
-// fn determine_mode(libdirs: &[PathBuf], libs: &[&str]) -> &'static str {
-//     // First see if a mode was explicitly requested
-//     let kind = env("OPENSSL_STATIC");
-//     match kind.as_ref().and_then(|s| s.to_str()) {
-//         Some("0") => return "dylib",
-//         Some(_) => return "static",
-//         None => {}
-//     }
+/// Given a libdir (where artifacts are located) as well as the name
+/// of the libraries we're linking to, figure out whether we should link them
+/// statically or dynamically.
+fn determine_mode(libdirs: &[PathBuf], libs: &[String]) -> &'static str {
+    // First see if a mode was explicitly requested
+    let kind = env("HELIB_STATIC");
+    match kind.as_ref().and_then(|s| s.to_str()) {
+        Some("0") => return "dylib",
+        Some(_) => return "static",
+        None => {}
+    }
 
-//     // Next, see what files we actually have to link against, and see what our
-//     // possibilities even are.
-//     let mut files = HashSet::new();
-//     for dir in libdirs {
-//         for path in dir
-//             .read_dir()
-//             .unwrap()
-//             .map(|e| e.unwrap())
-//             .map(|e| e.file_name())
-//             .filter_map(|e| e.into_string().ok())
-//         {
-//             files.insert(path);
-//         }
-//     }
-//     let can_static = libs
-//         .iter()
-//         .all(|l| files.contains(&format!("lib{}.a", l)) || files.contains(&format!("{}.lib", l)));
-//     let can_dylib = libs.iter().all(|l| {
-//         files.contains(&format!("lib{}.so", l))
-//             || files.contains(&format!("{}.dll", l))
-//             || files.contains(&format!("lib{}.dylib", l))
-//     });
-//     match (can_static, can_dylib) {
-//         (true, false) => return "static",
-//         (false, true) => return "dylib",
-//         (false, false) => {
-//             panic!(
-//                 "OpenSSL libdir at `{:?}` does not contain the required files \
-//                  to either statically or dynamically link OpenSSL",
-//                 libdirs
-//             );
-//         }
-//         (true, true) => {}
-//     }
+    // Next, see what files we actually have to link against, and see what our
+    // possibilities even are.
+    let mut files = HashSet::new();
+    for dir in libdirs {
+        for path in dir
+            .read_dir()
+            .unwrap()
+            .map(|e| e.unwrap())
+            .map(|e| e.file_name())
+            .filter_map(|e| e.into_string().ok())
+        {
+            files.insert(path);
+        }
+    }
+    let can_static = libs
+        .iter()
+        .all(|l| files.contains(&format!("lib{}.a", l)) || files.contains(&format!("{}.lib", l)));
+    let can_dylib = libs.iter().all(|l| {
+        files.contains(&format!("lib{}.so", l))
+            || files.contains(&format!("{}.dll", l))
+            || files.contains(&format!("lib{}.dylib", l))
+    });
+    match (can_static, can_dylib) {
+        (true, false) => return "static",
+        (false, true) => return "dylib",
+        (false, false) => {
+            panic!(
+                "OpenSSL libdir at `{:?}` does not contain the required files \
+                 to either statically or dynamically link OpenSSL",
+                libdirs
+            );
+        }
+        (true, true) => {}
+    }
 
-//     // Ok, we've got not explicit preference and can *either* link statically or
-//     // link dynamically. In the interest of "security upgrades" and/or "best
-//     // practices with security libs", let's link dynamically.
-//     "dylib"
-// }
+    // Ok, we've got not explicit preference and can *either* link statically or
+    // link dynamically. In the interest of "security upgrades" and/or "best
+    // practices with security libs", let's link dynamically.
+    "dylib"
+}

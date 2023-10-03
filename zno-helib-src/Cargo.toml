@@ -28,31 +28,13 @@ exclude = [
 ]
 
 [features]
-default = ['package', 'release-with-dbg-info', 'no-fetch-gmp']
+default = ['package']
 # This option bundles HElib and its dependencies (NTL and GMP) in one directory
 # which can then be moved around freely on the system.
-package = ['release-with-dbg-info']
-# Choose the type of build.
-release-with-dbg-info = ['debug-module']
-debug = ['debug-module']
-release = []
-min-size-rel = []
-# Enables compilation of International Data Encryption Algorithm (IDEA), a symmetric key block
-# cypher sometimes used as an AES128 alternative.
-test = []
-# Activate the debug module when building HElib (defines the HELIB_DEBUG macro).
-# When the debug module is active, this generates extra information used for
-# debugging purposes.
-# HELIB_DEBUG will propagate to programs using HElib, when using cmake.
-# When this is enabled, programs using HElib will generate a warning during
-# configuration. This warning is to remind the user that use of the debug
-# module can cause issues, such as sigsegv, if initialized incorrectly.
-debug-module = []
-# Whether or not to fetch and build GMP. Upstream default is ON.
-# Here the default is OFF, so there should either exist a system-installed GMP
-# library, or `GMP_DIR` should point to a valid GMP prefix.
-no-fetch-gmp = []
+package = []
+tests = []
 
 [dependencies]
 cmake.workspace = true
 cxx.workspace = true
+tap.workspace = true

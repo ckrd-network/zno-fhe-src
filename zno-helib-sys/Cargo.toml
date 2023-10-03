@@ -15,7 +15,7 @@ readme.workspace = true
 categories.workspace = true
 keywords.workspace = true
 
-links = "openssl"
+links = "helib"
 build = "build/main.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -36,6 +36,7 @@ pkg-config.workspace = true
 vcpkg.workspace = true
 
 [features]
+default = ['vendored']
 autocxx = []
 vendored = ['zno-helib-src']
 
@@ -47,3 +48,4 @@ vendored = ['zno-helib-src']
 [package.metadata.pkg-config]
 gmp = "6.2.1"
 ntl = "11.5.1"
+helib = "2.3.0"

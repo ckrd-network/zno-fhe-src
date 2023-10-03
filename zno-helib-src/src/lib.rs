@@ -7,6 +7,7 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use tap::prelude::*;
 
 pub fn source_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("helib")
@@ -26,6 +27,7 @@ pub struct Artifacts {
     include_dir: PathBuf,
     lib_dir: PathBuf,
     bin_dir: PathBuf,
+    share_dir: PathBuf,
     libs: Vec<String>,
     target: String,
 }
@@ -33,7 +35,7 @@ pub struct Artifacts {
 impl Build {
     pub fn new() -> Build {
         Build {
-            out_dir: env::var_os("OUT_DIR").map(|s| PathBuf::from(s).join("zno-helib-build")),
+            out_dir: env::var_os("OUT_DIR").map(|s| PathBuf::from(s)),
             target: env::var("TARGET").ok(),
             host: env::var("HOST").ok(),
         }
@@ -119,6 +121,7 @@ impl Build {
         let target = &self.target.as_ref().expect("TARGET dir not set")[..];
         let host = &self.host.as_ref().expect("HOST dir not set")[..];
         let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set");
+        // Mirror upstream build and test script.
         let build_dir = out_dir.join("build");
         let install_dir = out_dir.join("install");
 
@@ -129,15 +132,54 @@ impl Build {
             fs::remove_dir_all(&install_dir).unwrap();
         }
 
-        let inner_dir = build_dir.join("src");
+        let inner_dir = build_dir;
         fs::create_dir_all(&inner_dir).unwrap();
-        cp_r(&source_dir(), &inner_dir);
+        // Mirror upstream build and test script.
+        cp_r(&source_dir(), &out_dir);
 
 
-        let configure = cmake::Config::new(inner_dir.clone())
-            .define("PACKAGE_BUILD", "ON")
+        // NTL and GMP libraries are installed:
+        //   - ./out/build/helib_pack/lib or, equivalently,
+        //   - {build_dir}/helib_pack/lib
+        let profile = cmake::Config::new(out_dir.clone());
+
+        let debug_module = match profile.get_profile() {
+            "Release" | "MinSizeRel"  => false,
+            "Debug" | "RelWithDebInfo" => true,
+            _ => { false }
+        };
+
+        let _configure = cmake::Config::new(out_dir.clone())
             .define("CMAKE_INSTALL_PREFIX", &format!("{}", install_dir.display()))
+            .define("BUILD_SHARED", "ON")
+            .pipe( |c| if cfg!(feature = "package") {
+                c.define("PACKAGE_BUILD", "ON")
+            } else { c.define("PACKAGE_BUILD", "OFF") })
+            .pipe( |c| if cfg!(feature = "tests") {
+                c.define("ENABLE_TEST", "ON")
+            } else { c.define("ENABLE_TEST", "OFF") })
+            .pipe( |c| if debug_module {
+                c.define("HELIB_DEBUG", "ON")
+            } else { c.define("HELIB_DEBUG", "OFF") })
             .build();
+
+            let mut build = self.cmd_make();
+            build.arg("-j4").current_dir(&inner_dir);
+            build.env("VERBOSE", "1");
+            self.run_command(build, "building HElib (verbose)");
+
+            let mut install = self.cmd_make();
+            install.arg("install").current_dir(&inner_dir);
+            self.run_command(install, "installing HElib");
+
+
+        //     let mut build = self.cmd_make();
+        //     build.arg("build_libs").current_dir(&inner_dir);
+        //     if !cfg!(windows) {
+        //         if let Some(s) = env::var_os("CARGO_MAKEFLAGS") {
+        //             build.env("MAKEFLAGS", s);
+        //         }
+        //     }
 
         // let perl_program =
         //     env::var("HELIB_SRC_PERL").unwrap_or(env::var("PERL").unwrap_or("perl".to_string()));
@@ -555,19 +597,20 @@ impl Build {
         //     self.run_command(install, "installing OpenSSL");
         // }
 
-        // let libs = if target.contains("msvc") {
-        //     vec!["libssl".to_string(), "libcrypto".to_string()]
-        // } else {
-        //     vec!["ssl".to_string(), "crypto".to_string()]
-        // };
+        let libs = if target.contains("msvc") {
+            vec!["libhelibw".to_string(), "libgmp".to_string(), "libntl".to_string()]
+        } else {
+            vec!["libhelib".to_string(), "libgmp".to_string(), "libntl".to_string()]
+        };
 
         fs::remove_dir_all(&inner_dir).unwrap();
 
         Artifacts {
-            lib_dir: install_dir.join("lib"),
-            bin_dir: install_dir.join("bin"),
-            include_dir: install_dir.join("include"),
-            libs: vec![],
+            lib_dir: install_dir.join("helib_pack").join("lib"),
+            bin_dir: install_dir.join("helib_pack").join("bin"),
+            share_dir: install_dir.join("helib_pack").join("share"),
+            include_dir: install_dir.join("helib_pack").join("include"),
+            libs,
             target: target.to_string(),
         }
     }

@@ -2,11 +2,13 @@
 extern crate cmake;
 // use cmake::Config;
 
+use std::collections::HashSet;
 use std::env;
-use std::ffi::OsStr;
+use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+
 use tap::prelude::*;
 
 pub fn source_dir() -> PathBuf {
@@ -421,8 +423,8 @@ impl Build {
 
             // Make sure we pass extra flags like `-ffunction-sections` and
             // other things like ARM codegen flags.
-            let mut skip_next = false;
-            let mut is_isysroot = false;
+            // let mut skip_next = false;
+            // let mut is_isysroot = false;
             // for arg in compiler.args() {
             //     // For whatever reason `-static` on MUSL seems to cause
             //     // issues...
@@ -598,9 +600,9 @@ impl Build {
         // }
 
         let libs = if target.contains("msvc") {
-            vec!["libhelibw".to_string(), "libgmp".to_string(), "libntl".to_string()]
+            vec!["helibw".to_string(), "gmp".to_string(), "ntl".to_string()]
         } else {
-            vec!["libhelib".to_string(), "libgmp".to_string(), "libntl".to_string()]
+            vec!["helib".to_string(), "gmp".to_string(), "ntl".to_string()]
         };
 
         fs::remove_dir_all(&inner_dir).unwrap();
@@ -697,9 +699,13 @@ impl Artifacts {
 
     pub fn print_cargo_metadata(&self) {
         println!("cargo:rustc-link-search=native={}", self.lib_dir.display());
-        for lib in self.libs.iter() {
-            println!("cargo:rustc-link-lib=static={}", lib);
+
+        let libdirs = vec![self.lib_dir().to_path_buf()];
+        let kind = Self::determine_mode(&libdirs, &self.libs);
+        for lib in self.libs.clone().into_iter() {
+            println!("cargo:rustc-link-lib={}={}", kind, lib);
         }
+
         println!("cargo:include={}", self.include_dir.display());
         println!("cargo:lib={}", self.lib_dir.display());
         if self.target.contains("msvc") {
@@ -711,4 +717,75 @@ impl Artifacts {
             println!("cargo:rustc-link-lib=wasi-emulated-getpid");
         }
     }
+
+    pub fn env_inner(name: &str) -> Option<OsString> {
+        let var = env::var_os(name);
+        println!("cargo:rerun-if-env-changed={}", name);
+
+        match var {
+            Some(ref v) => println!("{} = {}", name, v.to_string_lossy()),
+            None => println!("{} unset", name),
+        }
+
+        var
+    }
+
+    pub fn get_env(name: &str) -> Option<OsString> {
+        let prefix = env::var("TARGET").unwrap().to_uppercase().replace('-', "_");
+        let prefixed = format!("{}_{}", prefix, name);
+        Self::env_inner(&prefixed).or_else(|| Self::env_inner(name))
+    }
+
+    /// Given a libdir (where artifacts are located) as well as the name
+    /// of the libraries we're linking to, figure out whether we should link them
+    /// statically or dynamically.
+    fn determine_mode(libdirs: &Vec<PathBuf>, libs: &[String]) -> &'static str {
+        // First see if a mode was explicitly requested
+        let kind = Self::get_env("HELIB_STATIC");
+        match kind.as_ref().and_then(|s| s.to_str()) {
+            Some("0") => return "dylib",
+            Some(_) => return "static",
+            None => {}
+        }
+
+        // Next, see what files we actually have to link against, and see what our
+        // possibilities even are.
+        let mut files = HashSet::new();
+        for dir in libdirs {
+            for path in dir
+                .read_dir()
+                .unwrap()
+                .map(|e| e.unwrap())
+                .map(|e| e.file_name())
+                .filter_map(|e| e.into_string().ok())
+            {
+                files.insert(path);
+            }
+        }
+        let can_static = libs
+            .iter()
+            .all(|l| files.contains(&format!("lib{}.a", l)) || files.contains(&format!("{}.lib", l)));
+        let can_dylib = libs.iter().all(|l| {
+            files.contains(&format!("lib{}.so", l))
+                || files.contains(&format!("{}.dll", l))
+                || files.contains(&format!("lib{}.dylib", l))
+        });
+        match (can_static, can_dylib) {
+            (true, false) => return "static",
+            (false, true) => return "dylib",
+            (false, false) => {
+                panic!(
+                    "libdir does not contain the required files \
+                    to either statically or dynamically link HElib"
+                );
+            }
+            (true, true) => {}
+        }
+
+        // Ok, we've got not explicit preference and can *either* link statically or
+        // link dynamically. In the interest of "security upgrades" and/or "best
+        // practices with security libs", let's link dynamically.
+        "dylib"
+    }
+
 }

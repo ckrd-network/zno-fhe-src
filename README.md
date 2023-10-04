@@ -28,10 +28,10 @@ utils = []
 ```shell
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/zno-helib-src-test"
-sys_dir="$(pwd)/zno-helib-sys-test"
+sys_dir="$(pwd)/zno-helib-sys"
 
-cargo build --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
-cargo build --manifest-path "$sys_dir/Cargo.toml" --feature "vendored" --target $target -vvv &>log-sys.txt
+cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
+RUST_BACKTRACE=1 cargo build --bin zno-helib-sys --manifest-path "$sys_dir/Cargo.toml" --features "vendored" --target $target -vvv &>log-sys.txt
 
 ```
 

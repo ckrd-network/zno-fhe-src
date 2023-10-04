@@ -1,5 +1,3 @@
-#[cfg(feature = "autocxx")]
-use autocxx_build::prelude::*;
 // #[cfg(feature = "bindgen")]
 // use bindgen::{MacroTypeVariation, RustTarget};
 use std::io::Write;
@@ -68,8 +66,8 @@ pub fn run(include_dirs: &[PathBuf]) {
     let path = std::path::PathBuf::from("./../src"); // include path
 
     // This assumes all C++ bindings are in src/main.rs
-    let mut builder = autocxx_build::Builder::new("./../src/main.rs", &[&path]).build()?;
-    builder.flag_if_supported("-std=c++14")
+    let mut builder = autocxx_build::Builder::new("./../src/main.rs", &[&path]).build().unwrap();
+    builder.flag_if_supported("-std=c++17")
         .compile("helib-autocxx"); // arbitrary library name, pick anything
         // .parse_callbacks(Box::new(OpensslCallbacks))
         // .rust_target(RustTarget::Stable_1_47)

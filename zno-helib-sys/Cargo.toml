@@ -26,19 +26,19 @@ cxx.workspace = true
 # libc.workspace = true
 
 [build-dependencies]
-zno-helib-src = { workspace = true, optional = true }
+# zno-helib-src = { workspace = true, optional = true, version = "0.0.1"}
 autocxx-build.workspace = true
-miette.workspace = true
 # bindgen = { workspace = true, optional = true, features = ["experimental"] }
 # cc.workspace = true
 dirs.workspace = true
+miette.workspace = true
 pkg-config.workspace = true
 vcpkg.workspace = true
 
 [features]
 default = ['vendored']
 autocxx = []
-vendored = ['zno-helib-src']
+vendored = []
 
 # This is here for tooling.
 # GMP version to be used (and eventually downloaded) if `package` feature.
@@ -47,5 +47,5 @@ vendored = ['zno-helib-src']
 #   - Can be found at FETCHED_NTL_VERSION in CMakeLists.txt.
 [package.metadata.pkg-config]
 gmp = "6.2.1"
-ntl = "11.5.1"
 helib = "2.3.0"
+ntl = "11.5.1"

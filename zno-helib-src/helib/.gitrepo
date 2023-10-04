@@ -4,8 +4,8 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/homenc/HElib.git
-	branch = v2.3.0
+ remote = https://github.com/ckrd-network/HElib.git
+	branch = zno
 	commit = 3e337a66a91a92d49de6a9505340826b0eb71081
 	parent = 6b985ec358ab90a3890499a2bc584677369c0e5c
 	method = rebase

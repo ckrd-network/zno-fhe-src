@@ -26,6 +26,7 @@ pub struct Build {
 }
 
 pub struct Artifacts {
+    package_dir: PathBuf,
     include_dir: PathBuf,
     lib_dir: PathBuf,
     bin_dir: PathBuf,
@@ -117,6 +118,29 @@ impl Build {
     fn is_nasm_ready(&self) -> bool {
         // We assume that nobody would run nasm.exe on a non-windows system.
         false
+    }
+
+    pub fn artifacts(&mut self) -> Artifacts {
+        let target = &self.target.as_ref().expect("TARGET dir not set")[..];
+        let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set");
+        let install_dir = out_dir.join("install");
+
+        let libs = if target.contains("msvc") {
+            vec!["helibw".to_string(), "gmp".to_string(), "ntl".to_string()]
+        } else {
+            vec!["helib".to_string(), "gmp".to_string(), "ntl".to_string()]
+        };
+
+        let pd = install_dir.join("helib_pack");
+        Artifacts {
+            package_dir: pd.clone(),
+            lib_dir: pd.clone().join("lib"),
+            bin_dir: pd.clone().join("bin"),
+            share_dir: pd.clone().join("share"),
+            include_dir:pd.clone().join("include"),
+            libs,
+            target: target.to_string(),
+        }
     }
 
     pub fn build(&mut self) -> Artifacts {
@@ -597,24 +621,30 @@ impl Build {
         //     let mut install = self.cmd_make();
         //     install.arg("install_dev").current_dir(&inner_dir);
         //     self.run_command(install, "installing OpenSSL");
-        // }
-
-        let libs = if target.contains("msvc") {
-            vec!["helibw".to_string(), "gmp".to_string(), "ntl".to_string()]
-        } else {
-            vec!["helib".to_string(), "gmp".to_string(), "ntl".to_string()]
-        };
+        //
 
         fs::remove_dir_all(&inner_dir).unwrap();
 
-        Artifacts {
-            lib_dir: install_dir.join("helib_pack").join("lib"),
-            bin_dir: install_dir.join("helib_pack").join("bin"),
-            share_dir: install_dir.join("helib_pack").join("share"),
-            include_dir: install_dir.join("helib_pack").join("include"),
-            libs,
-            target: target.to_string(),
+        // Copy artifacts to avoid constantly rebuilding source.
+        // This decouples the -src and -sys crates as Cargo dependencies.
+        // Build -src or -src-test crate to update the -sys crate.
+        let rtfcts = self.artifacts();
+        let dst = env::var_os("CARGO_MANIFEST_DIR")
+            .map(|s| PathBuf::from(s))
+            .unwrap()
+            .join("../zno-helib-sys")
+            .join("src")
+            .join("helib_pack");
+
+        if dst.exists() {
+            fs::remove_dir_all(&dst).unwrap();
         }
+
+        fs::create_dir_all(&dst).unwrap();
+
+        cp_r(&rtfcts.package_dir(), &dst);
+
+        rtfcts
     }
 
     fn run_command(&self, mut command: Command, desc: &str) {
@@ -693,8 +723,24 @@ impl Artifacts {
         &self.lib_dir
     }
 
+    pub fn bin_dir(&self) -> &Path {
+        &self.bin_dir
+    }
+
+    pub fn package_dir(&self) -> &Path {
+        &self.package_dir
+    }
+
+    pub fn share_dir(&self) -> &Path {
+        &self.share_dir
+    }
+
     pub fn libs(&self) -> &[String] {
         &self.libs
+    }
+
+    pub fn target(&self) -> String {
+        self.target.clone()
     }
 
     pub fn print_cargo_metadata(&self) {

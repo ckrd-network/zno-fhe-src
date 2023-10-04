@@ -20,3 +20,6 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+# Ignore binary files built locally.
+zno-helib-sys/src/helib_pack/lib

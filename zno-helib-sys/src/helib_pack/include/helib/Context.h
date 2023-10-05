@@ -15,6 +15,7 @@
  * @file Context.h
  * @brief Keeps the parameters of an instance of the cryptosystem
  **/
+#include <cstdint>
 #include <optional>
 #include <helib/PAlgebra.h>
 #include <helib/CModulus.h>
@@ -87,6 +88,7 @@ long FindM(long k,
            bool verbose = false);
 
 class EncryptedArray;
+using EncryptedArrayConst = const EncryptedArray;
 struct PolyModRing;
 
 // Forward declaration of ContextBuilder
@@ -412,14 +414,14 @@ public:
   /**
    * @brief Getter method returning the default `view` object of the created
    * `context`.
-   * @return A reference to the `view` object.
+   * @return A raw pointer/reference to the `EncryptedArray` object.
    **/
   const EncryptedArray& getView() const { return *ea; } // preferred name
 
   /**
    * @brief Getter method returning the default `EncryptedArray` object of the
    *created `context`.
-   * @return A reference to the `EncryptedArray` object.
+   * @return A raw pointer/reference to the `EncryptedArray` object.
    * @note It is foreseen that this method will be eventually deprecated in
    * favour of the alternative `getView`.
    **/
@@ -430,7 +432,103 @@ public:
    * `EncryptedArray` object of the created `context`.
    * @return A reference to `std::shared_ptr` to the `EncryptedArray` object.
    **/
-  const std::shared_ptr<const EncryptedArray>& shareEA() const { return ea; }
+  // const std::shared_ptr<EncryptedArrayConst>& shareEA() const { return ea; }
+
+  /**
+   * @brief Retrieves a handle to the EncryptedArray object.
+   *
+   * This function is designed to be used in FFI (foreign function interface) contexts where it's
+   * desirable to obtain a handle to an EncryptedArray, while ensuring memory safety and proper
+   * resource management. The function obtains a const handle to the EncryptedArray, then casts
+   * away its const-ness. The result is constructed in the memory location pointed to by the
+   * provided `outHandle` pointer using placement new. This allows for controlled memory management
+   * on both the C++ side and the side of the foreign language.
+   *
+   * The reference count of the `shared_ptr` is managed on the C++ side.
+   * As long as the external language only ever interacts with the handle, there's no risk of using
+   * a deleted object (the use after free error).
+   *
+   * The user of this function is required to ensure the memory for `outHandle`
+   * is managed correctly. The function does not allocate or deallocate memory,
+   * it only constructs the shared pointer object in the provided location.
+   *
+   * Both constHandle and mutableHandle track the same reference count. Calling `use_count()`
+   * on either of them, returns the same value, which would be at least 2 inside the function after the
+   * creation of mutableHandle. Both constHandle and mutableHandle point to the same EncryptedArray
+   * object and share the reference count.
+   *
+   * @note  When using this function, remember that the original EncryptedArray was marked as const.
+   * Hence, it's crucial to respect this original intent and avoid modifying the EncryptedArray, even
+   * though this function provides a non-const handle.
+   *
+   * @note Workaround for google/autocxx#799 & dtolnay/cxx#850.
+   *
+   * @param[out] handle    A pointer to the memory location where the resulting
+   *                       `std::shared_ptr<::helib::EncryptedArray>` will be constructed.
+   *                       This memory location should be pre-allocated and must be large
+   *                       enough to store a `std::shared_ptr` object.
+   **/
+  // void getHandle(std::shared_ptr<::helib::EncryptedArray>* handle) const {
+  //   auto constHandle = ea;
+  //   auto mutableHandle = std::const_pointer_cast<::helib::EncryptedArray>(constHandle);
+  //   new (handle) std::shared_ptr<::helib::EncryptedArray>(std::move(mutableHandle));
+  // }
+
+  /**
+  * @brief Transfer ownership of the `EncryptedArray` object to the caller.
+  *
+  * This function returns a unique pointer to the `EncryptedArray`, which signifies
+  * the transfer of ownership. After calling this function, the Context object
+  * no longer has ownership of the `EncryptedArray`.
+  *
+  * @note Workaround for google/autocxx#799 & dtolnay/cxx#850.
+  *
+  * @return A unique pointer to the `EncryptedArray`.
+  */
+  std::unique_ptr<EncryptedArray> getHandle() {
+      if (ea.use_count() > 1) {
+          // EncryptedArray is still owned by other shared pointers, so we cannot transfer
+          // ownership safely.
+          return nullptr;
+      }
+
+      // Transfer ownership, then reset the shared_ptr to decrement its reference count.
+      auto raw_ptr = const_cast<EncryptedArray*>(ea.get());
+      ea.reset();
+      return std::unique_ptr<EncryptedArray>(raw_ptr);
+  }
+
+  /**
+   * @brief Assume we have an opaque C++ type OpaqueType that is used in an
+   * external language and a C++ function that returns
+   * `std::shared_ptr<OpaqueType>` and another C++ function that takes
+   * `std::shared_ptr<const OpaqueType>` as an argument.
+   * There is currently no way to directly call it.
+   * Instead, we need to bind both OpaqueType and ConstOpaqueType as different
+   * independent types to the external language (in c++:
+   * `using ConstOpaqueType = const OpaqueType`), and then also add a binding
+   * for a conversion function that converts from SharedPtr<OpaqueType> to
+   * SharedPtr<ConstOpaqueType>.
+   * @note Workaround for google/autocxx#799 & dtolnay/cxx#850.
+   * @return A handle to `std::shared_ptr` to the `EncryptedArrayConst` object.
+   **/
+  // std::shared_ptr<EncryptedArrayConst> toConst(const std::shared_ptr<EncryptedArray>& handle) {
+  //       return std::const_pointer_cast<EncryptedArrayConst>(handle);
+  // }
+
+  /**
+   * @brief The `getHandle` method is the preferred way for an external
+   * language binding to interact with the `EncryptedArray` object of the
+   * created `context`.
+   * However, the `getUseCount` function can still be valuable for debugging
+   * or verification purposes.
+   * For instance, the `getUseCount` function is a direct way to confirm
+   * there are no unexpected references (or the lack thereof) to an object.
+   * @note This is mainly for debugging or verification and doesn't directly
+   * contribute to safe usage in external language bindings.
+   * @return Use count of the `std::shared_ptr` to the `EncryptedArray` object.
+   **/
+  int64_t getUseCount() const { return ea.use_count(); }
 
   //======================= high probability bounds ================
 

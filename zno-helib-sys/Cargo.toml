@@ -28,7 +28,7 @@ cxx.workspace = true
 [build-dependencies]
 # zno-helib-src = { workspace = true, optional = true, version = "0.0.1"}
 autocxx-build.workspace = true
-# bindgen = { workspace = true, optional = true, features = ["experimental"] }
+cxx-build = { workspace = true}
 # cc.workspace = true
 dirs.workspace = true
 miette.workspace = true

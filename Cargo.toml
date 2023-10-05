@@ -41,6 +41,7 @@ bssl-sys = { version = "0.1.0"}
 cc = "1.0.79"
 cmake = "0.1"
 cxx = "1.0"
+cxx-build = "1.0"
 dirs = "5.0.1"
 flate2 = { version = "1.0" }
 libc = { version = "0.2"  }

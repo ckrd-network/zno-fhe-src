@@ -1,6 +1,8 @@
 # Issues
 
-- Make `function_properties_ref_t` and `std::shared_ptr` not const, in order to work around cxx - assumes google/autocxx#799 & dtolnay/cxx#850 are unresolved.
+## Make `function_properties_ref_t` and `std::shared_ptr` not const,
+
+Work around cxx and autocxx choking on mismatch in constness types - assumes google/autocxx#799 & dtolnay/cxx#850 are unresolved.
 
   - the error
   ```

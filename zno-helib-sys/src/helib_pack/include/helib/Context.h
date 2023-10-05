@@ -16,6 +16,7 @@
  * @brief Keeps the parameters of an instance of the cryptosystem
  **/
 #include <cstdint>
+#include <memory> // for std::unique_ptr
 #include <optional>
 #include <helib/PAlgebra.h>
 #include <helib/CModulus.h>
@@ -485,18 +486,7 @@ public:
   *
   * @return A unique pointer to the `EncryptedArray`.
   */
-  std::unique_ptr<EncryptedArray> getHandle() {
-      if (ea.use_count() > 1) {
-          // EncryptedArray is still owned by other shared pointers, so we cannot transfer
-          // ownership safely.
-          return nullptr;
-      }
-
-      // Transfer ownership, then reset the shared_ptr to decrement its reference count.
-      auto raw_ptr = const_cast<EncryptedArray*>(ea.get());
-      ea.reset();
-      return std::unique_ptr<EncryptedArray>(raw_ptr);
-  }
+  std::unique_ptr<EncryptedArray> getHandle();
 
   /**
    * @brief Assume we have an opaque C++ type OpaqueType that is used in an

@@ -1,8 +1,8 @@
 # zno-fhe-src
 
-Source code crates for the ZnO-FHE crate.
+Source code and FFI binding crates for the ZnO-FHE crate.
 
-This crate contains the logic to build HELib, OpenFHE and SEAL.
+This crate contains the logic to build HELib, (TODO: OpenFHE and SEAL).
 It is intended to be consumed by the `zno-fhe` crate.
 In theory you should not need to interact with this repository.
 
@@ -25,14 +25,22 @@ utils = []
 
 ### HElib
 
+To compile the source code and move artifacts to the system crate:
+
 ```shell
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/zno-helib-src-test"
-sys_dir="$(pwd)/zno-helib-sys"
 
-cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
+RUST_BACKTRACE=1 cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
+```
+
+To generate the FFI bindings in the system crate
+
+```shell
+target=x86_64-unknown-linux-gnu
+ys_dir="$(pwd)/zno-helib-sys"
+
 RUST_BACKTRACE=1 cargo build --bin zno-helib-sys --manifest-path "$sys_dir/Cargo.toml" --features "vendored" --target $target -vvv &>log-sys.txt
-
 ```
 
 #### Test

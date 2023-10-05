@@ -267,6 +267,19 @@ long FindM(long k,
 // A global variable, pointing to the "current" context
 Context* activeContext = nullptr;
 
+std::unique_ptr<EncryptedArray> Context::getHandle() {
+    if (ea.use_count() > 1) {
+        // EncryptedArray is still owned by other shared pointers, so we cannot transfer
+        // ownership safely.
+        return nullptr;
+    }
+
+    // Transfer ownership, then reset the shared_ptr to decrement its reference count.
+    auto raw_ptr = const_cast<EncryptedArray*>(ea.get());
+    ea.reset();
+    return std::unique_ptr<EncryptedArray>(raw_ptr);
+}
+
 void Context::productOfPrimes(NTL::ZZ& p, const IndexSet& s) const
 {
   p = 1;

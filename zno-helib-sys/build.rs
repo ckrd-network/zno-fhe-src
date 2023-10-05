@@ -15,7 +15,7 @@ fn main() -> miette::Result<()> {
      .compile("helib-autocxx"); // arbitrary library name, pick anything
 
     // // Compile cxx generated bindings
-    // let mut cc_build = cxx_build::bridge("src/manual/issue-2.rs");
+    // let mut cc_build = cxx_build::bridge("src/cxx-bridges/issue-2.rs");
     // cc_build.include("src/helib_pack/include")
     //         .flag_if_supported("-std=c++17")
     //         .compile("helib-issue-2"); // compile cxx generated bindings

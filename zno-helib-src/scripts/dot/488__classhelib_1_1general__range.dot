@@ -1,0 +1,8 @@
+digraph "helib::general_range&lt; T &gt;"
+{
+  N1 [label="helib::general_range\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" end_\nbegin_" ];
+  N2 [label="helib::general_range\l\< T \>::iterator",color="black", fillcolor="white", style="filled"];
+  N3 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" i_" ];
+  N3 [label="T",color="grey75", fillcolor="white", style="filled"];
+}

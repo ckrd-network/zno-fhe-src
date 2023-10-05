@@ -1,0 +1,8 @@
+digraph "helib::MatMul1D_derived&lt; PA_cx &gt;"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node4 [label="helib::MatMul1D_derived\l\< PA_cx \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="helib::MatMul1D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d.html"];
+}

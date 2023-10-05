@@ -1,0 +1,22 @@
+digraph "helib::MatMul_CKKS_Complex"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node3 [label="helib::MatMul_CKKS\l_Complex",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="MatMul1D_CKKS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d__derived_3_01_p_a__cx_01_4.html"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="helib::MatMul1D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d.html"];
+  Node6 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ea" ];
+  Node6 [label="helib::EncryptedArray",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encrypted_array.html",tooltip="A simple wrapper for a smart pointer to an EncryptedArrayBase. This is the interface that higher-leve..."];
+  Node7 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" alMod" ];
+  Node7 [label="helib::PAlgebraMod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod.html",tooltip="The structure of Z[X]/(Phi_m(X), p) "];
+  Node8 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node8 [label="helib::ClonedPtr\< helib\l::PAlgebraModBase \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node9 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node9 [label="helib::PAlgebraModBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod_base.html",tooltip="Virtual base class for PAlgebraMod. "];
+  Node10 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node10 [label="helib::ClonedPtr\< helib\l::EncryptedArrayBase \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node11 -> Node10 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node11 [label="helib::EncryptedArrayBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encrypted_array_base.html",tooltip="virtual class for data-movement operations on arrays of slots "];
+}

@@ -1,0 +1,15 @@
+digraph "helib::PtrMatrix&lt; T &gt;"
+{
+  rankdir="LR";
+  N0 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrMatrix_PtPtrVector\< T \>",color="black", fillcolor="white", style="filled",tooltip="An implementation of PtrMatrix using vector< PtrVector<T>* > "];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::PtrMatrix_ptVec\< T \>",color="black", fillcolor="white", style="filled",tooltip="An implementation of PtrMatrix using Vec< Vec<T>* > "];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrMatrix_ptvector\< T \>",color="black", fillcolor="white", style="filled",tooltip="An implementation of PtrMatrix using vector< vector<T>* > "];
+  N0 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::PtrMatrix_Vec\< T \>",color="black", fillcolor="white", style="filled",tooltip="An implementation of PtrMatrix using Vec< Vec<T> > "];
+  N0 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::PtrMatrix_vector\< T \>",color="black", fillcolor="white", style="filled",tooltip="An implementation of PtrMatrix using vector< vector<T> > "];
+}

@@ -1,0 +1,6 @@
+digraph "helib::ReplicateHandler"
+{
+  N0 [label="helib::ReplicateHandler",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ExplicitReplicator",color="black", fillcolor="white", style="filled",tooltip="An implementation of ReplicateHandler that explicitly returns all the replicated ciphertexts in one b..."];
+}

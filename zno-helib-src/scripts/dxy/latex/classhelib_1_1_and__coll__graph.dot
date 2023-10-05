@@ -1,0 +1,10 @@
+digraph "helib::And"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node2 [label="helib::And",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="helib::Expr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_expr.html",tooltip="Base structure for logical expressions. "];
+  Node4 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" lhs\nrhs" ];
+  Node4 [label="helib::QueryExpr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_query_expr.html",tooltip="A class wrapping a shared pointer to an Expr object. "];
+}

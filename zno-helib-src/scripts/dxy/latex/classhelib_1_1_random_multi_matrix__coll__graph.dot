@@ -1,0 +1,25 @@
+digraph "helib::RandomMultiMatrix&lt; type &gt;"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node4 [label="helib::RandomMultiMatrix\l\< type \>",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="helib::MatMul1D_derived\l\< type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d__derived.html"];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="helib::MatMul1D_partial\l\< type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d__partial.html"];
+  Node7 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node7 [label="helib::MatMul1D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d.html"];
+  Node8 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ea" ];
+  Node8 [label="helib::EncryptedArray",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encrypted_array.html",tooltip="A simple wrapper for a smart pointer to an EncryptedArrayBase. This is the interface that higher-leve..."];
+  Node9 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" alMod" ];
+  Node9 [label="helib::PAlgebraMod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod.html",tooltip="The structure of Z[X]/(Phi_m(X), p) "];
+  Node10 -> Node9 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node10 [label="helib::ClonedPtr\< helib\l::PAlgebraModBase \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node11 -> Node10 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node11 [label="helib::PAlgebraModBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod_base.html",tooltip="Virtual base class for PAlgebraMod. "];
+  Node12 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node12 [label="helib::ClonedPtr\< helib\l::EncryptedArrayBase \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node13 -> Node12 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node13 [label="helib::EncryptedArrayBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encrypted_array_base.html",tooltip="virtual class for data-movement operations on arrays of slots "];
+}

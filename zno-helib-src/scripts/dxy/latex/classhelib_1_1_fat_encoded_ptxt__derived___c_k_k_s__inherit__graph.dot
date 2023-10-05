@@ -1,0 +1,10 @@
+digraph "helib::FatEncodedPtxt_derived_CKKS"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node0 [label="helib::FatEncodedPtxt\l_derived_CKKS",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="helib::FatEncodedPtxt_base",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_fat_encoded_ptxt__base.html"];
+  Node2 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="helib::FatEncodedPtxt_CKKS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_fat_encoded_ptxt___c_k_k_s.html"];
+}

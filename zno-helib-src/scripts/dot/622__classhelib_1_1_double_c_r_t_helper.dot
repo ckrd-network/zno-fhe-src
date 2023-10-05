@@ -1,0 +1,12 @@
+digraph "helib::DoubleCRTHelper"
+{
+  N2 [label="helib::DoubleCRTHelper",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::IndexMapInit\l\< NTL::vec_long \>",color="black", fillcolor="white", style="filled"];
+}
+digraph "helib::DoubleCRTHelper"
+{
+  N0 [label="helib::DoubleCRTHelper",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::IndexMapInit\l\< NTL::vec_long \>",color="black", fillcolor="white", style="filled"];
+}

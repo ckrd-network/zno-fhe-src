@@ -1,0 +1,14 @@
+digraph "helib::EncryptedArray"
+{
+  N1 [label="helib::EncryptedArray",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" alMod" ];
+  N2 [label="helib::PAlgebraMod",color="black", fillcolor="white", style="filled",tooltip="The structure of Z[X]/(Phi_m(X), p) "];
+  N3 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N3 [label="helib::ClonedPtr\< helib\l::PAlgebraModBase \>",color="black", fillcolor="white", style="filled"];
+  N4 -> N3 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N4 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+  N5 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N5 [label="helib::ClonedPtr\< helib\l::EncryptedArrayBase \>",color="black", fillcolor="white", style="filled"];
+  N6 -> N5 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N6 [label="helib::EncryptedArrayBase",color="black", fillcolor="white", style="filled",tooltip="virtual class for data-movement operations on arrays of slots "];
+}

@@ -1,0 +1,14 @@
+digraph "helib::Exception"
+{
+  N0 [label="helib::Exception",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::InvalidArgument",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::invalid_argument. "];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::LogicError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::logic_error. "];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::OutOfRangeError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::out_of_range. "];
+  N0 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::RuntimeError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::runtime_error. "];
+  N4 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::IOError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::runtime_error. "];
+}

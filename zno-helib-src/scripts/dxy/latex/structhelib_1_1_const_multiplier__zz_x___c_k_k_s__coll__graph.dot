@@ -1,0 +1,14 @@
+digraph "helib::ConstMultiplier_zzX_CKKS"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node2 [label="helib::ConstMultiplier\l_zzX_CKKS",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="helib::ConstMultiplier",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_const_multiplier.html"];
+  Node4 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" eptxt" ];
+  Node4 [label="helib::EncodedPtxt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt.html"];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node5 [label="helib::ClonedPtr\< helib\l::EncodedPtxt_base \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node6 -> Node5 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node6 [label="helib::EncodedPtxt_base",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt__base.html"];
+}

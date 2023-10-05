@@ -1,0 +1,33 @@
+digraph "helib::RandomMultiBlockMatrix&lt; type &gt;"
+{
+  rankdir="LR";
+  N4 [label="helib::RandomMultiBlockMatrix\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N5 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::BlockMatMul1D\l_derived\< type \>",color="black", fillcolor="white", style="filled"];
+  N6 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N6 [label="helib::BlockMatMul1D\l_partial\< type \>",color="black", fillcolor="white", style="filled"];
+  N7 -> N6 [dir="back",color="midnightblue",style="solid"];
+  N7 [label="helib::BlockMatMul1D",color="black", fillcolor="white", style="filled"];
+  N8 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" ea" ];
+  N8 [label="helib::EncryptedArray",color="black", fillcolor="white", style="filled",tooltip="A simple wrapper for a smart pointer to an EncryptedArrayBase. This is the interface that higher-leve..."];
+  N9 -> N8 [dir="back",color="darkorchid3",style="dashed",label=" alMod" ];
+  N9 [label="helib::PAlgebraMod",color="black", fillcolor="white", style="filled",tooltip="The structure of Z[X]/(Phi_m(X), p) "];
+  N10 -> N9 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N10 [label="helib::ClonedPtr\< helib\l::PAlgebraModBase \>",color="black", fillcolor="white", style="filled"];
+  N11 -> N10 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N11 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+  N12 -> N8 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N12 [label="helib::ClonedPtr\< helib\l::EncryptedArrayBase \>",color="black", fillcolor="white", style="filled"];
+  N13 -> N12 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N13 [label="helib::EncryptedArrayBase",color="black", fillcolor="white", style="filled",tooltip="virtual class for data-movement operations on arrays of slots "];
+}
+digraph "helib::RandomMultiBlockMatrix&lt; type &gt;"
+{
+  N0 [label="helib::RandomMultiBlockMatrix\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::BlockMatMul1D\l_derived\< type \>",color="black", fillcolor="white", style="filled"];
+  N2 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::BlockMatMul1D\l_partial\< type \>",color="black", fillcolor="white", style="filled"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::BlockMatMul1D",color="black", fillcolor="white", style="filled"];
+}

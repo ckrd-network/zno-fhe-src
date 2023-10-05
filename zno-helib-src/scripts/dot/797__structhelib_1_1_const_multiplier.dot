@@ -1,0 +1,13 @@
+digraph "helib::ConstMultiplier"
+{
+  rankdir="LR";
+  N0 [label="helib::ConstMultiplier",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ConstMultiplier\l_DoubleCRT",color="black", fillcolor="white", style="filled"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::ConstMultiplier\l_DoubleCRT_CKKS",color="black", fillcolor="white", style="filled"];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ConstMultiplier_zzX",color="black", fillcolor="white", style="filled"];
+  N0 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::ConstMultiplier\l_zzX_CKKS",color="black", fillcolor="white", style="filled"];
+}

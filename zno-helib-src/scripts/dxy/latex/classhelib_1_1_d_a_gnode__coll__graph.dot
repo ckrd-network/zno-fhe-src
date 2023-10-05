@@ -1,0 +1,34 @@
+digraph "helib::DAGnode"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node1 [label="helib::DAGnode",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ct" ];
+  Node2 [label="helib::Ctxt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_ctxt.html",tooltip="A Ctxt object holds a single ciphertext. "];
+  Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" context" ];
+  Node3 [label="helib::Context",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_context.html",tooltip="Maintaining the HE scheme parameters. "];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" modSizes" ];
+  Node4 [label="helib::ModuliSizes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_moduli_sizes.html",tooltip="A helper class to map required modulo-sizes to primeSets. "];
+  Node5 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rcData" ];
+  Node5 [label="helib::ThinRecryptData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_thin_recrypt_data.html",tooltip="Same as above, but for \"thin\" bootstrapping, where the slots are assumed to contain constants..."];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="helib::RecryptData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_recrypt_data.html",tooltip="A structure to hold recryption-related data inside the Context. "];
+  Node7 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ctxtPrimes\nsmallPrimes\nspecialPrimes" ];
+  Node7 [label="helib::IndexSet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_index_set.html",tooltip="A dynamic set of non-negative integers. "];
+  Node8 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" zMStar" ];
+  Node8 [label="helib::PAlgebra",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra.html",tooltip="The structure of (Z/mZ)* /(p) "];
+  Node9 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cube" ];
+  Node9 [label="helib::CubeSignature",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cube_signature.html",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+  Node10 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" alMod" ];
+  Node10 [label="helib::PAlgebraMod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod.html",tooltip="The structure of Z[X]/(Phi_m(X), p) "];
+  Node11 -> Node10 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rep" ];
+  Node11 [label="helib::ClonedPtr\< helib\l::PAlgebraModBase \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node12 -> Node11 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node12 [label="helib::PAlgebraModBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra_mod_base.html",tooltip="Virtual base class for PAlgebraMod. "];
+  Node7 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" primeSet" ];
+  Node13 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pubKey" ];
+  Node13 [label="helib::PubKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_pub_key.html",tooltip="The public key. "];
+  Node2 -> Node13 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pubEncrKey\nrecryptEkey" ];
+  Node3 -> Node13 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" context" ];
+  Node1 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" parent1\nparent2" ];
+}

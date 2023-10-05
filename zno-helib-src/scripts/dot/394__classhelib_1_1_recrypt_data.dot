@@ -1,0 +1,6 @@
+digraph "helib::RecryptData"
+{
+  N0 [label="helib::RecryptData",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ThinRecryptData",color="black", fillcolor="white", style="filled",tooltip="Same as above, but for \"thin\" bootstrapping, where the slots are assumed to contain constants..."];
+}

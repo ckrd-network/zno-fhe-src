@@ -1,0 +1,10 @@
+digraph "helib::MatMul1DExec"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node0 [label="helib::MatMul1DExec",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="helib::MatMulExecBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul_exec_base.html"];
+  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="helib::EncodedMatMul_CKKS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_mat_mul___c_k_k_s.html"];
+}

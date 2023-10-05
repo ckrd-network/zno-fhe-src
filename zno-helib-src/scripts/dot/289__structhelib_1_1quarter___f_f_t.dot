@@ -1,0 +1,6 @@
+digraph "helib::quarter_FFT"
+{
+  N1 [label="helib::quarter_FFT",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" fft" ];
+  N2 [label="helib::PGFFT",color="black", fillcolor="white", style="filled"];
+}

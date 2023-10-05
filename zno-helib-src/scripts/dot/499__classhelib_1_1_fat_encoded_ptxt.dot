@@ -1,0 +1,8 @@
+digraph "helib::FatEncodedPtxt"
+{
+  N1 [label="helib::FatEncodedPtxt",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N2 [label="helib::ClonedPtr\< helib\l::FatEncodedPtxt_base \>",color="black", fillcolor="white", style="filled"];
+  N3 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N3 [label="helib::FatEncodedPtxt_base",color="black", fillcolor="white", style="filled"];
+}

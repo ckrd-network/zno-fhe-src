@@ -1,0 +1,19 @@
+digraph "helib::Cmodulus"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="helib::Cmodulus",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" phimx" ];
+  Node2 [label="helib::ClonedPtr\< helib\l::zz_pXModulus1 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ptr" ];
+  Node3 [label="helib::zz_pXModulus1",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1zz__p_x_modulus1.html",tooltip="Auxiliary classes to facilitate faster reduction mod Phi_m(X) when the input has degree less than m..."];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" zMStar" ];
+  Node4 [label="helib::PAlgebra",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_p_algebra.html",tooltip="The structure of (Z/mZ)* /(p) "];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cube" ];
+  Node5 [label="helib::CubeSignature",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cube_signature.html",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" iRb\nRb" ];
+  Node6 [label="helib::ClonedPtr\< NTL\l::fftRep \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" ipowers\npowers" ];
+  Node7 [label="helib::ClonedPtr\< NTL\l::zz_pX \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+}

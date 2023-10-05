@@ -1,0 +1,17 @@
+digraph "helib::MatMulExecBase"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="helib::MatMulExecBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="helib::BlockMatMul1DExec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_block_mat_mul1_d_exec.html"];
+  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="helib::BlockMatMulFullExec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_block_mat_mul_full_exec.html"];
+  Node0 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="helib::MatMul1DExec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d_exec.html"];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="helib::EncodedMatMul_CKKS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_mat_mul___c_k_k_s.html"];
+  Node0 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="helib::MatMulFullExec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul_full_exec.html"];
+}

@@ -1,0 +1,6 @@
+digraph "helib::PowerfulTranslationIndexes"
+{
+  N1 [label="helib::PowerfulTranslation\lIndexes",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" shortSig\nlongSig" ];
+  N2 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}

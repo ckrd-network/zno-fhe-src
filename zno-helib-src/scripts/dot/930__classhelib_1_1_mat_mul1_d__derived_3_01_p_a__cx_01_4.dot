@@ -1,0 +1,16 @@
+digraph "helib::MatMul1D_derived&lt; PA_cx &gt;"
+{
+  N4 [label="helib::MatMul1D_derived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N5 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::MatMul1D",color="black", fillcolor="white", style="filled"];
+}
+digraph "helib::MatMul1D_derived&lt; PA_cx &gt;"
+{
+  N0 [label="helib::MatMul1D_derived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::MatMul1D",color="black", fillcolor="white", style="filled"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::MatMul_CKKS",color="black", fillcolor="white", style="filled"];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::MatMul_CKKS\l_Complex",color="black", fillcolor="white", style="filled"];
+}

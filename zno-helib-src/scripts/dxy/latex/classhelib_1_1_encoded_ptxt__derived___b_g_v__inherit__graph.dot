@@ -1,0 +1,10 @@
+digraph "helib::EncodedPtxt_derived_BGV"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  Node0 [label="helib::EncodedPtxt\l_derived_BGV",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="helib::EncodedPtxt_base",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt__base.html"];
+  Node2 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="helib::EncodedPtxt_BGV",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt___b_g_v.html"];
+}

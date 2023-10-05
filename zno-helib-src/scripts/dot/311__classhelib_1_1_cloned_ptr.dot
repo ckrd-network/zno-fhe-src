@@ -1,0 +1,6 @@
+digraph "helib::ClonedPtr&lt; T, Cloner &gt;"
+{
+  N1 [label="helib::ClonedPtr\< T,\l Cloner \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N2 [label="T",color="grey75", fillcolor="white", style="filled"];
+}

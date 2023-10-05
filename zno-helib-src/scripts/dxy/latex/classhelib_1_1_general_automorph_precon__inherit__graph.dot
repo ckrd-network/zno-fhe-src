@@ -1,0 +1,13 @@
+digraph "helib::GeneralAutomorphPrecon"
+{
+  edge [fontname="FreeSans",fontsize="10",labelfontname="FreeSans",labelfontsize="10"];
+  node [fontname="FreeSans",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="helib::GeneralAutomorphPrecon",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node1 [label="helib::GeneralAutomorphPrecon_BSGS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_general_automorph_precon___b_s_g_s.html"];
+  Node0 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="helib::GeneralAutomorphPrecon_FULL",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_general_automorph_precon___f_u_l_l.html"];
+  Node0 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="helib::GeneralAutomorphPrecon\l_UNKNOWN",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_general_automorph_precon___u_n_k_n_o_w_n.html"];
+}

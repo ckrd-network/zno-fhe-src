@@ -1,0 +1,8 @@
+digraph "helib::FatEncodedPtxt_base"
+{
+  N0 [label="helib::FatEncodedPtxt_base",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::FatEncodedPtxt\l_derived_BGV",color="black", fillcolor="white", style="filled"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::FatEncodedPtxt\l_derived_CKKS",color="black", fillcolor="white", style="filled"];
+}

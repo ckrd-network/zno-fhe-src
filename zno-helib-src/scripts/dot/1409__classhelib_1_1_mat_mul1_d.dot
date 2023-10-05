@@ -1,0 +1,21 @@
+digraph "helib::MatMul1D"
+{
+  rankdir="LR";
+  N0 [label="helib::MatMul1D",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::MatMul1D_derived\l\< PA_cx \>",color="black", fillcolor="white", style="filled"];
+  N1 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::MatMul_CKKS",color="black", fillcolor="white", style="filled"];
+  N1 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::MatMul_CKKS\l_Complex",color="black", fillcolor="white", style="filled"];
+  N0 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::MatMul1D_partial\l\< type \>",color="black", fillcolor="white", style="filled"];
+  N4 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::MatMul1D_derived\l\< type \>",color="black", fillcolor="white", style="filled"];
+  N5 -> N6 [dir="back",color="midnightblue",style="solid"];
+  N6 [label="helib::RandomMatrix\l\< type \>",color="black", fillcolor="white", style="filled"];
+  N5 -> N7 [dir="back",color="midnightblue",style="solid"];
+  N7 [label="helib::RandomMultiMatrix\l\< type \>",color="black", fillcolor="white", style="filled"];
+  N4 -> N8 [dir="back",color="midnightblue",style="solid"];
+  N8 [label="helib::MatMulFullHelper\l\< type \>",color="black", fillcolor="white", style="filled"];
+}

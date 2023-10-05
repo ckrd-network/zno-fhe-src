@@ -1,0 +1,8 @@
+digraph "helib::PAlgebraModBase"
+{
+  N0 [label="helib::PAlgebraModBase",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PAlgebraModDerived\l\< type \>",color="black", fillcolor="white", style="filled",tooltip="A concrete instantiation of the virtual class. "];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::PAlgebraModDerived\l\< PA_cx \>",color="black", fillcolor="white", style="filled"];
+}

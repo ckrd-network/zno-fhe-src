@@ -1,0 +1,11 @@
+digraph "helib::GeneralAutomorphPrecon"
+{
+  rankdir="LR";
+  N0 [label="helib::GeneralAutomorphPrecon",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::GeneralAutomorphPrecon_BSGS",color="black", fillcolor="white", style="filled"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::GeneralAutomorphPrecon_FULL",color="black", fillcolor="white", style="filled"];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::GeneralAutomorphPrecon\l_UNKNOWN",color="black", fillcolor="white", style="filled"];
+}

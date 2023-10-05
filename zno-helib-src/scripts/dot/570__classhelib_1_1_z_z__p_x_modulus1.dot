@@ -1,0 +1,12 @@
+digraph "helib::ZZ_pXModulus1"
+{
+  N2 [label="helib::ZZ_pXModulus1",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="NTL::ZZ_pXModulus",color="grey75", fillcolor="white", style="filled"];
+}
+digraph "helib::ZZ_pXModulus1"
+{
+  N0 [label="helib::ZZ_pXModulus1",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="NTL::ZZ_pXModulus",color="grey75", fillcolor="white", style="filled"];
+}

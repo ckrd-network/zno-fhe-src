@@ -1,0 +1,16 @@
+digraph "helib::OutOfRangeError"
+{
+  N3 [label="helib::OutOfRangeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="std::out_of_range",color="grey75", fillcolor="white", style="filled"];
+  N5 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::OutOfRangeError"
+{
+  N0 [label="helib::OutOfRangeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="std::out_of_range",color="grey75", fillcolor="white", style="filled"];
+  N2 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}

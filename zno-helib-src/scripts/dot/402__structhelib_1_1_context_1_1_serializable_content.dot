@@ -1,0 +1,6 @@
+digraph "helib::Context::SerializableContent"
+{
+  N1 [label="helib::Context::Serializable\lContent",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" smallPrimes\nspecialPrimes" ];
+  N2 [label="helib::IndexSet",color="black", fillcolor="white", style="filled",tooltip="A dynamic set of non-negative integers. "];
+}

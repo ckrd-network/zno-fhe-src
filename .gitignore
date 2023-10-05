@@ -23,3 +23,4 @@ Cargo.lock
 
 # Ignore binary files built locally.
 zno-helib-sys/src/helib_pack/lib
+scratch/

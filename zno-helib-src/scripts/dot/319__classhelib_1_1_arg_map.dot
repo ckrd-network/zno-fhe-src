@@ -1,6 +1,0 @@
-digraph "helib::ArgMap"
-{
-  N1 [label="helib::ArgMap",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" positional_args_list" ];
-  N2 [label="helib::ArgMap::Positional\lArgsList",color="black", fillcolor="white", style="filled"];
-}

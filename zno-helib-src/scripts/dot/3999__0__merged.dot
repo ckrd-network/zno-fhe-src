@@ -1,0 +1,170 @@
+digraph "helib::OutOfRangeError"
+{
+  N3 [label="helib::OutOfRangeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="std::out_of_range",color="grey75", fillcolor="white", style="filled"];
+  N5 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::OutOfRangeError"
+{
+  N0 [label="helib::OutOfRangeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="std::out_of_range",color="grey75", fillcolor="white", style="filled"];
+  N2 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::InvalidArgument"
+{
+  N3 [label="helib::InvalidArgument",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="std::invalid_argument",color="grey75", fillcolor="white", style="filled"];
+  N5 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::InvalidArgument"
+{
+  N0 [label="helib::InvalidArgument",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="std::invalid_argument",color="grey75", fillcolor="white", style="filled"];
+  N2 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::MatMul1D_derived&lt; PA_cx &gt;"
+{
+  N4 [label="helib::MatMul1D_derived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N5 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::MatMul1D",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d.html"];
+}
+digraph "helib::MatMul1D_derived&lt; PA_cx &gt;"
+{
+  N0 [label="helib::MatMul1D_derived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::MatMul1D",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul1_d.html"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::MatMul_CKKS",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul___c_k_k_s.html"];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::MatMul_CKKS\l_Complex",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul___c_k_k_s___complex.html"];
+}
+digraph "helib::PAlgebraModDerived&lt; type &gt;"
+{
+  N2 [label="helib::PAlgebraModDerived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" zMStar" ];
+  N4 [label="helib::PAlgebra",color="black", fillcolor="white", style="filled",tooltip="The structure of (Z/mZ)* /(p) "];
+  N5 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" cube" ];
+  N5 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::PAlgebraModDerived&lt; type &gt;"
+{
+  N0 [label="helib::PAlgebraModDerived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+}
+digraph "helib::PAlgebraModDerived&lt; PA_cx &gt;"
+{
+  N2 [label="helib::PAlgebraModDerived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" zMStar" ];
+  N4 [label="helib::PAlgebra",color="black", fillcolor="white", style="filled",tooltip="The structure of (Z/mZ)* /(p) "];
+  N5 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" cube" ];
+  N5 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::PAlgebraModDerived&lt; PA_cx &gt;"
+{
+  N0 [label="helib::PAlgebraModDerived\l\< PA_cx \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PAlgebraModBase",color="black", fillcolor="white", style="filled",tooltip="Virtual base class for PAlgebraMod. "];
+}
+digraph "helib::RuntimeError"
+{
+  N4 [label="helib::RuntimeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N5 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="std::runtime_error",color="grey75", fillcolor="white", style="filled"];
+  N6 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N6 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::RuntimeError"
+{
+  N0 [label="helib::RuntimeError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="std::runtime_error",color="grey75", fillcolor="white", style="filled"];
+  N2 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+  N0 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::IOError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::runtime_error. "];
+}
+digraph "helib::GeneralAutomorphPrecon_BSGS"
+{
+  N2 [label="helib::GeneralAutomorphPrecon_BSGS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::GeneralAutomorphPrecon",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_general_automorph_precon.html"];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" zMStar" ];
+  N4 [label="helib::PAlgebra",color="black", fillcolor="white", style="filled",tooltip="The structure of (Z/mZ)* /(p) "];
+  N5 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" cube" ];
+  N5 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::GeneralAutomorphPrecon_BSGS"
+{
+  N0 [label="helib::GeneralAutomorphPrecon_BSGS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::GeneralAutomorphPrecon",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_general_automorph_precon.html"];
+}
+digraph "helib::ConstMultiplier_zzX_CKKS"
+{
+  N2 [label="helib::ConstMultiplier\l_zzX_CKKS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ConstMultiplier",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_const_multiplier.html"];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" eptxt" ];
+  N4 [label="helib::EncodedPtxt",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt.html"];
+  N5 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N5 [label="helib::ClonedPtr\< helib\l::EncodedPtxt_base \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  N6 -> N5 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N6 [label="helib::EncodedPtxt_base",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_encoded_ptxt__base.html"];
+}
+digraph "helib::ConstMultiplier_zzX_CKKS"
+{
+  N0 [label="helib::ConstMultiplier\l_zzX_CKKS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ConstMultiplier",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_const_multiplier.html"];
+}
+digraph "helib::IOError"
+{
+  N4 [label="helib::IOError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N5 -> N4 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::RuntimeError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::runtime_error. "];
+  N6 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N6 [label="std::runtime_error",color="grey75", fillcolor="white", style="filled"];
+  N7 -> N5 [dir="back",color="midnightblue",style="solid"];
+  N7 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::IOError"
+{
+  N0 [label="helib::IOError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::RuntimeError",color="black", fillcolor="white", style="filled",tooltip="Inherits from Exception and std::runtime_error. "];
+  N2 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="std::runtime_error",color="grey75", fillcolor="white", style="filled"];
+  N3 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::ConstMultiplier_DoubleCRT_CKKS"
+{
+  N2 [label="helib::ConstMultiplier\l_DoubleCRT_CKKS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ConstMultiplier",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_const_multiplier.html"];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" feptxt" ];
+  N4 [label="helib::FatEncodedPtxt",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_fat_encoded_ptxt.html"];
+  N5 -> N4 [dir="back",color="darkorchid3",style="dashed",label=" rep" ];
+  N5 [label="helib::ClonedPtr\< helib\l::FatEncodedPtxt_base \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_cloned_ptr.html"];
+  N6 -> N5 [dir="back",color="darkorchid3",style="dashed",label=" ptr" ];
+  N6 [label="helib::FatEncodedPtxt_base",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_fat_encoded_ptxt__base.html"];
+}
+digraph "helib::ConstMultiplier_DoubleCRT_CKKS"
+{
+  N0 [label="helib::ConstMultiplier\l_DoubleCRT_CKKS",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ConstMultiplier",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_const_multiplier.html"];
+}

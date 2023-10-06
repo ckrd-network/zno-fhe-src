@@ -1,8 +1,0 @@
-digraph "helib::MatMulFull"
-{
-  N0 [label="helib::MatMulFull",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
-  N1 [label="helib::MatMulFull_derived\l\< type \>",color="black", fillcolor="white", style="filled"];
-  N1 -> N2 [dir="back",color="midnightblue",style="solid"];
-  N2 [label="helib::RandomFullMatrix\l\< type \>",color="black", fillcolor="white", style="filled"];
-}

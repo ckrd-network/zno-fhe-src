@@ -1,6 +1,0 @@
-digraph "helib::KeySwitch"
-{
-  N1 [label="helib::KeySwitch",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" fromKey" ];
-  N2 [label="helib::SKHandle",color="black", fillcolor="white", style="filled",tooltip="A handle, describing the secret-key element that \"matches\" a part, of the form s^r(X^t). "];
-}

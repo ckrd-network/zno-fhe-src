@@ -1,8 +1,0 @@
-digraph "helib::EncryptedArrayBase"
-{
-  N0 [label="helib::EncryptedArrayBase",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
-  N1 [label="helib::EncryptedArrayDerived\l\< type \>",color="black", fillcolor="white", style="filled",tooltip="Derived concrete implementation of EncryptedArrayBase. "];
-  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
-  N2 [label="helib::EncryptedArrayDerived\l\< PA_cx \>",color="black", fillcolor="white", style="filled",tooltip="A different derived class to be used for the approximate-numbers scheme. "];
-}

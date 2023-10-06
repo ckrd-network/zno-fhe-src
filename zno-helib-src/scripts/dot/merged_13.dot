@@ -1,0 +1,58 @@
+digraph "helib::MatMulFull_derived&lt; type &gt;"
+{
+  N3 [label="helib::MatMulFull_derived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::MatMulFull",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul_full.html"];
+}
+digraph "helib::MatMulFull_derived&lt; type &gt;"
+{
+  N0 [label="helib::MatMulFull_derived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::MatMulFull",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_mat_mul_full.html"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::RandomFullMatrix\l\< type \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_random_full_matrix.html"];
+}
+digraph "helib::CubeSlice&lt; T &gt;"
+{
+  N2 [label="helib::CubeSlice\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ConstCubeSlice\< T \>",color="black", fillcolor="white", style="filled",tooltip="A constant lower-dimension slice of a hypercube. "];
+  N4 -> N3 [dir="back",color="darkorchid3",style="dashed",label=" sig" ];
+  N4 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::CubeSlice&lt; T &gt;"
+{
+  N0 [label="helib::CubeSlice\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ConstCubeSlice\< T \>",color="black", fillcolor="white", style="filled",tooltip="A constant lower-dimension slice of a hypercube. "];
+}
+digraph "helib::BlockMatMulFull_derived&lt; type &gt;"
+{
+  N3 [label="helib::BlockMatMulFull\l_derived\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="helib::BlockMatMulFull",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_block_mat_mul_full.html"];
+}
+digraph "helib::BlockMatMulFull_derived&lt; type &gt;"
+{
+  N0 [label="helib::BlockMatMulFull\l_derived\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::BlockMatMulFull",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_block_mat_mul_full.html"];
+  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::RandomFullBlockMatrix\l\< type \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_random_full_block_matrix.html"];
+}
+digraph "helib::LogicError"
+{
+  N3 [label="helib::LogicError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N4 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N4 [label="std::logic_error",color="grey75", fillcolor="white", style="filled"];
+  N5 -> N3 [dir="back",color="midnightblue",style="solid"];
+  N5 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}
+digraph "helib::LogicError"
+{
+  N0 [label="helib::LogicError",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="std::logic_error",color="grey75", fillcolor="white", style="filled"];
+  N2 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N2 [label="helib::Exception",color="black", fillcolor="white", style="filled",tooltip="Base class that other HElib exception classes inherit from. "];
+}

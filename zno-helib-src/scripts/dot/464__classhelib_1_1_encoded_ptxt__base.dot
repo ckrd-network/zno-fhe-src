@@ -1,8 +1,0 @@
-digraph "helib::EncodedPtxt_base"
-{
-  N0 [label="helib::EncodedPtxt_base",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
-  N1 [label="helib::EncodedPtxt\l_derived_BGV",color="black", fillcolor="white", style="filled"];
-  N0 -> N2 [dir="back",color="midnightblue",style="solid"];
-  N2 [label="helib::EncodedPtxt\l_derived_CKKS",color="black", fillcolor="white", style="filled"];
-}

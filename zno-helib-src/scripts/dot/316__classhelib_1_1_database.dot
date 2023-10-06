@@ -1,6 +1,0 @@
-digraph "helib::Database&lt; TXT &gt;"
-{
-  N1 [label="helib::Database\< TXT \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" data" ];
-  N2 [label="helib::Tensor\< TXT \>",color="black", fillcolor="white", style="filled"];
-}

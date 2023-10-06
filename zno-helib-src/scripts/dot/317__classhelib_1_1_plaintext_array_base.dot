@@ -1,6 +1,0 @@
-digraph "helib::PlaintextArrayBase"
-{
-  N0 [label="helib::PlaintextArrayBase",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
-  N1 [label="helib::PlaintextArrayDerived\l\< type \>",color="black", fillcolor="white", style="filled"];
-}

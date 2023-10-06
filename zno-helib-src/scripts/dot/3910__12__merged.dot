@@ -1,0 +1,188 @@
+digraph "helib::PtrMatrix_ptVec&lt; T &gt;"
+{
+  N2 [label="helib::PtrMatrix_ptVec\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrMatrix_ptVec&lt; T &gt;"
+{
+  N0 [label="helib::PtrMatrix_ptVec\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrVector_vectorPt&lt; T &gt;"
+{
+  N2 [label="helib::PtrVector_vectorPt\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrVector\< T \>",color="black", fillcolor="white", style="filled",tooltip="Abstract class for an array of objects. "];
+}
+digraph "helib::PtrVector_vectorPt&lt; T &gt;"
+{
+  N0 [label="helib::PtrVector_vectorPt\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrVector\< T \>",color="black", fillcolor="white", style="filled",tooltip="Abstract class for an array of objects. "];
+}
+digraph "helib::PtrMatrix_vector&lt; T &gt;"
+{
+  N2 [label="helib::PtrMatrix_vector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrMatrix_vector&lt; T &gt;"
+{
+  N0 [label="helib::PtrMatrix_vector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrVector_Singleton&lt; T &gt;"
+{
+  N2 [label="helib::PtrVector_Singleton\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrVector\< T \>",color="black", fillcolor="white", style="filled",tooltip="Abstract class for an array of objects. "];
+}
+digraph "helib::PtrVector_Singleton&lt; T &gt;"
+{
+  N0 [label="helib::PtrVector_Singleton\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrVector\< T \>",color="black", fillcolor="white", style="filled",tooltip="Abstract class for an array of objects. "];
+}
+digraph "helib::PtrMatrix_ptvector&lt; T &gt;"
+{
+  N2 [label="helib::PtrMatrix_ptvector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrMatrix_ptvector&lt; T &gt;"
+{
+  N0 [label="helib::PtrMatrix_ptvector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrMatrix_PtPtrVector&lt; T &gt;"
+{
+  N2 [label="helib::PtrMatrix_PtPtrVector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::PtrMatrix_PtPtrVector&lt; T &gt;"
+{
+  N0 [label="helib::PtrMatrix_PtPtrVector\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PtrMatrix\< T \>",color="black", fillcolor="white", style="filled",tooltip="An abstract class for an array of PtrVectors. "];
+}
+digraph "helib::ConstCubeSlice&lt; T &gt;"
+{
+  N2 [label="helib::ConstCubeSlice\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" sig" ];
+  N3 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::ConstCubeSlice&lt; T &gt;"
+{
+  N0 [label="helib::ConstCubeSlice\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N0 -> N1 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::CubeSlice\< T \>",color="black", fillcolor="white", style="filled",tooltip="A lower-dimension slice of a hypercube. "];
+}
+digraph "helib::ExplicitReplicator"
+{
+  N2 [label="helib::ExplicitReplicator",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ReplicateHandler",color="black", fillcolor="white", style="filled",tooltip="An abstract class to handle call-backs to get the output of replicate. "];
+}
+digraph "helib::ExplicitReplicator"
+{
+  N0 [label="helib::ExplicitReplicator",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ReplicateHandler",color="black", fillcolor="white", style="filled",tooltip="An abstract class to handle call-backs to get the output of replicate. "];
+}
+digraph "helib::PlaintextArrayDerived&lt; type &gt;"
+{
+  N2 [label="helib::PlaintextArrayDerived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::PlaintextArrayBase",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_plaintext_array_base.html"];
+}
+digraph "helib::PlaintextArrayDerived&lt; type &gt;"
+{
+  N0 [label="helib::PlaintextArrayDerived\l\< type \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::PlaintextArrayBase",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_plaintext_array_base.html"];
+}
+digraph "helib::ArgMap::ArgProcessorValue&lt; T &gt;"
+{
+  N2 [label="helib::ArgMap::ArgProcessor\lValue\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ArgMap::ArgProcessor",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_arg_map_1_1_arg_processor.html"];
+}
+digraph "helib::ArgMap::ArgProcessorValue&lt; T &gt;"
+{
+  N0 [label="helib::ArgMap::ArgProcessor\lValue\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ArgMap::ArgProcessor",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_arg_map_1_1_arg_processor.html"];
+}
+digraph "helib::ArgMap::ArgProcessorContainer&lt; C &gt;"
+{
+  N2 [label="helib::ArgMap::ArgProcessor\lContainer\< C \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::ArgMap::ArgProcessor",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_arg_map_1_1_arg_processor.html"];
+}
+digraph "helib::ArgMap::ArgProcessorContainer&lt; C &gt;"
+{
+  N0 [label="helib::ArgMap::ArgProcessor\lContainer\< C \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::ArgMap::ArgProcessor",color="black", fillcolor="white", style="filled",URL="$structhelib_1_1_arg_map_1_1_arg_processor.html"];
+}
+digraph "helib::Not"
+{
+  N2 [label="helib::Not",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" p" ];
+  N4 [label="helib::QueryExpr",color="black", fillcolor="white", style="filled",tooltip="A class wrapping a shared pointer to an Expr object. "];
+}
+digraph "helib::Not"
+{
+  N0 [label="helib::Not",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+}
+digraph "helib::Or"
+{
+  N2 [label="helib::Or",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" lhs\nrhs" ];
+  N4 [label="helib::QueryExpr",color="black", fillcolor="white", style="filled",tooltip="A class wrapping a shared pointer to an Expr object. "];
+}
+digraph "helib::Or"
+{
+  N0 [label="helib::Or",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+}
+digraph "helib::And"
+{
+  N2 [label="helib::And",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+  N4 -> N2 [dir="back",color="darkorchid3",style="dashed",label=" lhs\nrhs" ];
+  N4 [label="helib::QueryExpr",color="black", fillcolor="white", style="filled",tooltip="A class wrapping a shared pointer to an Expr object. "];
+}
+digraph "helib::And"
+{
+  N0 [label="helib::And",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::Expr",color="black", fillcolor="white", style="filled",tooltip="Base structure for logical expressions. "];
+}
+digraph "helib::ColPerm"
+{
+  N2 [label="helib::ColPerm",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N3 -> N2 [dir="back",color="midnightblue",style="solid"];
+  N3 [label="helib::HyperCube\< long \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_hyper_cube.html"];
+  N4 -> N3 [dir="back",color="darkorchid3",style="dashed",label=" sig" ];
+  N4 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
+}
+digraph "helib::ColPerm"
+{
+  N0 [label="helib::ColPerm",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  N1 -> N0 [dir="back",color="midnightblue",style="solid"];
+  N1 [label="helib::HyperCube\< long \>",color="black", fillcolor="white", style="filled",URL="$classhelib_1_1_hyper_cube.html"];
+}

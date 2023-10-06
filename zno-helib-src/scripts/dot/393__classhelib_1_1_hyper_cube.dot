@@ -1,6 +1,0 @@
-digraph "helib::HyperCube&lt; T &gt;"
-{
-  N1 [label="helib::HyperCube\< T \>",color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  N2 -> N1 [dir="back",color="darkorchid3",style="dashed",label=" sig" ];
-  N2 [label="helib::CubeSignature",color="black", fillcolor="white", style="filled",tooltip="Holds a vector of dimensions for a hypercube and some additional data. "];
-}

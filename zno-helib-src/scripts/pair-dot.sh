@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Enable strict mode
-set -euo pipefail
+set -exuo pipefail
 IFS=$'\n\t'
 
 # Directory paths

@@ -1,0 +1,3 @@
+project(GTestEvalMapTests)
+add_executable(GTestEvalMap_Test0 GTestEvalMap_Test0.cpp)
+target_link_libraries(GTestEvalMap_Test0 gtest_main)

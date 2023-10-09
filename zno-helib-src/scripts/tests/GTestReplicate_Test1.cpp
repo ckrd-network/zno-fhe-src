@@ -1,0 +1,3 @@
+project(GTestReplicateTests)
+add_executable(GTestReplicate_Test0 GTestReplicate_Test0.cpp)
+target_link_libraries(GTestReplicate_Test0 gtest_main)

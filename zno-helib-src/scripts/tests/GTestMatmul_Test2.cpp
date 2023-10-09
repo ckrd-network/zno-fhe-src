@@ -1,0 +1,5 @@
+project(GTestMatmulTests)
+add_executable(GTestMatmul_Test0 GTestMatmul_Test0.cpp)
+target_link_libraries(GTestMatmul_Test0 gtest_main)
+add_executable(GTestMatmul_Test1 GTestMatmul_Test1.cpp)
+target_link_libraries(GTestMatmul_Test1 gtest_main)

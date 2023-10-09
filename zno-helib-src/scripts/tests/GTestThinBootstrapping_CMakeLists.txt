@@ -1,0 +1,2 @@
+add_executable(GTestThinBootstrapping_Test1 GTestThinBootstrapping_Test1.cpp)
+target_link_libraries(GTestThinBootstrapping_Test1 gtest_main)

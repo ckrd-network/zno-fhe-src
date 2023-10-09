@@ -1,0 +1,4 @@
+add_executable(GTestApproxNums_Test1 GTestApproxNums_Test1.cpp)
+target_link_libraries(GTestApproxNums_Test1 gtest_main)
+add_executable(GTestApproxNums_Test2 GTestApproxNums_Test2.cpp)
+target_link_libraries(GTestApproxNums_Test2 gtest_main)

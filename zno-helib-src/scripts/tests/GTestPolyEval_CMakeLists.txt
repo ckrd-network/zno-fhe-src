@@ -1,0 +1,2 @@
+add_executable(GTestPolyEval_Test1 GTestPolyEval_Test1.cpp)
+target_link_libraries(GTestPolyEval_Test1 gtest_main)

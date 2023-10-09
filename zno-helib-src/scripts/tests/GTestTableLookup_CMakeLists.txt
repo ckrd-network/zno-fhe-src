@@ -1,0 +1,2 @@
+add_executable(GTestTableLookup_Test1 GTestTableLookup_Test1.cpp)
+target_link_libraries(GTestTableLookup_Test1 gtest_main)

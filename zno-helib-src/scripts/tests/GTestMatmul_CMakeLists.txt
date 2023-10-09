@@ -1,0 +1,2 @@
+add_executable(GTestMatmul_Test2 GTestMatmul_Test2.cpp)
+target_link_libraries(GTestMatmul_Test2 gtest_main)

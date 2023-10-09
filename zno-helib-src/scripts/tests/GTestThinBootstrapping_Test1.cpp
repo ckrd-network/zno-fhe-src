@@ -1,0 +1,3 @@
+project(GTestThinBootstrappingTests)
+add_executable(GTestThinBootstrapping_Test0 GTestThinBootstrapping_Test0.cpp)
+target_link_libraries(GTestThinBootstrapping_Test0 gtest_main)

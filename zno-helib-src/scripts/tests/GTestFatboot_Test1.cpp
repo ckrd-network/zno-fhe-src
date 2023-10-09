@@ -1,0 +1,3 @@
+project(GTestFatbootTests)
+add_executable(GTestFatboot_Test0 GTestFatboot_Test0.cpp)
+target_link_libraries(GTestFatboot_Test0 gtest_main)

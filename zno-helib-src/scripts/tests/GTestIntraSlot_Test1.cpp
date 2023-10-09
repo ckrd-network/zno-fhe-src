@@ -1,0 +1,3 @@
+project(GTestIntraSlotTests)
+add_executable(GTestIntraSlot_Test0 GTestIntraSlot_Test0.cpp)
+target_link_libraries(GTestIntraSlot_Test0 gtest_main)

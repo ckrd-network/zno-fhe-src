@@ -27,13 +27,23 @@ cxx.workspace = true
 
 [build-dependencies]
 # zno-helib-src = { workspace = true, optional = true, version = "0.0.1"}
+# cc.workspace = true
 autocxx-build.workspace = true
 cxx-build = { workspace = true}
-# cc.workspace = true
 dirs.workspace = true
+fake.workspace = true
 miette.workspace = true
 pkg-config.workspace = true
+serde.workspace = true
+synth.workspace = true
 vcpkg.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+quickcheck.workspace = true
+insta.workspace = true
+mockall.workspace = true
+proptest.workspace = true
 
 [features]
 default = ['vendored']

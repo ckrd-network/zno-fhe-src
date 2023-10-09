@@ -121,24 +121,24 @@ impl Build {
         })
     }
 
-    #[cfg(windows)]
-    fn is_nasm_ready(&self) -> bool {
-        self.check_env_var("ZNO_RUST_USE_NASM")
-            .unwrap_or_else(|| {
-                // On Windows, use cmd `where` command to check if nasm is installed
-                let wherenasm = Command::new("cmd")
-                    .args(&["/C", "where nasm"])
-                    .output()
-                    .expect("Failed to execute `cmd`.");
-                wherenasm.status.success()
-            })
-    }
+    // #[cfg(windows)]
+    // fn is_nasm_ready(&self) -> bool {
+    //     self.check_env_var("ZNO_RUST_USE_NASM")
+    //         .unwrap_or_else(|| {
+    //             // On Windows, use cmd `where` command to check if nasm is installed
+    //             let wherenasm = Command::new("cmd")
+    //                 .args(&["/C", "where nasm"])
+    //                 .output()
+    //                 .expect("Failed to execute `cmd`.");
+    //             wherenasm.status.success()
+    //         })
+    // }
 
-    #[cfg(not(windows))]
-    fn is_nasm_ready(&self) -> bool {
-        // We assume that nobody would run nasm.exe on a non-windows system.
-        false
-    }
+    // #[cfg(not(windows))]
+    // fn is_nasm_ready(&self) -> bool {
+    //     // We assume that nobody would run nasm.exe on a non-windows system.
+    //     false
+    // }
 
     pub fn artifacts(&mut self) -> Artifacts {
         let target = &self.target.as_ref().expect("TARGET dir not set")[..];

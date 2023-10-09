@@ -21,6 +21,15 @@ tests = []
 utils = []
 ```
 
+## Tests
+
+Tests are front and centre. We follow advice on how they can be setup:
+
+- [Delete Cargo Integration Tests](https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html) these tips also reduce compile time:
+
+  - > Large projects should have only one integration test crate with several modules. A nice side-effect of a single modularized integration test is that sharing the code between separate tests becomes trivial, you just pull it into a submodule. There’s no need to awkwardly repeat mod common; for each integration test.
+  - For a public API on crates.io, avoid unit tests. Use a single integration test,  `tests/it.rs` or `tests/it/main.rs`. Integration tests use `it` library as an external crate. Using the public API results in better API design feedback.
+
 ## FHE Libraries
 
 ### HElib
@@ -81,8 +90,6 @@ The crate versions follow the X.Y.Z+B pattern:
 git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --branch=v2.3.0 --method=rebase
 ```
 
-
-
 ## Parameter Selection
 
 Install SageMath. Run script.
@@ -96,6 +103,11 @@ pushd ~/src
 popd
 ~/mambaforge/envs/sage/bin/sage --python ~/src/fhegen/src/interactive.py
 ```
+
+## Contributing
+
+- [Fast Rust Builds](https://matklad.github.io/2021/09/04/fast-rust-builds.html)
+- [Optimize Rust Compile Time](https://rustmagazine.org/issue-2/optimize-rust-comptime/)
 
 ## References
 

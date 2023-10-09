@@ -1,0 +1,3 @@
+project(GTestPolyEvalTests)
+add_executable(GTestPolyEval_Test0 GTestPolyEval_Test0.cpp)
+target_link_libraries(GTestPolyEval_Test0 gtest_main)

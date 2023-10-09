@@ -1,0 +1,3 @@
+project(GTestApproxNumsTests)
+add_executable(GTestApproxNums_Test0 GTestApproxNums_Test0.cpp)
+target_link_libraries(GTestApproxNums_Test0 gtest_main)

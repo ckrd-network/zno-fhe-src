@@ -1,0 +1,3 @@
+project(GTestPtrVectorTests)
+add_executable(GTestPtrVector_Test0 GTestPtrVector_Test0.cpp)
+target_link_libraries(GTestPtrVector_Test0 gtest_main)

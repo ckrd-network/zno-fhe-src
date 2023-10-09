@@ -1,0 +1,2 @@
+add_executable(GTestEaCx_Test1 GTestEaCx_Test1.cpp)
+target_link_libraries(GTestEaCx_Test1 gtest_main)

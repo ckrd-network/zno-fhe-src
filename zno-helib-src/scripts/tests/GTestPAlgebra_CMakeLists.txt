@@ -1,0 +1,2 @@
+add_executable(GTestPAlgebra_Test1 GTestPAlgebra_Test1.cpp)
+target_link_libraries(GTestPAlgebra_Test1 gtest_main)

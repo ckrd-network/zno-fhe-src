@@ -1,0 +1,2 @@
+add_executable(GTestExtractDigits_Test1 GTestExtractDigits_Test1.cpp)
+target_link_libraries(GTestExtractDigits_Test1 gtest_main)

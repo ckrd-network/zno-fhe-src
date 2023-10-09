@@ -1,0 +1,2 @@
+add_executable(GTestPGFFT_Test4 GTestPGFFT_Test4.cpp)
+target_link_libraries(GTestPGFFT_Test4 gtest_main)

@@ -1,0 +1,2 @@
+add_executable(GTestGeneral_Test1 GTestGeneral_Test1.cpp)
+target_link_libraries(GTestGeneral_Test1 gtest_main)

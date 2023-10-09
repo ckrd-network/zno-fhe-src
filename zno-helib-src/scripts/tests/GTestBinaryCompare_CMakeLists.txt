@@ -1,0 +1,2 @@
+add_executable(GTestBinaryCompare_Test1 GTestBinaryCompare_Test1.cpp)
+target_link_libraries(GTestBinaryCompare_Test1 gtest_main)

@@ -1,0 +1,2 @@
+add_executable(GTestPtrVector_Test1 GTestPtrVector_Test1.cpp)
+target_link_libraries(GTestPtrVector_Test1 gtest_main)

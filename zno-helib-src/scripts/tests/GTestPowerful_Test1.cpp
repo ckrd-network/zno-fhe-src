@@ -1,0 +1,3 @@
+project(GTestPowerfulTests)
+add_executable(GTestPowerful_Test0 GTestPowerful_Test0.cpp)
+target_link_libraries(GTestPowerful_Test0 gtest_main)

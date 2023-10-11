@@ -35,8 +35,7 @@ fake.workspace = true
 miette.workspace = true
 pkg-config.workspace = true
 serde.workspace = true
-synth.workspace = true
-vcpkg.workspace = true
+syn.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

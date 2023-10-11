@@ -23,7 +23,7 @@ utils = []
 
 ## Tests
 
-Tests are front and centre. We follow advice on how they can be setup:
+Tests are front and centre. We follow advice on their setup:
 
 - [Delete Cargo Integration Tests](https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html) these tips also reduce compile time:
 
@@ -40,16 +40,18 @@ To compile the source code and move artifacts to the system crate:
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/zno-helib-src-test"
 
-RUST_BACKTRACE=1 cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src.txt
+RUST_BACKTRACE=1 cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src-test.txt
 ```
 
 To generate the FFI bindings in the system crate
 
 ```shell
 target=x86_64-unknown-linux-gnu
-ys_dir="$(pwd)/zno-helib-sys"
+sys_dir="$(pwd)/zno-helib-sys"
 
-RUST_BACKTRACE=1 cargo build --bin zno-helib-sys --manifest-path "$sys_dir/Cargo.toml" --features "vendored" --target $target -vvv &>log-sys.txt
+RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv &>>log-sys.txt
+cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
+cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-expand.txt
 ```
 
 #### Test
@@ -108,6 +110,17 @@ popd
 
 - [Fast Rust Builds](https://matklad.github.io/2021/09/04/fast-rust-builds.html)
 - [Optimize Rust Compile Time](https://rustmagazine.org/issue-2/optimize-rust-comptime/)
+
+## Maintenance
+
+```shell
+cargo install cargo-edit
+cargo upgrade --dry-run --verbose &>>cargo-upgrade.txt
+cargo upgrade
+# Check release notes for crates dry-run said are incompatible.
+cargo upgrade --incompatible
+cargo tree &>>cargo-tree.txt
+```
 
 ## References
 

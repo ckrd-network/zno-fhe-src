@@ -177,6 +177,7 @@ impl Build {
 
         let _configure = cmake::Config::new(out_dir.clone())
             .define("CMAKE_INSTALL_PREFIX", &format!("{}", install_dir.display()))
+            .define("CMAKE_CXX_STANDARD", "17")
             .define("BUILD_SHARED", "ON")
             .pipe( |c| if cfg!(feature = "package") {
                 c.define("PACKAGE_BUILD", "ON")

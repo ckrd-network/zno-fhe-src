@@ -7,7 +7,7 @@ use std::process::Command;
 
 fn main() -> miette::Result<()> {
     let path = std::path::PathBuf::from("src/helib_pack/include"); // include path
-    let mut b = autocxx_build::Builder::new("src/main.rs", &[&path])
+    let mut b = autocxx_build::Builder::new("src/lib.rs", &[&path])
         .extra_clang_args(&["-std=c++17"])
         .build()?;
         // This assumes all your C++ bindings are in main.rs
@@ -20,7 +20,7 @@ fn main() -> miette::Result<()> {
     //         .flag_if_supported("-std=c++17")
     //         .compile("helib-issue-2"); // compile cxx generated bindings
 
-    println!("cargo:rerun-if-changed=src/main.rs");
+    println!("cargo:rerun-if-changed=src/lib.rs");
     println!("cargo:rerun-if-changed=src/helib_pack/include/helib/helib.h");
 
     // Add instructions to link to any C++ libraries you need.

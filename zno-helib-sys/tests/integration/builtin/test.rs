@@ -1,3 +1,5 @@
+use zno::prelude::*;
+
 #[cfg(test)]
 mod tests {
     #[test]

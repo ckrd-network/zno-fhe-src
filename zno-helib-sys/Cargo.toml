@@ -3,8 +3,9 @@ name = "zno-helib-sys"
 version.workspace = true
 authors.workspace = true
 
-edition.workspace = true
-rust-version.workspace = true
+# edition.workspace = true
+# rust-version.workspace = true
+edition = "2018"
 
 description.workspace = true
 documentation.workspace = true

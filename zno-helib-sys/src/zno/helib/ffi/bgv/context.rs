@@ -9,7 +9,7 @@ use autocxx::prelude::*;
 #[allow(dead_code)]
 #[allow(non_upper_case_globals)]
 #[allow(non_camel_case_types)]
-mod ffi {
+// mod ffi {
     pub trait ToCppString {
         fn into_cpp(self) -> cxx::UniquePtr<cxx::CxxString>;
     }
@@ -6658,4 +6658,4 @@ mod ffi {
         pub use super::bindgen::root::std::ostream;
         pub use super::bindgen::root::std::istream;
     }
-}
+// }

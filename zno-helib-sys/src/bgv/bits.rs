@@ -50,11 +50,11 @@ impl std::str::FromStr for Bits {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // First, we attempt to parse it as a u32
+        // First, we attempt to parse a u32
         match s.parse::<u32>() {
             Ok(val) => Ok(Bits::new(val)),
             Err(e) => {
-                // If there's an error, let's check if it's because the string is a negative number
+                // Check if the error is a string with a negative number
                 if s.starts_with('-') {
                     Ok(Bits::Err(ParseIntError { kind: std::num::IntErrorKind::Negative }))
                 } else {

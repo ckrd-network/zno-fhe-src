@@ -19,17 +19,25 @@ keywords.workspace = true
 links = "helib"
 build = "build.rs"
 
+# # For linking to an external library.
+# [build]
+# script = "build.rs" # If you have a build script for linking C/C++ libraries
+
+[lib]
+name = "helib_ffi"
+crate-type = ["cdylib", "rlib"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-autocxx.workspace = true
+# autocxx.workspace = true
 cxx.workspace = true
-# libc.workspace = true
+libc.workspace = true
 
 [build-dependencies]
 # zno-helib-src = { workspace = true, optional = true, version = "0.0.1"}
-# cc.workspace = true
-autocxx-build.workspace = true
+cc.workspace = true
+# autocxx-build.workspace = true
 cxx-build = { workspace = true}
 dirs.workspace = true
 fake.workspace = true
@@ -42,6 +50,7 @@ syn.workspace = true
 criterion.workspace = true
 quickcheck.workspace = true
 insta.workspace = true
+libloading.workspace = true
 mockall.workspace = true
 proptest.workspace = true
 
@@ -49,6 +58,11 @@ proptest.workspace = true
 default = ['vendored']
 autocxx = []
 vendored = []
+
+[package.metadata.cxx]
+src = "ffi/ffi_wrapper.cpp"
+include = ["src/helib_pack/include"]
+lib = ["src/helib_pack/lib"]
 
 # This is here for tooling.
 # GMP version to be used (and eventually downloaded) if `package` feature.
@@ -59,3 +73,7 @@ vendored = []
 gmp = "6.2.1"
 helib = "2.3.0"
 ntl = "11.5.1"
+
+[[test]]
+name = "ffi-context-bgv"
+path = "tests/integration/builtin/ffi-context-bgv.rs"

@@ -52,6 +52,7 @@ sys_dir="$(pwd)/zno-helib-sys"
 RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv &>>log-sys.txt
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-expand.txt
+cargo test --test ffi-context-bgv --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-test.txt
 ```
 
 #### Test

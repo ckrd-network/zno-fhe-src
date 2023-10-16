@@ -96,7 +96,7 @@ use std::fmt;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::{M, P, R, C, Bits, Gens, Ords, Mvec, Bootstrappable};
+/// # use zno::bgv::{M, P, R, C, Bits, Gens, Ords, Mvec, Bootstrappable};
 /// let params = BGVParams {
 ///     m: M::new(4095).unwrap(),
 ///     p: P::new(2).unwrap(),
@@ -109,7 +109,10 @@ use std::fmt;
 ///     bootstrappable: Bootstrappable::new(true),
 /// };
 /// ```
-///
+
+use cxx::ExternType;
+
+#[repr(C)]
 pub struct BGVParams {
     pub m: M,
     pub p: P,
@@ -129,4 +132,32 @@ impl fmt::Display for BGVParams {
     }
 }
 
-// Here, you can add any methods or implementations that are useful for `BGVParams`.
+impl BGV {
+    pub fn context(&self) -> ffi::UniquePtr<ffi::Context> {
+        let gens = ffi::convert_to_vec(&self.gens);
+        let ords = ffi::convert_to_vec(&self.ords);
+
+        ffi::create_bgv_context(
+            self.m.value() as u64, // assuming method value() returns the internal value
+            self.p.value() as u64,
+            self.r.value() as u64,
+            gens,
+            ords,
+        )
+    }
+
+    // pub fn to_generic_context(&self, mparams: Option<ModChainParams>, bparams: Option<BootStrapParams>) -> ffi::UniquePtr<ffi::Context> {
+    //     let gens = ffi::convert_to_vec(&self.gens);
+    //     let ords = ffi::convert_to_vec(&self.ords);
+
+    //     ffi::create_generic_context(
+    //         self.m.value() as i64,
+    //         self.p.value() as i64,
+    //         self.r.value() as i64,
+    //         gens,
+    //         ords,
+    //         mparams,
+    //         bparams,
+    //     )
+    // }
+}

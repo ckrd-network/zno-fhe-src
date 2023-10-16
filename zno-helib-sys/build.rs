@@ -6,22 +6,95 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 fn main() -> miette::Result<()> {
-    let path = std::path::PathBuf::from("src/helib_pack/include"); // include path
-    let mut b = autocxx_build::Builder::new("src/lib.rs", &[&path])
-        .extra_clang_args(&["-std=c++17"])
-        .build()?;
-        // This assumes all your C++ bindings are in main.rs
-    b.flag_if_supported("-std=c++17")
-     .compile("helib-autocxx"); // arbitrary library name, pick anything
 
-    // // Compile cxx generated bindings
-    // let mut cc_build = cxx_build::bridge("src/cxx-bridges/issue-2.rs");
-    // cc_build.include("src/helib_pack/include")
-    //         .flag_if_supported("-std=c++17")
-    //         .compile("helib-issue-2"); // compile cxx generated bindings
+    // cxx_build::CFG.exported_header_prefixes = vec!["helib"];
+    // Determine the project directory
+    let project_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let ffi_dir = Path::new(&project_dir).join("ffi");
+    let helib_dir = Path::new(&project_dir).join("src").join("helib_pack");
+    // let helib_dir = Path::new(&ffi_dir);
+    let helib_lib_dir = helib_dir.join("lib");
+    let helib_include_dir = helib_dir.join("include");
+
+    let cxx_include_path = format!("{}/target/cxxbridge", project_dir);
+
+    // Compile ffi_wrapper.cpp separately
+    let cpp_source = ffi_dir.join("ffi_wrapper.cpp");
+    let cpp_output = ffi_dir.join("ffi_wrapper"); // Output binary name
+
+    // Copy ffi_wrapper.h and ffi_wrapper.cpp alongside helib.h
+    // let _ = fs::copy(ffi_dir.join("ffi_wrapper.h"), helib_include_dir.join("ffi_wrapper.h"));
+    // let _ = fs::copy(ffi_dir.join("ffi_wrapper.cpp"), cpp_source.clone());
+
+    // Retrieve the CARGO_MANIFEST_DIR and OUT_DIR environment variables
+    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let out_dir = env::var("OUT_DIR").unwrap();
+
+    let source_dir = Path::new(&manifest_dir).join("src/helib_pack/include/helib");
+    let target_dir = Path::new(&manifest_dir).join("ffi/helib");
+
+    // Recursively copy files from source to target directory
+    if let Err(e) = copy_dir_to(&source_dir, &target_dir) {
+        panic!("Failed to copy header files: {}", e);
+    }
+    let source_dir = Path::new(&manifest_dir).join("src/helib_pack/include/NTL");
+    let target_dir = Path::new(&manifest_dir).join("ffi/NTL");
+
+    // Recursively copy files from source to target directory
+    if let Err(e) = copy_dir_to(&source_dir, &target_dir) {
+        panic!("Failed to copy header files: {}", e);
+    }
+
+    // Allows Rust to call C++ functions defined in "ffi_wrapper.cpp" and use
+    // any C++ functionality encapsulated in "ffi_wrapper.cpp" separately from the original C++ code.
+    // let _ = Command::new("g++")
+    //     .args(&["-std=c++17", "-shared", "-fPIC", "-o", &cpp_output.to_string_lossy(), &cpp_source.to_string_lossy()])
+    //     .status()
+    //     .expect("Failed to compile ffi_wrapper.cpp");
+
+    // // Generate Rust bindings using cxx_build
+    // cxx_build::bridge("src/cxx-bridges/context.rs")
+    //     .file(cpp_source.to_string_lossy())  // Include the necessary C++ source files
+    //     .flag_if_supported("-std=c++17")
+    //     .compile("ffi_wrapper");
+
+    // Output the linker flags for the compiled wrapper C++ source
+    println!("cargo:rustc-link-search=native={}", ffi_dir.display());
+    // println!("cargo:rustc-link-lib=dylib=ffi_wrapper");
+    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
+    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
+    // println!("cargo:rustc-cfg=exported_header_prefixes=\"helib\"");
+    // let helib_include_dir = std::path::PathBuf::from("src/helib_pack/include"); // include path
+    // let mut b = autocxx_build::Builder::new("src/lib.rs", &[&helib_include_dir])
+    //     .extra_clang_args(&["-std=c++17"])
+    //     .build()?;
+    //     // This assumes all your C++ bindings are in main.rs
+    // b.flag_if_supported("-std=c++17")
+    //  .compile("helib-autocxx"); // arbitrary library name, pick anything
+
+    // Compile cxx generated bindings.  This is the name of the Rust FFI library
+    // that includes the generated Rust bindings for your C++ code.
+    // It is used to link the Rust code with the upstream C++ code.
+    let path: PathBuf = cpp_source.to_string_lossy().into_owned().into();
+    println!("cargo:warning=This is a test 1");
+    let mut cc_build = cxx_build::bridge("src/cxx-bridges/context.rs");
+    // Include the directory where cxx generates the cxxbridge sources.
+    // This directory will contain the rust/cxx.h header.
+    println!("cargo:warning=This is a test 2");
+    println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi");
+    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include");
+    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib");
+    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib/../");
+    cc_build.file(path)
+            .include(cxx_include_path)
+            .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi")
+            // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include")
+            // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib")
+            .flag_if_supported("-std=c++17")
+            .compile("cxx-bridge-context"); // compile cxx generated bindings
 
     println!("cargo:rerun-if-changed=src/lib.rs");
-    println!("cargo:rerun-if-changed=src/helib_pack/include/helib/helib.h");
+    println!("cargo:rerun-if-changed=ffi/helib/helib.h");
 
     // Add instructions to link to any C++ libraries you need.
 
@@ -39,6 +112,26 @@ pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
+/// Function to recursively copy directories
+fn copy_dir_to(src: &Path, dst: &Path) -> std::io::Result<()> {
+    if !dst.is_dir() {
+        fs::create_dir_all(dst)?;
+    }
+
+    for entry_result in src.read_dir()? {
+        let entry = entry_result?;
+        let file_type = entry.file_type()?;
+        let src_path = src.join(entry.file_name());
+        let dst_path = dst.join(entry.file_name());
+
+        if file_type.is_dir() {
+            copy_dir_to(&src_path, &dst_path)?;
+        } else {
+            fs::copy(&src_path, &dst_path)?;
+        }
+    }
+    Ok(())
+}
 pub struct Build {
     out_dir: Option<PathBuf>,
     target: Option<String>,

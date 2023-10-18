@@ -23,3 +23,7 @@ pub use mvec::Mvec;
 pub use bootstrap::Bootstrap;
 pub use bootstrappable::Bootstrappable;
 pub use bgv_params::BGVParams;
+
+// This brings `Context` to `bgv` module level, avoiding the need to include `ffi` in the path
+#[cfg(feature = "helib")]
+pub use crate::helib::bgv::Context;

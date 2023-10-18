@@ -26,16 +26,25 @@ use std::fmt;
 #[derive(Debug, PartialEq)]
 pub enum Bits {
     Some(NonZeroU32),
-    Err(ParseIntError),
+}
+
+#[derive(Debug, Clone)]
+pub struct BitsError {
+    kind: BitsErrorKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum BitsErrorKind {
+    Zero,
+    ParseError(ParseIntError),
 }
 
 impl Bits {
     /// Attempts to create a `Bits` variant from a given u32.
-    pub fn new(value: u32) -> Result<Self, ParseIntError> {
-        NonZeroU32::new(value).map_or_else(
-            || Bits::Err(ParseIntError { kind: std::num::IntErrorKind::Zero }),
-            Bits::Some,
-        )
+    pub fn new(value: u32) -> Result<Self, BitsError> {
+        NonZeroU32::new(value)
+            .map(Bits::Some)
+            .ok_or_else(|| BitsError { kind: BitsErrorKind::Zero })
     }
 }
 
@@ -46,30 +55,41 @@ impl Default for Bits {
     }
 }
 
-impl std::str::FromStr for Bits {
-    type Err = ParseIntError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // First, we attempt to parse a u32
-        match s.parse::<u32>() {
-            Ok(val) => Ok(Bits::new(val)),
-            Err(e) => {
-                // Check if the error is a string with a negative number
-                if s.starts_with('-') {
-                    Ok(Bits::Err(ParseIntError { kind: std::num::IntErrorKind::Negative }))
-                } else {
-                    Ok(Bits::Err(e))
-                }
-            }
+impl From<ParseIntError> for BitsError {
+    fn from(error: ParseIntError) -> Self {
+        BitsError {
+            kind: BitsErrorKind::ParseError(error),
         }
     }
 }
 
-impl fmt::Display for Bits {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::str::FromStr for Bits {
+    type Err = BitsError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parsed = s.parse::<u32>().map_err(BitsError::from)?;
+
+        NonZeroU32::new(parsed)
+            .map(Bits::Some)
+            .ok_or(BitsError { kind: BitsErrorKind::Zero })
+    }
+}
+
+// Implementing the Display trait for Bits
+impl core::fmt::Display for Bits {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Bits::Some(value) => write!(f, "{}", value),
-            Bits::Err(_) => write!(f, "Error parsing 'bits'"),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+impl core::fmt::Display for BitsError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.kind {
+            BitsErrorKind::Zero => write!(f, "zero is not allowed"),
+            BitsErrorKind::ParseError(e) => e.fmt(f),
         }
     }
 }

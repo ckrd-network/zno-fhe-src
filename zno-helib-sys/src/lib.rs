@@ -1,4 +1,6 @@
 pub mod prelude;
+mod bgv;
+#[cfg(feature = "helib")]
 mod helib;
 
 // use autocxx::prelude::*; // use all the main autocxx functions

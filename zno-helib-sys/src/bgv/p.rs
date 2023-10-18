@@ -1,72 +1,98 @@
 use std::num::{NonZeroU32, ParseIntError};
 use std::fmt;
 
-/// Represents the plaintext space parameter `p` in BGV.
+/// Represents the plaintext modulus parameter `p` in BGV.
 ///
-/// In HElib's BGV encryption scheme, the parameter `p` is chosen as the base of the plaintext space.
-/// The choice of `p` affects various properties of the encryption, including:
-/// - The size of the plaintext space.
-/// - The depth of computable circuits.
-/// - Noise behavior.
+/// In HElib's BGV encryption scheme, the parameter `p` defines the plaintext modulus.
+/// This parameter is crucial in defining the structure of the plaintext space and affects
+/// the efficiency and security of the encryption scheme.
 ///
 /// ## Range in this FFI Implementation:
 /// This FFI implementation accepts a limited range of values for `p`. Currently, the type
-/// uses `NonZeroU32`, which means the range is between 1 and 4,294,967,295 (both inclusive),
-/// excluding the value zero.
+/// uses `NonZeroU32`. This provides a range between 1 and 4,294,967,295 (both inclusive), excluding the value zero.
 ///
 /// ## Range in HElib:
-/// The choice of `p` in HElib can vary widely based on the specific application and desired
-/// security level. Common choices might be small prime numbers, but more complex selections
-/// are possible. Again, users should refer to HElib's official documentation or relevant
-/// cryptographic literature for specific guidance on choosing `p`.
+/// In HElib, the choice of `p` is a significant factor in the setup of the encryption scheme.
+/// It plays a crucial role in the noise growth during computations and thereby affects the
+/// overall depth of computation and security. Users should refer to HElib's official documentation
+/// or relevant academic publications for detailed guidelines on selecting `p`.
 ///
 /// # Example
 ///
 /// ```
 /// # use your_crate_name::P;  // Replace `your_crate_name` with the name of your crate
-/// let p = P::new(2).expect("Failed to create P");
-/// assert_eq!(p.to_string(), "2");
+/// let p = P::new(65537).expect("Failed to create P");
+/// assert_eq!(p.to_string(), "65537");
 /// ```
 ///
 #[derive(Debug, PartialEq)]
 pub enum P {
     Some(NonZeroU32),
-    Err(ParseIntError),
+    // Add other variants if needed in the future
+}
+
+#[derive(Debug, Clone)]
+pub struct PError {
+    kind: PErrorKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum PErrorKind {
+    Zero,
+    ParseError(ParseIntError),
 }
 
 impl P {
     /// Attempts to create a `P` variant from a given u32.
-    pub fn new(value: u32) -> Result<Self, ParseIntError> {
-        NonZeroU32::new(value).map_or_else(
-            || P::Err(ParseIntError { kind: std::num::IntErrorKind::Zero }),
-            P::Some,
-        )
+    pub fn new(value: u32) -> Result<Self, PError> {
+        NonZeroU32::new(value)
+            .map(P::Some)
+            .ok_or_else(|| PError { kind: PErrorKind::Zero })
     }
 }
 
 /// Provides a default `P` value.
 impl Default for P {
     fn default() -> Self {
-        P::new(2).unwrap_or_else(|_| panic!("Default value for P should be valid!"))
+        P::new(65537).unwrap_or_else(|_| panic!("Default value for P should be valid!"))
     }
 }
 
-impl std::str::FromStr for P {
-    type Err = ParseIntError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.parse::<u32>() {
-            Ok(val) => Ok(P::new(val)),
-            Err(e) => Ok(P::Err(e)),
+impl From<ParseIntError> for PError {
+    fn from(error: ParseIntError) -> Self {
+        PError {
+            kind: PErrorKind::ParseError(error),
         }
     }
 }
 
-impl fmt::Display for P {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::str::FromStr for P {
+    type Err = PError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parsed = s.parse::<u32>().map_err(PError::from)?;
+
+        NonZeroU32::new(parsed)
+            .map(P::Some)
+            .ok_or(PError { kind: PErrorKind::Zero })
+    }
+}
+
+// Implementing the Display trait for P
+impl core::fmt::Display for P {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             P::Some(value) => write!(f, "{}", value),
-            P::Err(_) => write!(f, "Error parsing 'p'"),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+impl core::fmt::Display for PError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.kind {
+            PErrorKind::Zero => write!(f, "zero is not allowed"),
+            PErrorKind::ParseError(e) => e.fmt(f),
         }
     }
 }
@@ -77,7 +103,7 @@ mod tests {
 
     #[test]
     fn test_valid_p_value() {
-        let p = P::new(2);
+        let p = P::new(65537);
         assert!(matches!(p, Ok(P::Some(_))));
     }
 
@@ -88,16 +114,8 @@ mod tests {
     }
 
     #[test]
-    fn test_out_of_range_p_value() {
-        // This test case may need adjustment, as there's no explicit out-of-range behavior defined.
-        // But keeping it for symmetry with 'm'.
-        let p = P::new(9000);
-        assert!(matches!(p, Ok(P::Some(_)))); // Currently, this is expected to pass.
-    }
-
-    #[test]
-    fn test_negative_p_value() {
-        let p = P::new(-1 as u32); // Casting negative value to u32
-        assert!(matches!(p, Ok(P::Some(_)))); // This is expected to pass because `-1 as u32` results in a valid `u32`.
+    fn test_negative_string_p_value() {
+        let p = "-1".parse::<P>();
+        assert!(matches!(p, Ok(P::Err(_))));
     }
 }

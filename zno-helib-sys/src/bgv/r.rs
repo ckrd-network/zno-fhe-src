@@ -1,67 +1,97 @@
+use std::num::{NonZeroU32, ParseIntError};
 use std::fmt;
-use std::num::ParseIntError;
 
-/// Represents the lifting value `r` in BGV.
+/// Represents the Hensel lifting degree `r` in BGV.
 ///
-/// In the BGV encryption scheme of HElib, the parameter `r` is a small non-negative integer
-/// that indicates the number of times plaintexts are lifted to a larger ring.
-///
-/// The choice of `r` influences:
-/// - The noise growth.
-/// - The computational efficiency.
+/// In HElib's BGV encryption scheme, the parameter `r` typically refers to the Hensel lifting degree.
+/// This parameter affects the encoding of integers into polynomials and plays a crucial role in
+/// the efficiency of operations and the capacity of the ciphertext.
 ///
 /// ## Range in this FFI Implementation:
-/// This FFI implementation accepts values for `r` that can fit within a `u32` type, i.e., between 0 and 4,294,967,295.
+/// This FFI implementation accepts a limited range of values for `r`. Currently, the type
+/// uses `NonZeroU32`. This provides a range between 1 and 4,294,967,295 (both inclusive), excluding the value zero.
 ///
 /// ## Range in HElib:
-/// In HElib, `r` is typically a small value, often between 1 and 3. However, the exact range
-/// might depend on specific computational contexts and application requirements. Users should
-/// refer to HElib's official documentation or relevant publications for detailed guidelines on selecting `r`.
+/// In HElib, the choice of `r` often depends on the desired balance between the complexity of operations
+/// and the noise growth in ciphertexts. Users should refer to HElib's official documentation or relevant
+/// publications for detailed guidelines on selecting `r`.
 ///
 /// # Example
 ///
 /// ```
 /// # use your_crate_name::R;  // Replace `your_crate_name` with the name of your crate
-/// let r = R::new(1).expect("Failed to create R");
-/// assert_eq!(r.to_string(), "1");
+/// let r = R::new(32).expect("Failed to create R");
+/// assert_eq!(r.to_string(), "32");
 /// ```
 ///
 #[derive(Debug, PartialEq)]
 pub enum R {
-    Some(u32),
-    Err(ParseIntError),
+    Some(NonZeroU32),
+    // Add other variants if necessary
+}
+
+#[derive(Debug, Clone)]
+pub struct LiftingDegreeError {
+    kind: LiftingDegreeErrorKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum LiftingDegreeErrorKind {
+    Zero,
+    ParseError(ParseIntError),
 }
 
 impl R {
-    /// Attempts to create an `R` variant from a given u32.
-    pub fn new(value: u32) -> Result<Self, ParseIntError> {
-        Ok(R::Some(value))
+    /// Attempts to create a `R` variant from a given u32.
+    pub fn new(value: u32) -> Result<Self, LiftingDegreeError> {
+        NonZeroU32::new(value)
+            .map(R::Some)
+            .ok_or_else(|| LiftingDegreeError { kind: LiftingDegreeErrorKind::Zero })
     }
 }
 
 /// Provides a default `R` value.
 impl Default for R {
     fn default() -> Self {
-        R::new(1).unwrap()
+        R::new(1).unwrap_or_else(|_| panic!("Default value for R should be valid!"))
     }
 }
 
-impl std::str::FromStr for R {
-    type Err = ParseIntError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.parse::<u32>() {
-            Ok(val) => Ok(R::new(val)),
-            Err(e) => Err(e),
+impl From<ParseIntError> for LiftingDegreeError {
+    fn from(error: ParseIntError) -> Self {
+        LiftingDegreeError {
+            kind: LiftingDegreeErrorKind::ParseError(error),
         }
     }
 }
 
-impl fmt::Display for R {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::str::FromStr for R {
+    type Err = LiftingDegreeError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parsed = s.parse::<u32>().map_err(LiftingDegreeError::from)?;
+
+        NonZeroU32::new(parsed)
+            .map(R::Some)
+            .ok_or(LiftingDegreeError { kind: LiftingDegreeErrorKind::Zero })
+    }
+}
+
+// Implementing the Display trait for R
+impl core::fmt::Display for R {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             R::Some(value) => write!(f, "{}", value),
-            R::Err(_) => write!(f, "Error parsing 'r'"),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+impl core::fmt::Display for LiftingDegreeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.kind {
+            LiftingDegreeErrorKind::Zero => write!(f, "zero is not allowed"),
+            LiftingDegreeErrorKind::ParseError(e) => e.fmt(f),
         }
     }
 }
@@ -71,27 +101,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_valid_r_value() {
-        let r = R::new(1);
+    fn test_valid_lifting_degree_value() {
+        let r = R::new(32);
         assert!(matches!(r, Ok(R::Some(_))));
     }
 
     #[test]
-    fn test_invalid_r_value() {
-        // Given that `r` is defined over all u32 values, there's no specific "invalid" value.
-        // This test is kept for structural consistency but won't demonstrate an invalid case.
+    fn test_invalid_lifting_degree_value() {
+        let r = R::new(0);
+        assert!(matches!(r, Err(_)));
     }
 
     #[test]
-    fn test_large_r_value() {
-        // This test is just to demonstrate that large values of `r` are currently accepted by the type.
-        let r = R::new(1_000_000);
-        assert!(matches!(r, Ok(R::Some(_))));
-    }
-
-    #[test]
-    fn test_negative_r_value() {
-        let r = R::new(-1 as u32); // Casting negative value to u32
-        assert!(matches!(r, Ok(R::Some(_)))); // This is expected to pass because `-1 as u32` results in a valid `u32`.
+    fn test_negative_string_lifting_degree_value() {
+        let r = "-1".parse::<R>();
+        assert!(matches!(r, Err(_)));  // Should not match Ok since negative values are not allowed
     }
 }

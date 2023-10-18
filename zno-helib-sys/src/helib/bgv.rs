@@ -9,7 +9,7 @@ use cxx::UniquePtr;
 // use super::bgv::*;
 
 #[cxx::bridge(namespace="helib")]
-mod ffi {
+pub mod ffi {
 
     unsafe extern "C++" {
         include!("zno-helib-sys/ffi/ffi_wrapper.h");
@@ -155,7 +155,7 @@ impl Context {
     // Create a new instance of the C++ object.
     // This is safe because we're not exposing the inner pointer directly.
     // Logic specific to the HElib implementation belongs here.
-    pub fn new() -> Self {
+    pub fn new(params: &mut crate::bgv::BGVParams) -> Self {
         let cb = BGVContextBuilder::new();
         // Build BGV context. Consume the instance of BGVContextBuilder.
         // return a UniquePtr<ffi::Context>

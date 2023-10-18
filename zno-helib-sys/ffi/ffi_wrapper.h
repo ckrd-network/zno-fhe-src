@@ -15,14 +15,14 @@
 #include <helib/Context.h>
 
 #include <rust/cxx.h>
-    std::unique_ptr<helib::Context> create_bgv_context_wrapper(
-        uint64_t m,
-        uint64_t p,
-        uint64_t r,
-        uint64_t bits,
-        const rust::cxxbridge1::Vec<long int>& gens,
-        const rust::cxxbridge1::Vec<long int>& ords
-    );
+    // std::unique_ptr<helib::Context> create_bgv_context_wrapper(
+    //     uint64_t m,
+    //     uint64_t p,
+    //     uint64_t r,
+    //     uint64_t bits,
+    //     const rust::cxxbridge1::Vec<long int>& gens,
+    //     const rust::cxxbridge1::Vec<long int>& ords
+    // );
 namespace helib {
 
     // Declare the type alias in the helib namespace after including the ContextBuilder definition.
@@ -32,6 +32,8 @@ namespace helib {
 
     std::unique_ptr<::helib::BGVContextBuilder> new_bgv_builder();
     std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, int32_t m);
+    std::unique_ptr<::helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder); // This function will now return a new Context pointer
+    
     BGVContextBuilder& set_p(BGVContextBuilder& builder, long p);
     BGVContextBuilder& set_r(BGVContextBuilder& builder, long r);
     // ... Other setter functions ...
@@ -43,9 +45,6 @@ namespace helib {
     BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec);
     BGVContextBuilder& set_thickboot(BGVContextBuilder& builder);
     void set_thinboot(BGVContextBuilder& builder);
-
-    Context* build_ptr(BGVContextBuilder& builder); // This function will now return a new Context pointer
-
 
 }  // namespace helib
 

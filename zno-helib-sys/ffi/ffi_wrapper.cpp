@@ -36,6 +36,14 @@ namespace helib {
         return builder; // Return the unique_ptr.
     }
 
+    std::unique_ptr<helib::Context> build_ptr(BGVContextBuilder& builder) {
+        // buildPtr() returns a raw Context* that we need to manage
+        helib::Context* raw_ptr = builder.buildPtr();
+        // Construct a unique_ptr to take ownership of the Context
+        // This ensures the Context will be deleted when the unique_ptr is destroyed
+        return std::unique_ptr<helib::Context>(raw_ptr);
+    }
+
     BGVContextBuilder& set_p(BGVContextBuilder& builder, long p) {
         builder.p(p);
         return builder;
@@ -87,11 +95,6 @@ namespace helib {
     void set_thinboot(BGVContextBuilder& builder) {
         builder.thinboot();
         // return builder;
-    }
-
-    Context* build_ptr(BGVContextBuilder& builder) {
-        // Assumes buildPtr() returns a Context*
-        return builder.buildPtr();
     }
 
 }  // namespace helib_wrapper

@@ -9,6 +9,9 @@ use super::mvec::Mvec;
 use super::bootstrappable::Bootstrappable;
 use std::fmt;
 
+#[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
+compile_error!("You must enable one of the features: `helib` or `openfhe` or `seal`");
+
 /// Represents the complete set of BGV parameters as used by HElib.
 ///
 /// The BGV encryption scheme is versatile, with various parameters affecting its
@@ -81,8 +84,6 @@ use std::fmt;
 ///
 
 
-use std::fmt;
-
 /// BGVParams encapsulates all the parameters required for the BGV scheme in HElib.
 ///
 /// The BGV encryption scheme is versatile, with various parameters affecting its
@@ -122,6 +123,7 @@ pub struct BGVParams {
     pub gens: Gens,
     pub ords: Ords,
     pub mvec: Mvec,
+    pub bootstrap: Bootstrap,
     pub bootstrappable: Bootstrappable,
 }
 
@@ -133,31 +135,27 @@ impl fmt::Display for BGVParams {
 }
 
 impl BGV {
-    pub fn context(&self) -> ffi::UniquePtr<ffi::Context> {
-        let gens = ffi::convert_to_vec(&self.gens);
-        let ords = ffi::convert_to_vec(&self.ords);
-
-        ffi::create_bgv_context(
-            self.m.value() as u64, // assuming method value() returns the internal value
-            self.p.value() as u64,
-            self.r.value() as u64,
-            gens,
-            ords,
-        )
+    #[cfg(feature = "helib")]
+    pub fn context(&self) -> ffi::UniquePtr<helib::ffi::Context> {
+        crate::helib::Context::new(self)
     }
-
-    // pub fn to_generic_context(&self, mparams: Option<ModChainParams>, bparams: Option<BootStrapParams>) -> ffi::UniquePtr<ffi::Context> {
-    //     let gens = ffi::convert_to_vec(&self.gens);
-    //     let ords = ffi::convert_to_vec(&self.ords);
-
-    //     ffi::create_generic_context(
-    //         self.m.value() as i64,
-    //         self.p.value() as i64,
-    //         self.r.value() as i64,
-    //         gens,
-    //         ords,
-    //         mparams,
-    //         bparams,
-    //     )
-    // }
+    #[cfg(feature = "openfhe")]
+    pub fn context(&self) -> ffi::UniquePtr<openfhe::ffi::Context> {
+        todo!();
+    }
+    #[cfg(feature = "seal")]
+    pub fn context(&self) -> ffi::UniquePtr<seal::ffi::Context> {
+        todo!();
+    }
 }
+
+// {
+//   "m": 4096,
+//   "p": 2,
+//   "r": 1,
+//   "c": 2,
+//   "bits": 300,
+//   "bootstrap": "none"
+// }
+// { "m": 4096, "p": 2, "r": 1, "c": 2, "bits": 300, "bootstrap": "none" }
+// {"m":4096,"p":2,"r":1,"c":2,"bits":300,"bootstrap":"none"}

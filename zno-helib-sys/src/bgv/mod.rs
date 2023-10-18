@@ -7,6 +7,7 @@ mod bits;
 mod gens;
 mod ords;
 mod mvec;
+mod bootstrap;
 mod bootstrappable;
 mod bgv_params;
 
@@ -19,5 +20,6 @@ pub use bits::Bits;
 pub use gens::Gens;
 pub use ords::Ords;
 pub use mvec::Mvec;
+pub use bootstrap::Bootstrap;
 pub use bootstrappable::Bootstrappable;
 pub use bgv_params::BGVParams;

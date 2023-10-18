@@ -55,7 +55,10 @@ mockall.workspace = true
 proptest.workspace = true
 
 [features]
-default = ['vendored']
+default = ['helib']
+helib = []
+openfhe = []
+seal = []
 autocxx = []
 vendored = []
 

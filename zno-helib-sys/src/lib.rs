@@ -1,5 +1,5 @@
 pub mod prelude;
-mod zno;
+mod helib;
 
 // use autocxx::prelude::*; // use all the main autocxx functions
 
@@ -9,6 +9,6 @@ mod zno;
 //     #include "helib/ArgMap.h"
 //     safety!(unsafe_ffi) // see details of unsafety policies described in the 'safety' section of the book
 //     // generate_ns!("helib") // add this line for each function or type you wish to generate
-//     // generate!("helib::Context") // zno-helib-sys/src/cxx-bridge/context.rs
-//     generate!("helib::ArgMap") // zno-helib-sys/src/cxx-bridge/arg_map.rs
+//     // generate!("helib::Context") // zno-helib-sys/src/helib/bgv.rs
+//     generate!("helib::ArgMap") // zno-helib-sys/src/helib/arg_map.rs
 // }

@@ -6,8 +6,9 @@ use super::bits::Bits;
 use super::gens::Gens;
 use super::ords::Ords;
 use super::mvec::Mvec;
+use super::bootstrap::Bootstrap;
 use super::bootstrappable::Bootstrappable;
-use std::fmt;
+use core::fmt;
 
 #[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
 compile_error!("You must enable one of the features: `helib` or `openfhe` or `seal`");
@@ -127,25 +128,30 @@ pub struct BGVParams {
     pub bootstrappable: Bootstrappable,
 }
 
-impl fmt::Display for BGVParams {
+impl core::fmt::Display for BGVParams {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "BGVParams(m={}, p={}, r={}, c={}, bits={}, gens={}, ords={}, mvec={}, bootstrappable={})",
                self.m, self.p, self.r, self.c, self.bits, self.gens, self.ords, self.mvec, self.bootstrappable)
     }
 }
 
-impl BGV {
+impl BGVParams {
     #[cfg(feature = "helib")]
-    pub fn context(&self) -> ffi::UniquePtr<helib::ffi::Context> {
-        crate::helib::Context::new(self)
+    pub fn context(&mut self) -> crate::bgv::Context {
+        // Note: the `inner` attribute contains cxx::UniquePtr<crate::helib::bgv::ffi::Context>
+        crate::helib::bgv::Context::new(self)
     }
     #[cfg(feature = "openfhe")]
-    pub fn context(&self) -> ffi::UniquePtr<openfhe::ffi::Context> {
+    pub fn context(&self) -> crate::bgv::Context {
         todo!();
+        // Note: the `inner` attribute contains cxx::UniquePtr<crate::openfhe::Context>
+        crate::openfhe::Context::new(self)
     }
     #[cfg(feature = "seal")]
-    pub fn context(&self) -> ffi::UniquePtr<seal::ffi::Context> {
+    pub fn context(&self) -> crate::bgv::Context {
         todo!();
+        // Note: the `inner` attribute contains cxx::UniquePtr<crate::seal::Context>
+        crate::seal::Context::new(self)
     }
 }
 

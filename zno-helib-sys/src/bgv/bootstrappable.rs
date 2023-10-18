@@ -1,5 +1,5 @@
 use std::fmt;
-use std::str::FromStr;
+use core::str::FromStr;
 
 /// Represents the `bootstrappable` parameter in BGV.
 ///
@@ -33,7 +33,7 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq)]
 pub enum Bootstrappable {
     Some(bool),
-    Err(String),  // Simple error variant for any potential parsing errors.
+    Error(String),  // Simple error variant for any potential parsing errors.
 }
 
 impl Bootstrappable {
@@ -47,19 +47,19 @@ impl fmt::Display for Bootstrappable {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Bootstrappable::Some(value) => write!(f, "{}", value),
-            Bootstrappable::Err(e) => write!(f, "Error: {}", e),
+            Bootstrappable::Error(e) => write!(f, "Error: {}", e),
         }
     }
 }
 
-impl FromStr for Bootstrappable {
+impl core::str::FromStr for Bootstrappable {
     type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, <Self as FromStr>::Err> {
         match s.trim().to_lowercase().as_str() {
             "true" => Ok(Bootstrappable::Some(true)),
             "false" => Ok(Bootstrappable::Some(false)),
-            _ => Ok(Bootstrappable::Err(format!("Invalid value for Bootstrappable: {}", s))),
+            _ => Ok(Bootstrappable::Error(format!("Invalid value for Bootstrappable: {}", s))),
         }
     }
 }
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn test_invalid_string_bootstrappable_value() {
         let boot_flag = "maybe".parse::<Bootstrappable>();
-        assert!(matches!(boot_flag, Ok(Bootstrappable::Err(_))));
+        assert!(matches!(boot_flag, Ok(Bootstrappable::Error(_))));
     }
 
     #[test]

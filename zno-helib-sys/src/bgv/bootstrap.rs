@@ -46,8 +46,8 @@ pub enum Bootstrap {
     Error(String), // Error variant to handle parsing errors.
 }
 
-impl fmt::Display for Bootstrap {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for Bootstrap {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Bootstrap::None => write!(f, "None"),
             Bootstrap::Thick => write!(f, "Thick"),
@@ -57,7 +57,7 @@ impl fmt::Display for Bootstrap {
     }
 }
 
-impl FromStr for Bootstrap {
+impl core::str::FromStr for Bootstrap {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

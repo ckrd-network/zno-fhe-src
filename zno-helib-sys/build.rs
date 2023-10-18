@@ -53,7 +53,7 @@ fn main() -> miette::Result<()> {
     //     .expect("Failed to compile ffi_wrapper.cpp");
 
     // // Generate Rust bindings using cxx_build
-    // cxx_build::bridge("src/cxx-bridges/context.rs")
+    // cxx_build::bridge("src/helib/bgv.rs")
     //     .file(cpp_source.to_string_lossy())  // Include the necessary C++ source files
     //     .flag_if_supported("-std=c++17")
     //     .compile("ffi_wrapper");
@@ -77,7 +77,7 @@ fn main() -> miette::Result<()> {
     // It is used to link the Rust code with the upstream C++ code.
     let path: PathBuf = cpp_source.to_string_lossy().into_owned().into();
     println!("cargo:warning=This is a test 1");
-    let mut cc_build = cxx_build::bridge("src/cxx-bridges/context.rs");
+    let mut cc_build = cxx_build::bridge("src/helib/bgv.rs");
     // Include the directory where cxx generates the cxxbridge sources.
     // This directory will contain the rust/cxx.h header.
     println!("cargo:warning=This is a test 2");
@@ -91,7 +91,7 @@ fn main() -> miette::Result<()> {
             // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include")
             // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib")
             .flag_if_supported("-std=c++17")
-            .compile("cxx-bridge-context"); // compile cxx generated bindings
+            .compile("helib-context"); // compile cxx generated bindings
 
     println!("cargo:rerun-if-changed=src/lib.rs");
     println!("cargo:rerun-if-changed=ffi/helib/helib.h");

@@ -1,12 +1,12 @@
-use cxx::UniquePtr;
-use std::os::raw::c_long;
-use cxx::rust::String;
-use std::convert::TryInto;
+use core::pin::Pin;
+use core::fmt;
 use cxx::CxxString;
 use cxx::CxxVector;
-use std::ffi::CStr;
+use cxx::UniquePtr;
+// use std::convert::TryInto;
+
 // Import the BGV struct and its fields
-use super::bgv::*;
+// use super::bgv::*;
 
 #[cxx::bridge(namespace="helib")]
 mod ffi {
@@ -21,7 +21,7 @@ mod ffi {
 
         // Representations of the C++ ContextBuilder methods in Rust.
         // Assuming the builder methods don't need parameters from Rust.
-        // fn build(self: &BGVContextBuilder) -> UniquePtr<Context>;
+        // fn build(self: &BGVContextBuilder) -> UniquePtr<bgv::ffi::Context>;
 
         // fn makeBGVContextBuilder() -> UniquePtr<BGVContextBuilder>;
 
@@ -32,7 +32,7 @@ mod ffi {
         fn new_bgv_builder() -> UniquePtr<BGVContextBuilder>;
         fn set_m(builder: UniquePtr<BGVContextBuilder>, m: i32) -> UniquePtr<BGVContextBuilder>;
 
-        // fn build_ptr(builder: Pin<&mut BGVContextBuilder>) -> UniquePtr<Context>;
+        fn build_ptr(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
         // fn is_bootstrappable(builder: Pin<&mut BGVContextBuilder>, flag: bool);
         // fn set_bits(builder: Pin<&mut BGVContextBuilder>, bits: i64);
         // fn set_c(builder: Pin<&mut BGVContextBuilder>, c: i64);
@@ -47,31 +47,16 @@ mod ffi {
 
     }
 
-    // External Rust functions, used to convert Rust types into types that can be used in C++:
-    extern "Rust" {
-        fn convert_to_vec(s: &str) -> Vec<i64>;
-    }
+    // // External Rust functions, used to convert Rust types into types that can be used in C++:
+    // extern "Rust" {
+    //     fn convert_to_vec(s: &str) -> Vec<i64>;
+    // }
 }
 
-// This part should be outside of the `mod ffi` block
-unsafe impl cxx::ExternType for ffi::BGVContextBuilder {
-    type Id = cxx::type_id!("BGVContextBuilder");
-    type Kind = cxx::kind::Trivial;
-}
-
-pub fn make_context_builder() -> cxx::UniquePtr<ffi::BGVContextBuilder> {
-    ffi::makeBGVContextBuilder()
-}
-
-pub fn build_context(builder: Pin<&mut BGVContextBuilder>) -> UniquePtr<ffi::Context> {
-    // This call is safe because it transfers ownership of the Context
-    // to the UniquePtr, which ensures it will be cleaned up correctly.
-    ffi::build_ptr(builder)
-}
-
+// Logic specific to the HElib implementation belongs here.
 pub struct BGVContextBuilder {
-    // Holds the actual C++ object
-    inner: ffi::UniquePtr<ffi::BGVContextBuilder>,
+    // Holds a pointer to the C++ object
+    inner: UniquePtr<ffi::BGVContextBuilder>,
 }
 
 impl BGVContextBuilder {
@@ -82,6 +67,14 @@ impl BGVContextBuilder {
         }
     }
 
+    // Note: This consumes the BGVContextBuilder instance when
+    // `cb.build()` is called, so you won't be able to use it afterward.
+    pub fn build(self) -> UniquePtr<ffi::Context> {
+        // This call is safe because it transfers ownership of the Context
+        // to the UniquePtr, which ensures it will be cleaned up correctly.
+        ffi::build_ptr(self.inner)
+    }
+
     // Sets the `m` parameter and enables method chaining
     pub fn set_m(mut self, m: i32) -> Self {
         self.inner = ffi::set_m(self.inner, m);
@@ -90,10 +83,6 @@ impl BGVContextBuilder {
 
     // Similarly, implement other setters following the same pattern...
 
-    // When you're done building
-    pub fn build(self) -> ffi::UniquePtr<ffi::BGVContextBuilder> {
-        self.inner
-    }
 }
 
 
@@ -147,17 +136,14 @@ impl BGVContextBuilder {
 ///
 /// Define the Rust struct to represent the C++ Context class
 
-struct Context {
-    // Fields matching the C++ constructor arguments
-    m: c_long,
-    p: c_long,
-    r: c_long,
-    bits: c_long,
-    gens: &Vec<c_long>,
-    ords: &Vec<c_long>,
+pub struct Context {
+    // This holds a pointer to the C++ object.
+    // UniquePtr ensures proper destruction, preventing memory leaks.
+    inner: UniquePtr<ffi::Context>,
 }
 
-// Define methods for the Rust Context struct
+// Define methods for the Rust struct helib::Context.
+// Logic specific to the HElib implementation belongs here.
 impl Context {
 
     pub fn convert_to_vec(s: &str) -> Vec<i64> {
@@ -166,28 +152,21 @@ impl Context {
             .collect()
     }
 
-    // Create Rust functions to create BGV contexts using FFI
-    pub fn create_bgv_context_default() -> UniquePtr<Context> {
-        ffi::create_context_default()
+    // Create a new instance of the C++ object.
+    // This is safe because we're not exposing the inner pointer directly.
+    // Logic specific to the HElib implementation belongs here.
+    pub fn new() -> Self {
+        let cb = BGVContextBuilder::new();
+        // Build BGV context. Consume the instance of BGVContextBuilder.
+        // return a UniquePtr<ffi::Context>
+        let inner = cb.build();
+        Self { inner }
     }
+}
 
-    // Define a method to create a Context instance using one constructor
-    pub fn create_bgv_context(bgvs: BGV) -> UniquePtr<Context> {
-        let gens_vec: Vec<i64> = bgvs.gens.iter().cloned().collect();
-        let ords_vec: Vec<i64> = bgvs.ords.iter().cloned().collect();
-
-        let cntxt = ffi::helib::create_bgv_context_wrapper(bgvs.m, bgvs.p, bgvs.r, bgvs.bits, &gens_vec, &ords_vec);
-        cntxt
+// Implement Display for printing, debugging, etc.
+impl fmt::Display for Context {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Context") // Or however you want this to appear
     }
-
-    // pub fn create_bgv_context_params_extended(bgvs: BGV, mparams: Option<ModChainParams>, bparams: Option<BootStrapParams>) -> UniquePtr<Context> {
-    //     let gens_vec: Vec<i64> = bgvs.gens.iter().cloned().collect();
-    //     let ords_vec: Vec<i64> = bgvs.ords.iter().cloned().collect();
-
-    //     ffi::create_context_params_extended(bgvs.m, bgvs.p, bgvs.r, gens_vec, ords_vec, mparams, bparams)
-    // }
-
-    // pub fn create_bgv_context_serializable(content: SerializableContent) -> UniquePtr<Context> {
-    //     ffi::create_context_serializable(content)
-    // }
 }

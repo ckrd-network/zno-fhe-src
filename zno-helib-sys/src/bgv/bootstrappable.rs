@@ -1,20 +1,33 @@
 use std::fmt;
 use core::str::FromStr;
 
-/// Represents the `bootstrappable` parameter in BGV.
+/// Represents the bootstrapping capability status in the BGV scheme.
 ///
 /// In the BGV encryption scheme as implemented by HElib, the `bootstrappable` parameter indicates
-/// whether the created context supports bootstrapping. Bootstrapping is a fundamental operation
-/// in homomorphic encryption schemes that helps in reducing the noise of ciphertexts, allowing
-/// more operations to be performed on encrypted data without the need for decryption.
+/// whether the created context has been configured for bootstrapping.
+/// Bootstrapping is a crucial operation in homomorphic encryption, allowing the noise
+/// reduction in ciphertexts and enabling more computations on encrypted data without decryption.
 ///
-/// Setting this flag ensures that the created context is equipped to handle bootstrapping. This
-/// might involve setting additional parameters and structures in the underlying implementation.
+/// This enum reflects the state of bootstrapping capability:
+/// - `Enabled`: The context is configured to support bootstrapping. Additional parameters and structures in the underlying implementation have been set.
+/// - `Disabled`: The context does not support bootstrapping.
+/// - `None`: No explicit setting provided, the context has not been configured.  Generally this means the logic associated with the `Bootstrap` parameter has not been invoked.
 ///
-/// # Errors
+/// ## Usage in this FFI Implementation:
 ///
-///   - No specific errors. This type just represents a boolean flag indicating if bootstrapping
-///     is enabled or not.
+/// This FFI implementation uses a boolean to indicate the `bootstrappable` state.
+/// Where `true` indicates that the scheme is setup to be bootstrappable, and `false` indicates that it is not.
+///
+/// ## Usage in HElib:
+///
+/// Bootstrapping in HElib is an advanced feature that requires careful configuration.
+/// Users should refer to HElib's official documentation or relevant publications for detailed guidelines on using bootstrapping.
+///
+/// ## Errors
+///
+/// Errors can occur when trying to create a `Bootstrappable` from a string. The operation
+/// might fail if the input string does not correctly describe a bootstrapping state.
+///
 ///
 /// # Panic
 ///
@@ -22,45 +35,80 @@ use core::str::FromStr;
 /// error will cause a panic. It's recommended to handle errors gracefully using pattern matching or methods
 /// like `is_ok()` and `is_err()` before unwrapping.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```
-/// # use your_crate_name::Bootstrappable;  // Replace `your_crate_name` with the name of your crate
-/// let boot_flag = Bootstrappable::new(true).expect("Failed to create Bootstrappable");
-/// assert_eq!(boot_flag.to_string(), "true");
+/// # use your_crate_name::Bootstrappable; // Replace `your_crate_name` with the name of your crate
+/// let bootstrappable = Bootstrappable::new("enabled").expect("Invalid state");
+/// assert_eq!(bootstrappable, Bootstrappable::Enabled);
 /// ```
 ///
 #[derive(Debug, PartialEq)]
 pub enum Bootstrappable {
-    Some(bool),
-    Error(String),  // Simple error variant for any potential parsing errors.
+    None,
+    Enabled,
+    Disabled,
 }
 
+#[derive(Debug, Clone)]
+pub struct BootstrappableError {
+    pub kind: BootstrappableErrorKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum BootstrappableErrorKind {
+    InvalidString(String),
+    // other kinds of errors can be added here
+}
+
+impl fmt::Display for BootstrappableError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self.kind {
+            BootstrappableErrorKind::InvalidString(s) =>
+                write!(f, "Invalid string for Bootstrappable: {}", s),
+            // handle other errors here
+        }
+    }
+}
+
+impl std::error::Error for BootstrappableError {}
+
 impl Bootstrappable {
-    /// Create a `Bootstrappable` variant from a given boolean.
-    pub fn new(value: bool) -> Self {
-        Bootstrappable::Some(value)
+    /// Creates a new `Bootstrappable` instance from a string representation.
+    /// The string can be "none", "enabled", or "disabled" (case-insensitive).
+    pub fn new(s: &str) -> Result<Self, BootstrappableError> {
+        match s.to_lowercase().as_str() {
+            "none" => Ok(Bootstrappable::None),
+            "enabled" => Ok(Bootstrappable::Enabled),
+            "disabled" => Ok(Bootstrappable::Disabled),
+            _ => Err(BootstrappableError {
+                kind: BootstrappableErrorKind::InvalidString(s.to_string())
+            }),
+        }
+    }
+}
+
+impl Default for Bootstrappable {
+    fn default() -> Self {
+        Bootstrappable::None
+    }
+}
+
+impl FromStr for Bootstrappable {
+    type Err = BootstrappableError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Bootstrappable::new(s)
     }
 }
 
 impl fmt::Display for Bootstrappable {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Bootstrappable::Some(value) => write!(f, "{}", value),
-            Bootstrappable::Error(e) => write!(f, "Error: {}", e),
-        }
-    }
-}
-
-impl core::str::FromStr for Bootstrappable {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, <Self as FromStr>::Err> {
-        match s.trim().to_lowercase().as_str() {
-            "true" => Ok(Bootstrappable::Some(true)),
-            "false" => Ok(Bootstrappable::Some(false)),
-            _ => Ok(Bootstrappable::Error(format!("Invalid value for Bootstrappable: {}", s))),
-        }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self {
+            Bootstrappable::None => "none",
+            Bootstrappable::Enabled => "enabled",
+            Bootstrappable::Disabled => "disabled",
+        })
     }
 }
 
@@ -70,19 +118,21 @@ mod tests {
 
     #[test]
     fn test_valid_bootstrappable_value() {
-        let boot_flag = Bootstrappable::new(true);
-        assert_eq!(boot_flag, Bootstrappable::Some(true));
+        let bootstrappable = Bootstrappable::new("enabled").unwrap();
+        assert_eq!(bootstrappable.to_string(), "enabled");
     }
 
     #[test]
     fn test_invalid_string_bootstrappable_value() {
-        let boot_flag = "maybe".parse::<Bootstrappable>();
-        assert!(matches!(boot_flag, Ok(Bootstrappable::Error(_))));
+        let bootstrappable = "not valid".parse::<Bootstrappable>();
+        assert!(bootstrappable.is_err());
     }
 
     #[test]
     fn test_valid_string_bootstrappable_value() {
-        let boot_flag = "true".parse::<Bootstrappable>();
-        assert!(matches!(boot_flag, Ok(Bootstrappable::Some(true))));
+        let bootstrappable = "disabled".parse::<Bootstrappable>().unwrap();
+        assert_eq!(bootstrappable, Bootstrappable::Disabled);
     }
+
+    // Additional tests for new functionality and error handling should be added here.
 }

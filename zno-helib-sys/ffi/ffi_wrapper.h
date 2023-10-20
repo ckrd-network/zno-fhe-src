@@ -31,9 +31,9 @@ namespace helib {
     std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec);
 
     std::unique_ptr<::helib::BGVContextBuilder> new_bgv_builder();
-    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, int32_t m);
+    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m);
     std::unique_ptr<::helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder); // This function will now return a new Context pointer
-    
+
     BGVContextBuilder& set_p(BGVContextBuilder& builder, long p);
     BGVContextBuilder& set_r(BGVContextBuilder& builder, long r);
     // ... Other setter functions ...

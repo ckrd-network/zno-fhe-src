@@ -31,22 +31,22 @@ pub enum R {
 }
 
 #[derive(Debug, Clone)]
-pub struct LiftingDegreeError {
-    kind: LiftingDegreeErrorKind,
+pub struct RError {
+    kind: RErrorKind,
 }
 
 #[derive(Debug, Clone)]
-pub enum LiftingDegreeErrorKind {
+pub enum RErrorKind {
     Zero,
     ParseError(ParseIntError),
 }
 
 impl R {
     /// Attempts to create a `R` variant from a given u32.
-    pub fn new(value: u32) -> Result<Self, LiftingDegreeError> {
+    pub fn new(value: u32) -> Result<Self, RError> {
         NonZeroU32::new(value)
             .map(R::Some)
-            .ok_or_else(|| LiftingDegreeError { kind: LiftingDegreeErrorKind::Zero })
+            .ok_or_else(|| RError { kind: RErrorKind::Zero })
     }
 }
 
@@ -57,23 +57,23 @@ impl Default for R {
     }
 }
 
-impl From<ParseIntError> for LiftingDegreeError {
+impl From<ParseIntError> for RError {
     fn from(error: ParseIntError) -> Self {
-        LiftingDegreeError {
-            kind: LiftingDegreeErrorKind::ParseError(error),
+        RError {
+            kind: RErrorKind::ParseError(error),
         }
     }
 }
 
 impl core::str::FromStr for R {
-    type Err = LiftingDegreeError;
+    type Err = RError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parsed = s.parse::<u32>().map_err(LiftingDegreeError::from)?;
+        let parsed = s.parse::<u32>().map_err(RError::from)?;
 
         NonZeroU32::new(parsed)
             .map(R::Some)
-            .ok_or(LiftingDegreeError { kind: LiftingDegreeErrorKind::Zero })
+            .ok_or(RError { kind: RErrorKind::Zero })
     }
 }
 
@@ -87,11 +87,11 @@ impl core::fmt::Display for R {
     }
 }
 
-impl core::fmt::Display for LiftingDegreeError {
+impl core::fmt::Display for RError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.kind {
-            LiftingDegreeErrorKind::Zero => write!(f, "zero is not allowed"),
-            LiftingDegreeErrorKind::ParseError(e) => e.fmt(f),
+            RErrorKind::Zero => write!(f, "zero is not allowed"),
+            RErrorKind::ParseError(e) => e.fmt(f),
         }
     }
 }

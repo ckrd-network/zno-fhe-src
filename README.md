@@ -49,10 +49,12 @@ To generate the FFI bindings in the system crate
 target=x86_64-unknown-linux-gnu
 sys_dir="$(pwd)/zno-helib-sys"
 
-RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv &>>log-sys.txt
+RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv &>>cargo-build-sys.txt
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
-cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-expand.txt
-cargo test --test ffi-context-bgv --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-test.txt
+cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-expand-sys.txt
+
+export LD_LIBRARY_PATH="$(pwd)/zno-helib-sys/src/helib_pack/lib:$LD_LIBRARY_PATH"
+cargo test --test ffi-context-bgv --features "helib" --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-test-sys.txt
 ```
 
 #### Test

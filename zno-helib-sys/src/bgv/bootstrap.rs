@@ -1,4 +1,6 @@
 use std::default::Default;
+use std::fmt;
+use std::str::FromStr;
 
 /// Represents the bootstrapping mode in the BGV scheme as implemented in HElib.
 ///
@@ -18,6 +20,8 @@ use std::default::Default;
 /// bootstrapping process (dictated by cryptographic parameters and available resources) and the balance
 /// between computational cost and accuracy in applications.
 ///
+/// Users should refer to HElib's official documentation or relevant publications for detailed guidelines on selecting `bootstrap`.
+///
 /// # Errors
 ///
 /// This enum's methods do not return `Err` values in a `Result`, as parsing simply yields an `Error` variant
@@ -33,39 +37,79 @@ use std::default::Default;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Bootstrap;  // Replace `your_crate_name` with the actual name of your crate
-/// let mode = Bootstrap::Thick;
-/// assert_eq!(mode, Bootstrap::Thick);
+/// # use your_crate_name::Bootstrap; // Replace `your_crate_name` with the name of your crate
+/// let bootstrap = Bootstrap::from_str("thin").expect("Failed to create Bootstrap");
+/// assert_eq!(bootstrap.to_string(), "thin");
+/// assert!(matches!(bootstrap, Ok(Bootstrap::Thin)));
 /// ```
 ///
 #[derive(Debug, PartialEq)]
 pub enum Bootstrap {
     None,
-    Thick,
     Thin,
-    Error(String), // Error variant to handle parsing errors.
+    Thick,
 }
 
-impl core::fmt::Display for Bootstrap {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match self {
-            Bootstrap::None => write!(f, "None"),
-            Bootstrap::Thick => write!(f, "Thick"),
-            Bootstrap::Thin => write!(f, "Thin"),
-            Bootstrap::Error(err) => write!(f, "Error: {}", err),
+#[derive(Debug, Clone)]
+pub struct BootstrapError;
+
+impl fmt::Display for BootstrapError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid value for bootstrap. Valid values are: 'none', 'thick', 'thin'.")
+    }
+}
+
+impl std::error::Error for BootstrapError {}
+
+impl Bootstrap {
+    /// Creates a new `Bootstrap` from a string slice.
+    ///
+    /// # Arguments
+    ///
+    /// * `s` - A string slice that holds the name of the variant
+    ///
+    /// # Returns
+    ///
+    /// * `Result` - `Ok` if the string corresponds to a known variant,
+    ///   `Err` otherwise.
+    pub fn new(s: &str) -> Result<Self, String> {
+        match s.to_lowercase().as_str() {
+            "none" => Ok(Bootstrap::None),
+            "thin" => Ok(Bootstrap::Thin),
+            "thick" => Ok(Bootstrap::Thick),
+            _ => Err(format!("'{}' is not a valid variant of Bootstrap", s)),
         }
     }
 }
 
-impl core::str::FromStr for Bootstrap {
-    type Err = String;
+impl FromStr for Bootstrap {
+    type Err = BootstrapError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.trim().to_lowercase().as_str() {
+        match s {
             "none" => Ok(Bootstrap::None),
-            "thick" => Ok(Bootstrap::Thick),
             "thin" => Ok(Bootstrap::Thin),
-            _ => Ok(Bootstrap::Error(format!("Invalid value for Bootstrap: {}", s))),
+            "thick" => Ok(Bootstrap::Thick),
+            _ => Err(BootstrapError),
+        }
+    }
+}
+
+// Implementing the Default trait for Bootstrap
+impl Default for Bootstrap {
+    /// Provides a default value for the Bootstrap type, which is `Bootstrap::Thick`.
+    fn default() -> Self {
+        Bootstrap::Thick
+    }
+}
+
+// Implementing the Display trait for Bootstrap
+impl fmt::Display for Bootstrap {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Bootstrap::None => write!(f, "none"),
+            Bootstrap::Thin => write!(f, "thin"),
+            Bootstrap::Thick => write!(f, "thick"),
         }
     }
 }
@@ -75,18 +119,55 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_display() {
-        assert_eq!(Bootstrap::None.to_string(), "None");
-        assert_eq!(Bootstrap::Thick.to_string(), "Thick");
-        assert_eq!(Bootstrap::Thin.to_string(), "Thin");
-        assert_eq!(Bootstrap::Error("Invalid".to_string()).to_string(), "Error: Invalid");
+    fn test_valid_bootstrap_values() {
+        let none = Bootstrap::from_str("none");
+        let thin = Bootstrap::from_str("thin");
+        let thick = Bootstrap::from_str("thick");
+
+        assert!(matches!(none, Ok(Bootstrap::None)));
+        assert!(matches!(thin, Ok(Bootstrap::Thin)));
+        assert!(matches!(thick, Ok(Bootstrap::Thick)));
     }
 
     #[test]
-    fn test_from_str() {
-        assert_eq!("None".parse(), Ok(Bootstrap::None));
-        assert_eq!("Thick".parse(), Ok(Bootstrap::Thick));
-        assert_eq!("Thin".parse(), Ok(Bootstrap::Thin));
-        assert_eq!("Invalid".parse::<Bootstrap>(), Ok(Bootstrap::Error("Invalid value for Bootstrap: Invalid".to_string())));
+    fn test_invalid_bootstrap_value() {
+        let bootstrap = Bootstrap::from_str("invalid");
+        assert!(matches!(bootstrap, Err(_)));
+    }
+
+    #[test]
+    fn test_default_bootstrap() {
+        // It should create a Bootstrap::Thick by default.
+        let default_bootstrap: Bootstrap = Default::default();
+        assert_eq!(default_bootstrap, Bootstrap::Thick);
+    }
+
+        #[test]
+    fn test_bootstrap_new_none() {
+        let bootstrap = Bootstrap::new("none").unwrap();
+        assert_eq!(bootstrap, Bootstrap::None);
+    }
+
+    #[test]
+    fn test_bootstrap_new_thin() {
+        let bootstrap = Bootstrap::new("thin").unwrap();
+        assert_eq!(bootstrap, Bootstrap::Thin);
+    }
+
+    #[test]
+    fn test_bootstrap_new_thick() {
+        let bootstrap = Bootstrap::new("thick").unwrap();
+        assert_eq!(bootstrap, Bootstrap::Thick);
+    }
+
+    #[test]
+    fn test_bootstrap_new_case_insensitive() {
+        let bootstrap = Bootstrap::new("ThIn").unwrap();
+        assert_eq!(bootstrap, Bootstrap::Thin);
+    }
+
+    #[test]
+    fn test_bootstrap_new_invalid() {
+        assert!(Bootstrap::new("invalid").is_err());
     }
 }

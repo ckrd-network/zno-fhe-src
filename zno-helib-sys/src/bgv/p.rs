@@ -38,8 +38,9 @@ pub struct PError {
 
 #[derive(Debug, Clone)]
 pub enum PErrorKind {
-    Zero,
+    OutOfRange(String),
     ParseError(ParseIntError),
+    Zero,
 }
 
 impl P {
@@ -48,6 +49,19 @@ impl P {
         NonZeroU32::new(value)
             .map(P::Some)
             .ok_or_else(|| PError { kind: PErrorKind::Zero })
+    }
+}
+
+impl crate::bgv::ToU32<PError> for P {
+    fn to_u32(&self) -> Result<u32, PError> {
+        match self {
+            P::Some(non_zero_u32) => Ok(non_zero_u32.get()),
+            // For other variants, return an appropriate error.
+            // This will depends on future extensions of the `M` enum.
+            _ => Err(PError {
+                kind: PErrorKind::OutOfRange("Value out of range of u32".into()), // A generic error.
+            }),
+        }
     }
 }
 
@@ -91,8 +105,9 @@ impl core::fmt::Display for P {
 impl core::fmt::Display for PError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.kind {
-            PErrorKind::Zero => write!(f, "zero is not allowed"),
+            PErrorKind::OutOfRange(s) => write!(f, "{}", s),
             PErrorKind::ParseError(e) => e.fmt(f),
+            PErrorKind::Zero => write!(f, "zero is not allowed"),
         }
     }
 }

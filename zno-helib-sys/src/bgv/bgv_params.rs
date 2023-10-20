@@ -8,6 +8,7 @@ use super::ords::Ords;
 use super::mvec::Mvec;
 use super::bootstrap::Bootstrap;
 use super::bootstrappable::Bootstrappable;
+use crate::bgv::BGVError;
 use core::fmt;
 
 #[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
@@ -128,6 +129,24 @@ pub struct BGVParams {
     pub bootstrappable: Bootstrappable,
 }
 
+impl Default for BGVParams {
+    // Use this if all-zero/empty BGVParams makes sense in your context
+    fn default() -> Self {
+        BGVParams {
+            m: Default::default(),
+            p: Default::default(),
+            r: Default::default(),
+            c: Default::default(),
+            bits: Default::default(),
+            gens: Default::default(),
+            ords: Default::default(),
+            mvec: Default::default(),
+            bootstrap: Default::default(),
+            bootstrappable: Default::default(),
+        }
+    }
+}
+
 impl core::fmt::Display for BGVParams {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "BGVParams(m={}, p={}, r={}, c={}, bits={}, gens={}, ords={}, mvec={}, bootstrappable={})",
@@ -137,18 +156,18 @@ impl core::fmt::Display for BGVParams {
 
 impl BGVParams {
     #[cfg(feature = "helib")]
-    pub fn context(&mut self) -> crate::bgv::Context {
+    pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::helib::bgv::ffi::Context>
         crate::helib::bgv::Context::new(self)
     }
     #[cfg(feature = "openfhe")]
-    pub fn context(&self) -> crate::bgv::Context {
+    pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         todo!();
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::openfhe::Context>
         crate::openfhe::Context::new(self)
     }
     #[cfg(feature = "seal")]
-    pub fn context(&self) -> crate::bgv::Context {
+    pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         todo!();
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::seal::Context>
         crate::seal::Context::new(self)

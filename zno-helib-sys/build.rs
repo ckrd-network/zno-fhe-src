@@ -76,11 +76,9 @@ fn main() -> miette::Result<()> {
     // that includes the generated Rust bindings for your C++ code.
     // It is used to link the Rust code with the upstream C++ code.
     let path: PathBuf = cpp_source.to_string_lossy().into_owned().into();
-    println!("cargo:warning=This is a test 1");
     let mut cc_build = cxx_build::bridge("src/helib/bgv.rs");
     // Include the directory where cxx generates the cxxbridge sources.
     // This directory will contain the rust/cxx.h header.
-    println!("cargo:warning=This is a test 2");
     println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi");
     // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include");
     // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib");
@@ -292,6 +290,10 @@ impl Artifacts {
 
     pub fn print_cargo_metadata(&self) {
         println!("cargo:rustc-link-search=native={}", self.lib_dir.display());
+
+        println!("cargo:rustc-link-lib=dylib=helib");
+
+        println!("cargo:rustc-cdylib-link-arg=-Wl,-rpath,{}", self.lib_dir.display());
 
         let libdirs = vec![self.lib_dir().to_path_buf()];
         let kind = Self::determine_mode(&libdirs, &self.libs);

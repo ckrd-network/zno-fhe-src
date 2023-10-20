@@ -30,13 +30,14 @@ pub enum M {
 
 #[derive(Debug, Clone)]
 pub struct MError {
-    kind: MErrorKind,
+    pub kind: MErrorKind,
 }
 
 #[derive(Debug, Clone)]
 pub enum MErrorKind {
-    Zero,
+    OutOfRange(String),
     ParseError(ParseIntError),
+    Zero,
     // other kinds of errors can be added here
 }
 
@@ -47,17 +48,51 @@ impl M {
             .map(M::Some)
             .ok_or_else(|| MError { kind: MErrorKind::Zero })
     }
+
+    pub fn from_i64(value: i64) -> Result<Self, MError> {
+        if value > 0 && value <= (u32::MAX as i64) {
+            M::new(value as u32)
+        } else if value == 0 {
+            Err(MError { kind: MErrorKind::Zero })
+        } else {
+            Err(MError { kind: MErrorKind::OutOfRange("Value out of range of u32".into()) })
+        }
+    }
+}
+
+impl crate::bgv::ToU32<MError> for M {
+    fn to_u32(&self) -> Result<u32, MError> {
+        match self {
+            M::Some(non_zero_u32) => Ok(non_zero_u32.get()),
+            // For other variants, return an appropriate error.
+            // This will depends on future extensions of the `M` enum.
+            _ => Err(MError {
+                kind: MErrorKind::OutOfRange("Value out of range of u32".into()), // A generic error.
+            }),
+        }
+    }
 }
 
 /// Provides a default `M` value.
 impl Default for M {
     fn default() -> Self {
-        M::new(32).unwrap_or_else(|_| panic!("Default value for M should be valid!"))
+        M::new(32).unwrap_or_else(|_| panic!("Default value for M should be non-zero u32!"))
     }
 }
 
-impl From<ParseIntError> for MError {
-    fn from(error: ParseIntError) -> Self {
+impl std::error::Error for MError {}
+
+// Implement From for each error type you want to convert into MError
+// impl From<std::io::Error> for MError {
+//     fn from(_: std::io::Error) -> MError {
+//         MError {
+//             // initialization here
+//         }
+//     }
+// }
+
+impl From<std::num::ParseIntError> for MError {
+    fn from(error: std::num::ParseIntError) -> Self {
         MError {
             kind: MErrorKind::ParseError(error),
         }
@@ -89,8 +124,9 @@ impl core::fmt::Display for M {
 impl core::fmt::Display for MError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.kind {
-            MErrorKind::Zero => write!(f, "zero is not allowed"),
+            MErrorKind::OutOfRange(s) => write!(f, "{}", s),
             MErrorKind::ParseError(e) => e.fmt(f),
+            MErrorKind::Zero => write!(f, "zero is not allowed"),
         }
     }
 }
@@ -114,6 +150,6 @@ mod tests {
     #[test]
     fn test_negative_string_m_value() {
         let m = "-1".parse::<M>();
-        assert!(matches!(m, Ok(M::Err(_)))); // This line will need to be adjusted based on your error handling strategy.
+        assert!(matches!(m, Ok(M::Err(_)))); // adjust based on error handling logic.
     }
 }

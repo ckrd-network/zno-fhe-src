@@ -31,14 +31,20 @@ namespace helib {
     //     return builder; // returning the reference
     // }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, int32_t m) {
+    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
         builder->m(m); // Assuming `m` modifies the object and is void.
         return builder; // Return the unique_ptr.
     }
 
-    std::unique_ptr<helib::Context> build_ptr(BGVContextBuilder& builder) {
+    std::unique_ptr<helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+        // Check if builder is not null before dereferencing
+        if (!builder) {
+            // Handle the error: throw an exception or return a null pointer
+            throw std::invalid_argument("Received null builder in build_ptr");
+        }
+
         // buildPtr() returns a raw Context* that we need to manage
-        helib::Context* raw_ptr = builder.buildPtr();
+        helib::Context* raw_ptr = builder->buildPtr();
         // Construct a unique_ptr to take ownership of the Context
         // This ensures the Context will be deleted when the unique_ptr is destroyed
         return std::unique_ptr<helib::Context>(raw_ptr);

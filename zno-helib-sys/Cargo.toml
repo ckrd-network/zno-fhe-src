@@ -24,7 +24,6 @@ build = "build.rs"
 # script = "build.rs" # If you have a build script for linking C/C++ libraries
 
 [lib]
-name = "helib_ffi"
 crate-type = ["cdylib", "rlib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -55,7 +54,7 @@ mockall.workspace = true
 proptest.workspace = true
 
 [features]
-default = ['helib']
+default = ["helib"]
 helib = []
 openfhe = []
 seal = []

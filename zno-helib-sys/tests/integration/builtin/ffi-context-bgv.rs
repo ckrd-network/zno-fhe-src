@@ -3,29 +3,33 @@ use cxx::UniquePtr;
 
 #[test]
 fn test_build_bgv_valid_params() {
-    let mut builder = ffi::new_bgv_builder(); // function from your FFI
+
     let bgv = BGVParams {
         m: M::new(4095).unwrap(),
         p: P::new(2).unwrap(),
         r: R::new(1).unwrap(),
         c: C::new(2).unwrap(),
-        bits: Bits::new("32").unwrap(),
+        bits: Bits::new(32).unwrap(),
         gens: "2,3,5".parse::<Gens>().unwrap(),
-        ords: "-1,-1,-1".parse::<Ords>().unwrap(),
+        ords: "1,1,1".parse::<Ords>().unwrap(),
         mvec: "2,3".parse::<Mvec>().unwrap(),
-        bootstrappable: Bootstrappable::new(true),
+        bootstrap: Bootstrap::new("thin").unwrap(),
+        bootstrappable: Bootstrappable::new("none").unwrap(),
     };
 
-    let context = build_bgv(&mut builder, bgv);
+    let expected = M::new(4095).unwrap();
+    let context = Context::new(bgv).expect("BGV context creation");
 
     // Perform assertions based on what you know about a correctly built Context
     // For instance, you might be able to call functions on `context` to query its state
     // These functions would also need to be exposed via your FFI
     // For example:
-    // assert_eq!(context.get_m(), expected_m);
+    let actual = context.get_m().unwrap(); // this will panic if get_m() returns an Err
+
+    assert_eq!(actual, expected);
     // assert_eq!(context.get_p(), expected_p);
     // ...
-    assert!(context.is_bootstrappable());
+    // assert!(context.bootstrappable());
 
 }
 

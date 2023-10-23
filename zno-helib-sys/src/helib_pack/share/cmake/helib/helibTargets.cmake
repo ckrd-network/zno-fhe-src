@@ -56,7 +56,7 @@ if(_IMPORT_PREFIX STREQUAL "/")
 endif()
 
 # Create imported target helib
-add_library(helib SHARED IMPORTED)
+add_library(helib STATIC IMPORTED)
 
 set_target_properties(helib PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "\$<\$<BOOL:ON>:HELIB_THREADS>;\$<\$<BOOL:ON>:HELIB_BOOT_THREADS>;\$<\$<BOOL:ON>:HELIB_DEBUG>"

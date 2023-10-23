@@ -204,7 +204,7 @@ mod tests {
 
         let params = BGVParams {
             m,
-            // ... other fields with dummy or default data
+            ..Default::default() // ... other fields with dummy or default data
         };
 
         BGVContext::new(&params)

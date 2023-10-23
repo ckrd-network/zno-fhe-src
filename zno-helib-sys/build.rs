@@ -7,12 +7,19 @@ use std::process::Command;
 
 fn main() -> miette::Result<()> {
 
+    // Check if the "static" feature is enabled
+    if env::var_os("CARGO_FEATURE_STATIC").is_some() {
+        // If "static" feature is enabled, set HELIB_STATIC to control the build process accordingly.
+        std::env::set_var("HELIB_STATIC", "1");
+        println!("cargo:rustc-env=HELIB_STATIC=1");
+    }
+
     // cxx_build::CFG.exported_header_prefixes = vec!["helib"];
     // Determine the project directory
     let project_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let ffi_dir = Path::new(&project_dir).join("ffi");
     let helib_dir = Path::new(&project_dir).join("src").join("helib_pack");
-    // let helib_dir = Path::new(&ffi_dir);
+
     let helib_lib_dir = helib_dir.join("lib");
     let helib_include_dir = helib_dir.join("include");
 
@@ -21,10 +28,6 @@ fn main() -> miette::Result<()> {
     // Compile ffi_wrapper.cpp separately
     let cpp_source = ffi_dir.join("ffi_wrapper.cpp");
     let cpp_output = ffi_dir.join("ffi_wrapper"); // Output binary name
-
-    // Copy ffi_wrapper.h and ffi_wrapper.cpp alongside helib.h
-    // let _ = fs::copy(ffi_dir.join("ffi_wrapper.h"), helib_include_dir.join("ffi_wrapper.h"));
-    // let _ = fs::copy(ffi_dir.join("ffi_wrapper.cpp"), cpp_source.clone());
 
     // Retrieve the CARGO_MANIFEST_DIR and OUT_DIR environment variables
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -45,49 +48,24 @@ fn main() -> miette::Result<()> {
         panic!("Failed to copy header files: {}", e);
     }
 
-    // Allows Rust to call C++ functions defined in "ffi_wrapper.cpp" and use
-    // any C++ functionality encapsulated in "ffi_wrapper.cpp" separately from the original C++ code.
-    // let _ = Command::new("g++")
-    //     .args(&["-std=c++17", "-shared", "-fPIC", "-o", &cpp_output.to_string_lossy(), &cpp_source.to_string_lossy()])
-    //     .status()
-    //     .expect("Failed to compile ffi_wrapper.cpp");
-
-    // // Generate Rust bindings using cxx_build
-    // cxx_build::bridge("src/helib/bgv.rs")
-    //     .file(cpp_source.to_string_lossy())  // Include the necessary C++ source files
-    //     .flag_if_supported("-std=c++17")
-    //     .compile("ffi_wrapper");
-
     // Output the linker flags for the compiled wrapper C++ source
     println!("cargo:rustc-link-search=native={}", ffi_dir.display());
     // println!("cargo:rustc-link-lib=dylib=ffi_wrapper");
     println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
     println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
-    // println!("cargo:rustc-cfg=exported_header_prefixes=\"helib\"");
-    // let helib_include_dir = std::path::PathBuf::from("src/helib_pack/include"); // include path
-    // let mut b = autocxx_build::Builder::new("src/lib.rs", &[&helib_include_dir])
-    //     .extra_clang_args(&["-std=c++17"])
-    //     .build()?;
-    //     // This assumes all your C++ bindings are in main.rs
-    // b.flag_if_supported("-std=c++17")
-    //  .compile("helib-autocxx"); // arbitrary library name, pick anything
 
     // Compile cxx generated bindings.  This is the name of the Rust FFI library
-    // that includes the generated Rust bindings for your C++ code.
-    // It is used to link the Rust code with the upstream C++ code.
+    // that includes the generated Rust bindings for C++ code.
+    // Used to link Rust code with the upstream C++ code.
     let path: PathBuf = cpp_source.to_string_lossy().into_owned().into();
     let mut cc_build = cxx_build::bridge("src/helib/bgv.rs");
     // Include the directory where cxx generates the cxxbridge sources.
     // This directory will contain the rust/cxx.h header.
     println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi");
-    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include");
-    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib");
-    // println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib/../");
+
     cc_build.file(path)
             .include(cxx_include_path)
             .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi")
-            // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include")
-            // .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/src/helib_pack/include/helib")
             .flag_if_supported("-std=c++17")
             .compile("helib-context"); // compile cxx generated bindings
 
@@ -97,6 +75,17 @@ fn main() -> miette::Result<()> {
     // Add instructions to link to any C++ libraries you need.
 
     let rtfcts = Build::new().artifacts();
+
+    // Recursively copy files from ./src/helib_pack/lib to ./libs directory
+    if let Err(e) = copy_dir_to(&rtfcts.lib_dir, &rtfcts.libs_dir) {
+        panic!("Failed to copy library files to ./libs: {}", e);
+    }
+
+    // Recursively copy files from ./src/helib_pack/lib to integration tests directory
+    if let Err(e) = copy_dir_to(&rtfcts.lib_dir, &rtfcts.tests_dir) {
+        panic!("Failed to copy library files to integration tests: {}", e);
+    }
+
     rtfcts.print_cargo_metadata();
 
     Ok(())
@@ -137,9 +126,12 @@ pub struct Build {
 }
 
 pub struct Artifacts {
+    out_dir: PathBuf,
     package_dir: PathBuf,
     include_dir: PathBuf,
     lib_dir: PathBuf,
+    libs_dir: PathBuf,
+    tests_dir: PathBuf,
     bin_dir: PathBuf,
     share_dir: PathBuf,
     libs: Vec<String>,
@@ -212,33 +204,29 @@ impl Build {
         })
     }
 
-    // #[cfg(windows)]
-    // fn is_nasm_ready(&self) -> bool {
-    //     self.check_env_var("ZNO_RUST_USE_NASM")
-    //         .unwrap_or_else(|| {
-    //             // On Windows, use cmd `where` command to check if nasm is installed
-    //             let wherenasm = Command::new("cmd")
-    //                 .args(&["/C", "where nasm"])
-    //                 .output()
-    //                 .expect("Failed to execute `cmd`.");
-    //             wherenasm.status.success()
-    //         })
-    // }
-
-    // #[cfg(not(windows))]
-    // fn is_nasm_ready(&self) -> bool {
-    //     // We assume that nobody would run nasm.exe on a non-windows system.
-    //     false
-    // }
-
     pub fn artifacts(&mut self) -> Artifacts {
         let target = &self.target.as_ref().expect("TARGET dir not set")[..];
-        let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set");
+        let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set").to_path_buf();
         // Generate files under the -sys crate src folder
         let install_dir = env::var_os("CARGO_MANIFEST_DIR")
             .map(|s| PathBuf::from(s))
             .unwrap()
             .join("src");
+
+        // Define your libs folder relative to the crate root
+        let libs_dir = env::var_os("CARGO_MANIFEST_DIR")
+            .map(|s| PathBuf::from(s))
+            .unwrap()
+            .join("libs");
+
+        // Make sure `libs` directory exists
+        fs::create_dir_all(&libs_dir).expect("Failed to create 'libs/' directory");
+
+        // Correcting the variable name to represent its purpose more clearly.
+        let tests_dir = Path::new(&out_dir).join(format!("../../../../../{}/debug/libs", target));
+
+        // Create the "libs" directory in the target location if it doesn't exist
+        fs::create_dir_all(&tests_dir).expect("Could not create 'libs' directory");
 
         let libs = if target.contains("msvc") {
             vec!["helibw".to_string(), "gmp".to_string(), "ntl".to_string()]
@@ -248,8 +236,11 @@ impl Build {
 
         let pd = install_dir.join("helib_pack");
         Artifacts {
+            out_dir: out_dir,
             package_dir: pd.clone(),
             lib_dir: pd.clone().join("lib"),
+            libs_dir,
+            tests_dir,
             bin_dir: pd.clone().join("bin"),
             share_dir: pd.clone().join("share"),
             include_dir:pd.clone().join("include"),
@@ -264,8 +255,22 @@ impl Artifacts {
         &self.include_dir
     }
 
+    // The libraries packaged from the src crate.
+    // These are not distributed with the crate.
     pub fn lib_dir(&self) -> &Path {
         &self.lib_dir
+    }
+
+    // The src/libs directory that is distributed with the crate.
+    // Contains the 3rd party libraries that are linked to.
+    // The library code points here at runtime to link without
+    // requiring changes to the user system.
+    pub fn libs_dir(&self) -> &Path {
+        &self.libs_dir
+    }
+
+    pub fn tests_dir(&self) -> &Path {
+        &self.tests_dir
     }
 
     pub fn bin_dir(&self) -> &Path {
@@ -274,6 +279,10 @@ impl Artifacts {
 
     pub fn package_dir(&self) -> &Path {
         &self.package_dir
+    }
+
+    pub fn out_dir(&self) -> &Path {
+        &self.out_dir
     }
 
     pub fn share_dir(&self) -> &Path {
@@ -289,20 +298,34 @@ impl Artifacts {
     }
 
     pub fn print_cargo_metadata(&self) {
-        println!("cargo:rustc-link-search=native={}", self.lib_dir.display());
+        // If you need to link to the libraries, inform cargo to link them
+        println!("cargo:rustc-link-search=native={}", self.libs_dir.display());
 
-        println!("cargo:rustc-link-lib=dylib=helib");
+        // Set rpath for Library B
+        #[cfg(target_os = "macos")]
+        println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/libs");
 
-        println!("cargo:rustc-cdylib-link-arg=-Wl,-rpath,{}", self.lib_dir.display());
+        #[cfg(target_os = "linux")]
+        println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN/../libs:$ORIGIN/libs:$ORIGIN");
 
-        let libdirs = vec![self.lib_dir().to_path_buf()];
-        let kind = Self::determine_mode(&libdirs, &self.libs);
-        for lib in self.libs.clone().into_iter() {
-            println!("cargo:rustc-link-lib={}={}", kind, lib);
+        // On Windows, rpath concept doesn't exist.
+        // Instead the end user is responsible for setting up their system so these libraries are available to the linker.
+
+        if env::var_os("CARGO_FEATURE_STATIC").is_some() {
+            // If "static" feature is enabled, set HELIB_STATIC to control the build process accordingly.
+            println!("cargo:rustc-link-lib=static=helib");
+        } else {
+            println!("cargo:rustc-link-lib=dylib=helib");
         }
+        println!("cargo:rustc-link-lib=dylib=gmp");
+        println!("cargo:rustc-link-lib=dylib=ntl");
+
+        // Link the C++ standard library statically, if desired
+        println!("cargo:rustc-link-search=native=/usr/lib/gcc/x86_64-linux-gnu/13");
+        println!("cargo:rustc-link-lib=static=stdc++");
 
         println!("cargo:include={}", self.include_dir.display());
-        println!("cargo:lib={}", self.lib_dir.display());
+        println!("cargo:lib={}", self.libs_dir.display());
         if self.target.contains("msvc") {
             println!("cargo:rustc-link-lib=user32");
         } else if self.target == "wasm32-wasi" {
@@ -329,58 +352,6 @@ impl Artifacts {
         let prefix = env::var("TARGET").unwrap().to_uppercase().replace('-', "_");
         let prefixed = format!("{}_{}", prefix, name);
         Self::env_inner(&prefixed).or_else(|| Self::env_inner(name))
-    }
-
-    /// Given a libdir (where artifacts are located) as well as the name
-    /// of the libraries we're linking to, figure out whether we should link them
-    /// statically or dynamically.
-    fn determine_mode(libdirs: &Vec<PathBuf>, libs: &[String]) -> &'static str {
-        // First see if a mode was explicitly requested
-        let kind = Self::get_env("HELIB_STATIC");
-        match kind.as_ref().and_then(|s| s.to_str()) {
-            Some("0") => return "dylib",
-            Some(_) => return "static",
-            None => {}
-        }
-
-        // Next, see what files we actually have to link against, and see what our
-        // possibilities even are.
-        let mut files = HashSet::new();
-        for dir in libdirs {
-            for path in dir
-                .read_dir()
-                .unwrap()
-                .map(|e| e.unwrap())
-                .map(|e| e.file_name())
-                .filter_map(|e| e.into_string().ok())
-            {
-                files.insert(path);
-            }
-        }
-        let can_static = libs
-            .iter()
-            .all(|l| files.contains(&format!("lib{}.a", l)) || files.contains(&format!("{}.lib", l)));
-        let can_dylib = libs.iter().all(|l| {
-            files.contains(&format!("lib{}.so", l))
-                || files.contains(&format!("{}.dll", l))
-                || files.contains(&format!("lib{}.dylib", l))
-        });
-        match (can_static, can_dylib) {
-            (true, false) => return "static",
-            (false, true) => return "dylib",
-            (false, false) => {
-                panic!(
-                    "libdir does not contain the required files \
-                    to either statically or dynamically link HElib"
-                );
-            }
-            (true, true) => {}
-        }
-
-        // Ok, we've got not explicit preference and can *either* link statically or
-        // link dynamically. In the interest of "security upgrades" and/or "best
-        // practices with security libs", let's link dynamically.
-        "dylib"
     }
 
 }

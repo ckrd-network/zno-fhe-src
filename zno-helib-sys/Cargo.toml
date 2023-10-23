@@ -24,7 +24,7 @@ build = "build.rs"
 # script = "build.rs" # If you have a build script for linking C/C++ libraries
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -54,7 +54,8 @@ mockall.workspace = true
 proptest.workspace = true
 
 [features]
-default = ["helib"]
+default = ["static","helib"]
+static = []
 helib = []
 openfhe = []
 seal = []

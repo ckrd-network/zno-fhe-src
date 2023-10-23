@@ -85,7 +85,7 @@ set -ex
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-unit-test-sys-release.txt
 
-cargo test zno_helib_sys::bgv::m --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+cargo test zno_helib_sys::bgv::m::* --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 

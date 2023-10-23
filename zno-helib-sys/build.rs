@@ -206,6 +206,9 @@ impl Build {
 
     pub fn artifacts(&mut self) -> Artifacts {
         let target = &self.target.as_ref().expect("TARGET dir not set")[..];
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let workspace_dir = Path::new(&manifest_dir).parent().expect("Cannot find workspace directory").to_path_buf();
+
         let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set").to_path_buf();
         // Generate files under the -sys crate src folder
         let install_dir = env::var_os("CARGO_MANIFEST_DIR")
@@ -222,8 +225,8 @@ impl Build {
         // Make sure `libs` directory exists
         fs::create_dir_all(&libs_dir).expect("Failed to create 'libs/' directory");
 
-        // Correcting the variable name to represent its purpose more clearly.
-        let tests_dir = Path::new(&out_dir).join(format!("../../../../../{}/debug/libs", target));
+        // Construct the path to the 'libs' directory adjacent to the test binaries
+        let tests_dir = workspace_dir.join("target").join(target).join("debug").join("libs");
 
         // Create the "libs" directory in the target location if it doesn't exist
         fs::create_dir_all(&tests_dir).expect("Could not create 'libs' directory");

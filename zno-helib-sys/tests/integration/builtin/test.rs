@@ -1,4 +1,4 @@
-use zno::prelude::*;
+use zno_helib_sys::prelude::*;
 
 #[cfg(test)]
 mod tests {

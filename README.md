@@ -60,6 +60,8 @@ src_dir="$(pwd)/zno-helib-src-test"
 RUST_BACKTRACE=1 cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-src-test.txt
 ```
 
+#### FFI bindings
+
 To generate the FFI bindings in the system crate
 
 ```shell
@@ -70,8 +72,6 @@ RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --targe
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
-# export LD_LIBRARY_PATH="$(pwd)/zno-helib-sys/src/helib_pack/lib:$LD_LIBRARY_PATH"
-cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-test-sys.txt
 ```
 
 #### Test
@@ -82,8 +82,12 @@ test_dir="$(pwd)/zno-helib-src-test"
 
 set -ex
 
-cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv &>log-test.txt
-cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release &>log-test-release.txt
+cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-unit-test-sys-release.txt
+
+cargo test zno_helib_sys::bgv::m --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+
+cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 set +ex
 

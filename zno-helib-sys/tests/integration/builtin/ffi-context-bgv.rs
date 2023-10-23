@@ -1,5 +1,4 @@
 use zno_helib_sys::prelude::*;
-use cxx::UniquePtr;
 
 pub fn setup_ld_library_path() {
     // Determine the directory of the Cargo.toml manifest.
@@ -32,8 +31,6 @@ pub fn setup_ld_library_path() {
 #[test]
 fn test_build_bgv_valid_params() {
 
-    setup_ld_library_path();
-
     let bgv = BGVParams {
         m: M::new(4095).unwrap(),
         p: P::new(2).unwrap(),
@@ -47,16 +44,15 @@ fn test_build_bgv_valid_params() {
         bootstrappable: Bootstrappable::new("none").unwrap(),
     };
 
-    let expected = M::new(4095).unwrap();
+    let expected_m = M::new(4095).unwrap();
+    // let expected_p = P::new(2).unwrap();
+    
     let context = Context::new(bgv).expect("BGV context creation");
 
-    // Perform assertions based on what you know about a correctly built Context
-    // For instance, you might be able to call functions on `context` to query its state
-    // These functions would also need to be exposed via your FFI
-    // For example:
-    let actual = context.get_m().unwrap(); // this will panic if get_m() returns an Err
+    let actual_m = context.get_m().unwrap(); // this will panic if get_m() returns an Err
 
-    assert_eq!(actual, expected);
+    assert_eq!(actual_m, expected_m);
+    // assert_eq!(actual_p, expected_p);
     // assert_eq!(context.get_p(), expected_p);
     // ...
     // assert!(context.bootstrappable());

@@ -26,16 +26,6 @@ namespace helib {
         return std::make_unique<::helib::BGVContextBuilder>();
     }
 
-    // BGVContextBuilder& set_m(BGVContextBuilder& builder, long m) {
-    //     builder.m(m); // this should return *this
-    //     return builder; // returning the reference
-    // }
-
-    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
-        builder->m(m); // Assuming `m` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
-
     std::unique_ptr<helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder) {
         // Check if builder is not null before dereferencing
         if (!builder) {
@@ -50,13 +40,34 @@ namespace helib {
         return std::unique_ptr<helib::Context>(raw_ptr);
     }
 
-    BGVContextBuilder& set_p(BGVContextBuilder& builder, long p) {
+
+    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
+        builder->m(m); // Assuming `m` modifies the object and is void.
+        return builder; // Return the unique_ptr.
+    }
+
+    BGVContextBuilder& set_p(BGVContextBuilder& builder, uint32_t p) {
         builder.p(p);
         return builder;
     }
 
-    BGVContextBuilder& set_r(BGVContextBuilder& builder, long r) {
+    BGVContextBuilder& set_r(BGVContextBuilder& builder, uint32_t r) {
         builder.r(r);
+        return builder;
+    }
+
+    BGVContextBuilder& set_bits(BGVContextBuilder& builder, uint32_t bits) {
+        builder.bits(bits);
+        return builder;
+    }
+
+    BGVContextBuilder& set_c(BGVContextBuilder& builder, uint32_t c) {
+        builder.c(c);
+        return builder;
+    }
+
+    BGVContextBuilder& is_bootstrappable(BGVContextBuilder& builder, bool flag) {
+        builder.bootstrappable(flag);
         return builder;
     }
 
@@ -69,21 +80,6 @@ namespace helib {
     BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords) {
         auto ords_std_ptr = to_std_vector(ords); // This is now a std::unique_ptr<std::vector<long int>>
         builder.ords(*ords_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-        return builder;
-    }
-
-    BGVContextBuilder& set_bits(BGVContextBuilder& builder, long bits) {
-        builder.bits(bits);
-        return builder;
-    }
-
-    BGVContextBuilder& set_c(BGVContextBuilder& builder, long c) {
-        builder.c(c);
-        return builder;
-    }
-
-    BGVContextBuilder& is_bootstrappable(BGVContextBuilder& builder, bool flag) {
-        builder.bootstrappable(flag);
         return builder;
     }
 

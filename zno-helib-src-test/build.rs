@@ -7,6 +7,7 @@ use std::path::PathBuf;
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
+    std::env::set_var("HELIB_STATIC", "1");
     let artifacts = zno_helib_src::Build::new().build();
     artifacts.print_cargo_metadata();
 

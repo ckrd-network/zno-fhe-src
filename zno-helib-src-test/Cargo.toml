@@ -26,4 +26,6 @@ zno-helib-src = { path = "../zno-helib-src" }
 libc = { workspace = true }
 
 [features]
+default = ["static","package"]
+static = []
 package = []

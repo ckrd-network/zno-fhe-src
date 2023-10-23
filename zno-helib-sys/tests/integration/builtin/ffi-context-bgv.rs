@@ -1,8 +1,38 @@
 use zno_helib_sys::prelude::*;
 use cxx::UniquePtr;
 
+pub fn setup_ld_library_path() {
+    // Determine the directory of the Cargo.toml manifest.
+    let manifest_dir = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set"));
+
+    // Construct the path to the `./libs` directory relative to the manifest directory.
+    let libs_path = manifest_dir.join("libs");
+
+    // Convert the path to a string, and panic if it can't be converted.
+    // This might happen if the path contains invalid unicode data.
+    let libs_str = libs_path.to_str().expect("Invalid unicode in path");
+
+    // Get the current LD_LIBRARY_PATH, if it's set.
+    let current_ld_library_path = std::env::var("LD_LIBRARY_PATH").unwrap_or_else(|_| String::new());
+
+    // Prepare the new LD_LIBRARY_PATH to be set.
+    let new_ld_library_path = if current_ld_library_path.is_empty() {
+        libs_str.to_string()
+    } else {
+        format!("{}:{}", current_ld_library_path, libs_str)
+    };
+
+    // Set the LD_LIBRARY_PATH to include the `./libs` directory.
+    // This will only affect child processes started by this process.
+    std::env::set_var("LD_LIBRARY_PATH", &new_ld_library_path);
+
+    println!("LD_LIBRARY_PATH has been set to: {}", libs_str);
+}
+
 #[test]
 fn test_build_bgv_valid_params() {
+
+    setup_ld_library_path();
 
     let bgv = BGVParams {
         m: M::new(4095).unwrap(),

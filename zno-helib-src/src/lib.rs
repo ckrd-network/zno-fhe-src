@@ -178,8 +178,9 @@ impl Build {
         let _configure = cmake::Config::new(out_dir.clone())
             .define("CMAKE_INSTALL_PREFIX", &format!("{}", install_dir.display()))
             .define("CMAKE_CXX_STANDARD", "17")
-            .define("BUILD_SHARED", "ON")
-            .pipe( |c| if cfg!(feature = "package") {
+            .pipe( |c| if cfg!(feature = "static") {
+                c.define("BUILD_SHARED", "OFF")
+            } else { c.define("BUILD_SHARED", "ON") })            .pipe( |c| if cfg!(feature = "package") {
                 c.define("PACKAGE_BUILD", "ON")
             } else { c.define("PACKAGE_BUILD", "OFF") })
             .pipe( |c| if cfg!(feature = "tests") {
@@ -198,7 +199,6 @@ impl Build {
             let mut install = self.cmd_make();
             install.arg("install").current_dir(&inner_dir);
             self.run_command(install, "installing HElib");
-
 
         //     let mut build = self.cmd_make();
         //     build.arg("build_libs").current_dir(&inner_dir);
@@ -745,13 +745,31 @@ impl Artifacts {
     }
 
     pub fn print_cargo_metadata(&self) {
+        // If you need to link to the libraries, inform cargo to link them
         println!("cargo:rustc-link-search=native={}", self.lib_dir.display());
 
-        let libdirs = vec![self.lib_dir().to_path_buf()];
-        let kind = Self::determine_mode(&libdirs, &self.libs);
-        for lib in self.libs.clone().into_iter() {
-            println!("cargo:rustc-link-lib={}={}", kind, lib);
+        // Set rpath for static and dynamic libraries.
+        #[cfg(target_os = "macos")]
+        println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/libs");
+
+        #[cfg(target_os = "linux")]
+        println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN/libs");
+
+        // On Windows, rpath concept doesn't exist.
+        // Instead the end user is responsible for setting up their system so these libraries are available to the linker.
+
+        if env::var_os("CARGO_FEATURE_STATIC").is_some() {
+            // If "static" feature is enabled, set HELIB_STATIC to control the build process accordingly.
+            println!("cargo:rustc-link-lib=static=helib");
+        } else {
+            println!("cargo:rustc-link-lib=dylib=helib");
         }
+        println!("cargo:rustc-link-lib=dylib=gmp");
+        println!("cargo:rustc-link-lib=dylib=ntl");
+
+        // Link the C++ standard library statically, if desired
+        println!("cargo:rustc-link-search=native=/usr/lib/gcc/x86_64-linux-gnu/13");
+        println!("cargo:rustc-link-lib=static=stdc++");
 
         println!("cargo:include={}", self.include_dir.display());
         println!("cargo:lib={}", self.lib_dir.display());
@@ -781,58 +799,6 @@ impl Artifacts {
         let prefix = env::var("TARGET").unwrap().to_uppercase().replace('-', "_");
         let prefixed = format!("{}_{}", prefix, name);
         Self::env_inner(&prefixed).or_else(|| Self::env_inner(name))
-    }
-
-    /// Given a libdir (where artifacts are located) as well as the name
-    /// of the libraries we're linking to, figure out whether we should link them
-    /// statically or dynamically.
-    fn determine_mode(libdirs: &Vec<PathBuf>, libs: &[String]) -> &'static str {
-        // First see if a mode was explicitly requested
-        let kind = Self::get_env("HELIB_STATIC");
-        match kind.as_ref().and_then(|s| s.to_str()) {
-            Some("0") => return "dylib",
-            Some(_) => return "static",
-            None => {}
-        }
-
-        // Next, see what files we actually have to link against, and see what our
-        // possibilities even are.
-        let mut files = HashSet::new();
-        for dir in libdirs {
-            for path in dir
-                .read_dir()
-                .unwrap()
-                .map(|e| e.unwrap())
-                .map(|e| e.file_name())
-                .filter_map(|e| e.into_string().ok())
-            {
-                files.insert(path);
-            }
-        }
-        let can_static = libs
-            .iter()
-            .all(|l| files.contains(&format!("lib{}.a", l)) || files.contains(&format!("{}.lib", l)));
-        let can_dylib = libs.iter().all(|l| {
-            files.contains(&format!("lib{}.so", l))
-                || files.contains(&format!("{}.dll", l))
-                || files.contains(&format!("lib{}.dylib", l))
-        });
-        match (can_static, can_dylib) {
-            (true, false) => return "static",
-            (false, true) => return "dylib",
-            (false, false) => {
-                panic!(
-                    "libdir does not contain the required files \
-                    to either statically or dynamically link HElib"
-                );
-            }
-            (true, true) => {}
-        }
-
-        // Ok, we've got not explicit preference and can *either* link statically or
-        // link dynamically. In the interest of "security upgrades" and/or "best
-        // practices with security libs", let's link dynamically.
-        "dylib"
     }
 
 }

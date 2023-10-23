@@ -23,5 +23,7 @@ Cargo.lock
 
 # Ignore binary files built locally.
 zno-helib-sys/src/helib_pack/lib
+zno-helib-sys/libs/*
+!zno-helib-sys/libs/.gitkeep
 scratch/
 *.txt

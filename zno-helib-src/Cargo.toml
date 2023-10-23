@@ -28,7 +28,8 @@ exclude = [
 ]
 
 [features]
-default = ['package']
+default = ["static","package"]
+static = []
 # This option bundles HElib and its dependencies (NTL and GMP) in one directory
 # which can then be moved around freely on the system.
 package = []

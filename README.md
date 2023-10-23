@@ -21,6 +21,23 @@ tests = []
 utils = []
 ```
 
+## Setting Up HElib Libraries for End-User Rust Binaries Using ZnO
+
+When you're building a Rust application that depends on the ZnO library, it's necessary to ensure that the required HElib static and shared libraries are appropriately located. The application will look for these libraries in three potential directories relative to the executable:
+
+1. `$ORIGIN/../libs`: This is the directory one level above the binary and then in the `libs` folder.
+2. `$ORIGIN/libs`: This is the `libs` directory at the same level as the binary.
+3. `$ORIGIN`: This is the directory where the binary is located.
+
+### Example: ZnO Integration Tests
+
+For ZnO's integration test binaries, the libraries are arranged as follows:
+
+- The test binaries are located in the `target/[target-triple]/debug/deps` directory.
+- The required libraries are placed within the `libs` directory at the root of the project. This corresponds to the `$ORIGIN/libs` location mentioned above, as `$ORIGIN` refers to the directory containing the test binary, which is `target/[target-triple]/debug/deps` in this case.
+
+This setup ensures that the test binaries can successfully locate and link to the required libraries during execution.
+
 ## Tests
 
 Tests are front and centre. We follow advice on their setup:
@@ -40,7 +57,7 @@ To compile the source code and move artifacts to the system crate:
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/zno-helib-src-test"
 
-RUST_BACKTRACE=1 cargo build --bin zno-helib-src-test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv &>log-src-test.txt
+RUST_BACKTRACE=1 cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-src-test.txt
 ```
 
 To generate the FFI bindings in the system crate
@@ -49,12 +66,12 @@ To generate the FFI bindings in the system crate
 target=x86_64-unknown-linux-gnu
 sys_dir="$(pwd)/zno-helib-sys"
 
-RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv &>>cargo-build-sys.txt
+RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-sys.txt
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
-cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-expand-sys.txt
+cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
-export LD_LIBRARY_PATH="$(pwd)/zno-helib-sys/src/helib_pack/lib:$LD_LIBRARY_PATH"
-cargo test --test ffi-context-bgv --features "helib" --manifest-path "$sys_dir/Cargo.toml" --target $target &>cargo-test-sys.txt
+# export LD_LIBRARY_PATH="$(pwd)/zno-helib-sys/src/helib_pack/lib:$LD_LIBRARY_PATH"
+cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-test-sys.txt
 ```
 
 #### Test
@@ -88,6 +105,14 @@ The crate versions follow the X.Y.Z+B pattern:
 - `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this field is actually ignored in comparisons and only there for documentation.
 
 ## Upstream Sources
+
+### System requirements
+
+Install static libraries for `libstdc++`
+
+```shell
+apt search libstdc++ | grep dev
+```
 
 ### HELib
 

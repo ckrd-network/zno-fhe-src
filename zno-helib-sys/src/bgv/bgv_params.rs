@@ -148,7 +148,7 @@ impl Default for BGVParams {
 }
 
 impl core::fmt::Display for BGVParams {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "BGVParams(m={}, p={}, r={}, c={}, bits={}, gens={}, ords={}, mvec={}, bootstrappable={})",
                self.m, self.p, self.r, self.c, self.bits, self.gens, self.ords, self.mvec, self.bootstrappable)
     }
@@ -158,7 +158,7 @@ impl BGVParams {
     #[cfg(feature = "helib")]
     pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::helib::bgv::ffi::Context>
-        crate::helib::bgv::Context::new(self)
+        crate::bgv::Context::new(self)
     }
     #[cfg(feature = "openfhe")]
     pub fn context(self) -> Result<crate::bgv::Context, BGVError> {

@@ -76,7 +76,7 @@ impl core::str::FromStr for C {
 
 // Implementing the Display trait for C
 impl core::fmt::Display for C {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             C::Some(value) => write!(f, "{}", value),
             // Handle other variants if they are added in the future
@@ -85,7 +85,7 @@ impl core::fmt::Display for C {
 }
 
 impl core::fmt::Display for CError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             CErrorKind::Zero => write!(f, "zero is not allowed"),
             CErrorKind::ParseError(e) => e.fmt(f),

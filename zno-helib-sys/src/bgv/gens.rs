@@ -107,15 +107,15 @@ impl FromStr for Gens {
 }
 
 // Implementing the Display trait for Gens
-impl fmt::Display for Gens {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for Gens {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let gens_as_strings: Vec<_> = self.0.iter().map(ToString::to_string).collect();
         write!(f, "{}", gens_as_strings.join(","))
     }
 }
 
-impl fmt::Display for GensError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for GensError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             GensErrorKind::Zero => write!(f, "zero is not allowed"),
             GensErrorKind::ParseError(e) => e.fmt(f),

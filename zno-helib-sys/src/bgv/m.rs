@@ -128,7 +128,7 @@ impl core::str::FromStr for M {
 }
 
 impl core::fmt::Display for M {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             M::Some(value) => write!(f, "{}", value),
             // Handle other variants if they are added in the future
@@ -137,7 +137,7 @@ impl core::fmt::Display for M {
 }
 
 impl core::fmt::Display for MError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             MErrorKind::OutOfRange(s) => write!(f, "{}", s),
             MErrorKind::ParseError(e) => e.fmt(f),

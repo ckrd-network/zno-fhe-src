@@ -94,7 +94,7 @@ impl Default for Bootstrappable {
     }
 }
 
-impl FromStr for Bootstrappable {
+impl core::str::FromStr for Bootstrappable {
     type Err = BootstrappableError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -102,7 +102,7 @@ impl FromStr for Bootstrappable {
     }
 }
 
-impl fmt::Display for Bootstrappable {
+impl core::fmt::Display for Bootstrappable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", match self {
             Bootstrappable::None => "none",
@@ -134,5 +134,9 @@ mod tests {
         assert_eq!(bootstrappable, Bootstrappable::Disabled);
     }
 
-    // Additional tests for new functionality and error handling should be added here.
+    #[test]
+    fn test_case_insensitivity() {
+        let bootstrappable = "DiSaBlEd".parse::<Bootstrappable>().unwrap();
+        assert_eq!(bootstrappable, Bootstrappable::Disabled);
+    }
 }

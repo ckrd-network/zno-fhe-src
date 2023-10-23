@@ -281,8 +281,8 @@ impl RandomNumber {
     }
 }
 
-impl fmt::Display for RandomNumber {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for RandomNumber {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", self.value)
     }
 }

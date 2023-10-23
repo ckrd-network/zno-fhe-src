@@ -122,15 +122,15 @@ impl FromStr for Ords {
 }
 
 // Implementing the Display trait for Ords
-impl fmt::Display for Ords {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for Ords {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         let as_strings: Vec<String> = self.values.iter().map(|n| n.get().to_string()).collect();
         write!(f, "[{}]", as_strings.join(", "))
     }
 }
 
-impl fmt::Display for OrdsError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for OrdsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             OrdsErrorKind::Zero => write!(f, "zero is not allowed in ords"),
             OrdsErrorKind::ParseError(e) => e.fmt(f),

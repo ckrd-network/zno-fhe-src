@@ -53,8 +53,8 @@ pub enum Bootstrap {
 #[derive(Debug, Clone)]
 pub struct BootstrapError;
 
-impl fmt::Display for BootstrapError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for BootstrapError {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "Invalid value for bootstrap. Valid values are: 'none', 'thick', 'thin'.")
     }
 }
@@ -104,8 +104,8 @@ impl Default for Bootstrap {
 }
 
 // Implementing the Display trait for Bootstrap
-impl fmt::Display for Bootstrap {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for Bootstrap {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             Bootstrap::None => write!(f, "none"),
             Bootstrap::Thin => write!(f, "thin"),

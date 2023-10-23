@@ -97,8 +97,8 @@ impl From<ParseIntError> for MvecError {
 }
 
 // Implementing the Display trait for Mvec
-impl fmt::Display for Mvec {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for Mvec {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "[")?;
         for (i, value) in self.values.iter().enumerate() {
             if i > 0 {
@@ -110,8 +110,8 @@ impl fmt::Display for Mvec {
     }
 }
 
-impl fmt::Display for MvecError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl core::fmt::Display for MvecError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             MvecErrorKind::ZeroValue => write!(f, "zero value in mvec is not allowed"),
             MvecErrorKind::ParseError(e) => e.fmt(f),

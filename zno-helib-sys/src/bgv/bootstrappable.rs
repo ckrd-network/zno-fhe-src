@@ -61,8 +61,8 @@ pub enum BootstrappableErrorKind {
     // other kinds of errors can be added here
 }
 
-impl fmt::Display for BootstrappableError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for BootstrappableError {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match &self.kind {
             BootstrappableErrorKind::InvalidString(s) =>
                 write!(f, "Invalid string for Bootstrappable: {}", s),
@@ -103,7 +103,7 @@ impl core::str::FromStr for Bootstrappable {
 }
 
 impl core::fmt::Display for Bootstrappable {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "{}", match self {
             Bootstrappable::None => "none",
             Bootstrappable::Enabled => "enabled",

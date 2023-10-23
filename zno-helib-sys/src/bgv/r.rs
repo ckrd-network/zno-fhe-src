@@ -79,7 +79,7 @@ impl core::str::FromStr for R {
 
 // Implementing the Display trait for R
 impl core::fmt::Display for R {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             R::Some(value) => write!(f, "{}", value),
             // Handle other variants if they are added in the future
@@ -88,7 +88,7 @@ impl core::fmt::Display for R {
 }
 
 impl core::fmt::Display for RError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             RErrorKind::Zero => write!(f, "zero is not allowed"),
             RErrorKind::ParseError(e) => e.fmt(f),

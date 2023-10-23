@@ -77,7 +77,7 @@ impl core::str::FromStr for Bits {
 
 // Implementing the Display trait for Bits
 impl core::fmt::Display for Bits {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             Bits::Some(value) => write!(f, "{}", value),
             // Handle other variants if they are added in the future
@@ -86,7 +86,7 @@ impl core::fmt::Display for Bits {
 }
 
 impl core::fmt::Display for BitsError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
             BitsErrorKind::Zero => write!(f, "zero is not allowed"),
             BitsErrorKind::ParseError(e) => e.fmt(f),

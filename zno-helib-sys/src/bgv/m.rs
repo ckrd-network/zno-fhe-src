@@ -35,6 +35,7 @@ pub struct MError {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum MErrorKind {
+    InvalidContext,
     NegativeValue,
     NoValue,
     OutOfRange(String),
@@ -141,6 +142,7 @@ impl core::fmt::Display for M {
 impl core::fmt::Display for MError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {
+            MErrorKind::InvalidContext => write!(f, "the UniquePtr to Context is null"),
             MErrorKind::NegativeValue => write!(f, "negative value is not allowed"),
             MErrorKind::NoValue => write!(f, "absent value is not allowed"),
             MErrorKind::OutOfRange(s) => write!(f, "{}", s),

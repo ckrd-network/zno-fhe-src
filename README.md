@@ -72,7 +72,9 @@ RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --targe
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
-cargo test --lib zno_helib_sys::bgv::m::* --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+cargo test --lib bgv::context:: --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+
+cargo test --lib bgv::m:: --features static helib --manifest-path zno-helib-sys/Cargo.toml --verbose --message-format=json -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 ```

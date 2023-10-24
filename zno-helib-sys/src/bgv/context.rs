@@ -159,7 +159,8 @@ impl Context {
     ///
     /// Returns an `Err` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
     pub fn get_m(&self) -> Result<M, MError> {
-        let ffi_optional = ffi::get_m(self.inner.as_ref().unwrap());
+        let context_ref = self.inner.as_ref().ok_or(MError { kind: MErrorKind::InvalidContext })?;
+        let ffi_optional = ffi::get_m(context_ref);
 
         // Dereference the UniquePtr to get the underlying ffi::OptionalLong.
         // Note: Assume get_m cannot return a null pointer. If it can, this code needs to handle that case.
@@ -210,7 +211,7 @@ mod tests {
         };
 
         Context::new(params)
-            .map_err(BGVError::from) // Convert any errors from Context::new using the From trait
+            //.map_err(BGVError::from) // Convert any errors from Context::new using the From trait
     }
 
     #[test]
@@ -223,7 +224,7 @@ mod tests {
     #[test]
     fn test_bgvcontext_new() {
         // Set up the input parameters
-        let context = setup_bgv_context_with_m(32).expect("BGV context creation should succeed");;
+        let context = setup_bgv_context_with_m(32).expect("BGV context creation should succeed");
 
         let actual_m = context.get_m().expect("Retrieving M value failed"); // Panic if get_m() returns an Err
 

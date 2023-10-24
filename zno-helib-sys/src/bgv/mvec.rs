@@ -53,12 +53,12 @@ pub struct Mvec {
     values: Vec<NonZeroU32>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MvecError {
     kind: MvecErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum MvecErrorKind {
     ZeroValue,
     ParseError(ParseIntError),

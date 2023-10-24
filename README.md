@@ -72,9 +72,12 @@ RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --targe
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
+cargo test --lib zno_helib_sys::bgv::m::* --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+
+cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 ```
 
-#### Test
+#### Source
 
 ```shell
 target=x86_64-unknown-linux-gnu
@@ -84,10 +87,6 @@ set -ex
 
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-unit-test-sys-release.txt
-
-cargo test zno_helib_sys::bgv::m::* --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
-
-cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 set +ex
 

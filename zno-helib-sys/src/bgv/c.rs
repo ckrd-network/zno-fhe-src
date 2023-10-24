@@ -27,12 +27,12 @@ pub enum C {
     Some(NonZeroU32),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CError {
     kind: CErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CErrorKind {
     Zero,
     ParseError(ParseIntError),

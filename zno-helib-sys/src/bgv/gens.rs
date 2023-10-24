@@ -49,12 +49,12 @@ use std::str::FromStr;
 #[derive(Debug, PartialEq)]
 pub struct Gens(Vec<NonZeroU32>);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GensError {
     kind: GensErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum GensErrorKind {
     Zero,
     ParseError(ParseIntError),

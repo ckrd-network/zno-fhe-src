@@ -57,12 +57,12 @@ pub struct Ords {
     values: Vec<NonZeroU32>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct OrdsError {
     kind: OrdsErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum OrdsErrorKind {
     Zero,
     ParseError(ParseIntError),

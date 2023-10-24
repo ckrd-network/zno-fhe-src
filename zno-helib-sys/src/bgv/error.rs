@@ -10,7 +10,7 @@ use super::ords::OrdsError;
 use super::p::PError;
 use super::r::RError;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BGVError {
     BitsError(BitsError),
     BootstrapError(BootstrapError),

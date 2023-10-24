@@ -28,12 +28,12 @@ pub enum Bits {
     Some(NonZeroU32),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BitsError {
     kind: BitsErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BitsErrorKind {
     Zero,
     ParseError(ParseIntError),

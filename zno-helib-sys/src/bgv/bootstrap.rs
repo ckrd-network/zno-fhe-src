@@ -50,7 +50,7 @@ pub enum Bootstrap {
     Thick,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BootstrapError;
 
 impl core::fmt::Display for BootstrapError {

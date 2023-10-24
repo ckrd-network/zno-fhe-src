@@ -30,12 +30,12 @@ pub enum R {
     // Add other variants if necessary
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RError {
     kind: RErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum RErrorKind {
     Zero,
     ParseError(ParseIntError),

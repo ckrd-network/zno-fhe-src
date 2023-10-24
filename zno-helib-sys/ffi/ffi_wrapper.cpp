@@ -36,13 +36,13 @@ namespace helib {
             return std::unique_ptr<helib::Context>(raw_ptr);
         } catch(const std::exception& e) {
             // Log the error message if needed: e.what()
-            return nullptr; // Indicate an error occurred.
+            return nullptr; // Indicates an error occurred.
         }
     }
 
 
     std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
-        builder->m(m); // Assuming `m` modifies the object and is void.
+        builder->m(m);  // Assumes `m` modifies the object and is void.
         return builder; // Return the unique_ptr.
     }
 
@@ -97,6 +97,21 @@ namespace helib {
     void set_thinboot(BGVContextBuilder& builder) {
         builder.thinboot();
         // return builder;
+    }
+
+    std::unique_ptr<OptionalLong> get_m(const Context& context) {
+        auto result = std::make_unique<OptionalLong>();
+        std::optional<long> opt = context.getM();
+
+        if (opt.has_value()) {
+            result->has_value = true;
+            result->value = *opt;
+        } else {
+            result->has_value = false;
+            // value can remain uninitialized or be set to 0, since it's ignored when has_value is false
+        }
+
+        return result;
     }
 
 }  // namespace helib_wrapper

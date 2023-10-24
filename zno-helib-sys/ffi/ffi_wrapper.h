@@ -6,23 +6,15 @@
 #include <memory>
 #include <optional>
 #include <vector>
-#include <vector>
 
 #include <helib/helib.h>
-#include <helib/Context.h>  // You might need to adjust the path based on your project's directory structure.// Assuming this is the path to the ContextBuilder within HElib
+#include <helib/Context.h>
 #include <helib/EncryptedArray.h>  // For potential bootstrapping flags or other parameters
 #include <helib/apiAttributes.h>
 #include <helib/Context.h>
 
 #include <rust/cxx.h>
-    // std::unique_ptr<helib::Context> create_bgv_context_wrapper(
-    //     uint64_t m,
-    //     uint64_t p,
-    //     uint64_t r,
-    //     uint64_t bits,
-    //     const rust::cxxbridge1::Vec<long int>& gens,
-    //     const rust::cxxbridge1::Vec<long int>& ords
-    // );
+
 namespace helib {
 
     // Declare the type alias in the helib namespace after including the ContextBuilder definition.
@@ -32,7 +24,7 @@ namespace helib {
 
     // This function returns a new Context pointer
     std::unique_ptr<::helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder);
-    
+
     std::unique_ptr<::helib::BGVContextBuilder> new_bgv_builder();
 
     std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m);
@@ -47,6 +39,21 @@ namespace helib {
     BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec);
     BGVContextBuilder& set_thickboot(BGVContextBuilder& builder);
     void set_thinboot(BGVContextBuilder& builder);
+
+    // Error code definitions
+    struct OptionalLong {
+        bool has_value;
+        long value; // used if has_value is true
+    };
+
+    enum class MErrorKind {
+        None,
+        OutOfRange,
+        Zero,
+        Generic,
+    };
+
+    std::unique_ptr<OptionalLong> get_m(const helib::Context& context);
 
 }  // namespace helib
 

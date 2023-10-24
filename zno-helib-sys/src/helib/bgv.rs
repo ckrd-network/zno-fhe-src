@@ -13,14 +13,18 @@ use crate::bgv::*;
 #[cxx::bridge(namespace="helib")]
 pub mod ffi {
 
+    pub struct OptionalLong {
+        pub has_value: bool,
+        pub value: i64, // `i64` is used to represent C's `long`.
+    }
+
     unsafe extern "C++" {
         include!("zno-helib-sys/ffi/ffi_wrapper.h");
 
 
         // Non-template representation for BGV.
         type Context;
-
-        fn getM(self: &Context) -> i64; // matching the C++ 'long' type
+        type OptionalLong;
 
         type BGVContextBuilder;
 
@@ -50,8 +54,14 @@ pub mod ffi {
         // fn set_thickboot(builder: Pin<&mut BGVContextBuilder>);
         // fn set_thinboot(builder: Pin<&mut BGVContextBuilder>);
 
+        fn get_m(context: &Context) -> UniquePtr<OptionalLong>;
+
     }
 
+    extern "Rust" {
+        type M;
+        type MError;
+    }
     // // External Rust functions, used to convert Rust types into types that can be used in C++:
     // extern "Rust" {
     //     fn convert_to_vec(s: &str) -> Vec<i64>;

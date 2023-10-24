@@ -50,12 +50,12 @@ pub enum Bootstrappable {
     Disabled,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BootstrappableError {
     pub kind: BootstrappableErrorKind,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BootstrappableErrorKind {
     InvalidString(String),
     // other kinds of errors can be added here

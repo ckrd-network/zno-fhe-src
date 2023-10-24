@@ -28,14 +28,6 @@ pub mod ffi {
 
         type BGVContextBuilder;
 
-        // Representations of the C++ ContextBuilder methods in Rust.
-        // Assuming the builder methods don't need parameters from Rust.
-        // fn build(self: &BGVContextBuilder) -> UniquePtr<bgv::ffi::Context>;
-
-        // fn makeBGVContextBuilder() -> UniquePtr<BGVContextBuilder>;
-
-        // fn from_std_vector(rustVec: &CxxVector<i64>) -> Vec<i64>;
-
         fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
 
         fn new_bgv_builder() -> UniquePtr<BGVContextBuilder>;
@@ -62,10 +54,6 @@ pub mod ffi {
         type M;
         type MError;
     }
-    // // External Rust functions, used to convert Rust types into types that can be used in C++:
-    // extern "Rust" {
-    //     fn convert_to_vec(s: &str) -> Vec<i64>;
-    // }
 }
 
 /// - Rust-side Null Pointer Check: On receipt of a raw pointer from C++,
@@ -208,18 +196,13 @@ mod tests {
     //     Context::new(params).expect("BGV context creation")
     // }
 
-    // #[test]
-    // fn test_bgv_context_builder_new() {
-    //     let builder = BGVContextBuilder::new();
-    //     assert!(builder.is_ok(), "Expected valid BGVContextBuilder, got error instead.");
-    // }
 
-    // #[test]
-    // fn test_build_with_valid_builder() {
-    //     let builder = BGVContextBuilder::new();
-    //     let context = builder.build();
-    //     assert!(context.is_ok());
-    // }
+    #[test]
+    fn test_build_with_valid_builder() {
+        let builder = BGVContextBuilder::new();
+        let context = builder.build();
+        assert!(context.is_ok());
+    }
 
     // #[test]
     // fn test_bgvcontext_new() {

@@ -12,20 +12,11 @@ use crate::bgv::*;
 
 #[cxx::bridge(namespace="helib")]
 pub mod ffi {
-
-    pub struct OptionalLong {
-        pub has_value: bool,
-        pub value: i64, // `i64` is used to represent C's `long`.
-    }
-
     unsafe extern "C++" {
         include!("zno-helib-sys/ffi/ffi_wrapper.h");
 
-
         // Non-template representation for BGV.
         type Context;
-        type OptionalLong;
-
         type BGVContextBuilder;
 
         fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
@@ -45,8 +36,6 @@ pub mod ffi {
         // fn set_r(builder: Pin<&mut BGVContextBuilder>, r: i64);
         // fn set_thickboot(builder: Pin<&mut BGVContextBuilder>);
         // fn set_thinboot(builder: Pin<&mut BGVContextBuilder>);
-
-        // fn get_m(context: &Context) -> UniquePtr<OptionalLong>;
 
         fn getM(self: &Context) -> i64;
     }
@@ -103,7 +92,7 @@ impl Display for FFIError {
 // Logic specific to the HElib implementation belongs here.
 pub struct BGVContextBuilder {
     // Holds a pointer to the C++ object
-    inner: UniquePtr<ffi::BGVContextBuilder>,
+    inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
 }
 
 impl BGVContextBuilder {

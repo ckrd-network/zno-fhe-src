@@ -11,14 +11,10 @@ pub use crate::openfhe::bgv::*;
 #[cfg(feature = "seal")]
 pub use crate::seal::bgv::*;
 
-pub struct OptionalLong {
-    pub value: Option<core::num::NonZeroU32>,
-}
-
 #[derive(Debug, Clone)]
 pub enum ConversionError {
     NegativeValue,
-    NoValue,                   // The ffi::OptionalLong doesn't contain a value.
+    NoValue,                   // The Context doesn't contain a value.
     ZeroValue,                 // The value is 0, which isn't allowed in NonZeroU32.
     OutOfRange(std::num::TryFromIntError), // The value is out of the range that can be represented by a u32.
 }
@@ -27,7 +23,7 @@ impl core::fmt::Display for ConversionError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             ConversionError::NegativeValue => write!(f, "Negative value is not allowed in NonZeroU32."),
-            ConversionError::NoValue => write!(f, "No value present in ffi::OptionalLong."),
+            ConversionError::NoValue => write!(f, "No value present in Context."),
             ConversionError::ZeroValue => write!(f, "Zero value is not allowed in NonZeroU32."),
             ConversionError::OutOfRange(e) => write!(f, "Value out of range for u32: {}", e),
         }
@@ -151,6 +147,13 @@ impl core::fmt::Display for Context {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use mockall::{automock, predicate::*};
+
+    #[automock]
+    pub trait ContextFFI {
+        fn getM(&self) -> i64;
+        // Add other methods as needed
+    }
 
     #[test]
     fn test_build_with_valid_builder() {
@@ -179,12 +182,18 @@ mod tests {
     }
 
     // #[test]
-    // fn test_set_m_zero() {
+    // fn test_get_m_zero() {
     //     let m = M::new(0);
     //     params = BGVParams { m.unwrap(), ..BGVParams::default() };
-    //     let context_result = Context::new(params); // Create your context
+    //     let context_result = Context::new(params);
     //     assert!(context_result.is_err(), "Expected error for m_value of 0, but got Ok");
-    //     if let Err(err) = context_result {
+
+    //     // Mock the `getM` method to return a invalid value
+    //     let mut mock_context_ffi = MockContextFFI::new();
+    //     mock_context.expect_getM().returning(|| 0);
+
+    //     let result = get_m(&mock_context_ffi); // Create your context
+    //     if let Err(err) = result {
     //         assert_eq!(err, BGVError::MError(MError { kind: MErrorKind::Zero }));
     //     }
     // }

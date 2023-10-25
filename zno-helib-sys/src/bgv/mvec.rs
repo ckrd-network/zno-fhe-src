@@ -84,7 +84,7 @@ impl Mvec {
 /// Provides a default `Mvec` value.
 impl Default for Mvec {
     fn default() -> Self {
-        Mvec::new(vec![2, 3, 5]).unwrap_or_else(|_| panic!("Default values for Mvec should be valid!"))
+        Mvec::new(vec![7, 5, 9, 13]).unwrap_or_else(|_| panic!("Default values for Mvec should be valid!"))
     }
 }
 

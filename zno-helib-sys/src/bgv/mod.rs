@@ -31,4 +31,3 @@ pub use self::error::*;
 pub trait ToU32<E> {
     fn to_u32(&self) -> Result<u32, E>;
 }
-

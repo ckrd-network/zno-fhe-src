@@ -99,19 +99,6 @@ namespace helib {
         // return builder;
     }
 
-    std::unique_ptr<OptionalLong> get_m(const Context& context) {
-        auto result = std::make_unique<OptionalLong>();
-        std::optional<long> opt = context.getM();
-
-        if (opt.has_value()) {
-            result->has_value = true;
-            result->value = *opt;
-        } else {
-            result->has_value = false;
-            // value can remain uninitialized or be set to 0, since it's ignored when has_value is false
-        }
-
-        return result;
-    }
+    long get_m(const Context& context) { return context.getM(); }
 
 }  // namespace helib_wrapper

@@ -24,6 +24,33 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 /// This struct provides a convenient way to manage all these parameters, ensuring they
 /// are all present when initializing the BGV scheme in HElib through FFI.
 ///
+/// # Defaults
+///
+/// NOTE: The parameters used in this example code are for demonstration only.
+/// They were chosen to provide the best performance of execution while
+/// providing the context to demonstrate how to use the "Binary Arithmetic
+/// APIs". The parameters do not provide the security level that might be
+/// required by real use/application scenarios.
+///
+/// ```
+///  // Plaintext prime modulus.
+///  long p = 2;
+///  // Cyclotomic polynomial - defines phi(m).
+///  long m = 4095;
+///  // Hensel lifting (default = 1).
+///  long r = 1;
+///  // Number of bits of the modulus chain.
+///  long bits = 500;
+///  // Number of columns of Key-Switching matrix (typically 2 or 3).
+///  long c = 2;
+///  // Factorisation of m required for bootstrapping.
+///  std::vector<long> mvec = {7, 5, 9, 13};
+///  // Generating set of Zm* group.
+///  std::vector<long> gens = {2341, 3277, 911};
+///  // Orders of the previous generators.
+///  std::vector<long> ords = {6, 4, 6};
+/// ```
+///
 /// # Errors
 ///
 /// While the `BGVParams` struct aggregates various parameters and does not directly produce errors,

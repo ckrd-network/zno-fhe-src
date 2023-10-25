@@ -81,7 +81,7 @@ impl crate::bgv::ToU32<PError> for P {
 /// Provides a default `P` value. A panic should never occur, as this is a safer default.
 impl Default for P {
     fn default() -> Self {
-        P::Some(NonZeroU32::new(11).expect("11 is a valid non-zero u32 value.")) // Assuming 11 is a safe default for P.
+        P::Some(NonZeroU32::new(2).expect("11 is a valid non-zero u32 value.")) // Assuming 11 is a safe default for P.
     }
 }
 

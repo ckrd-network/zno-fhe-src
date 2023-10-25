@@ -9,7 +9,7 @@ pub use crate::bgv::ords::*;
 pub use crate::bgv::mvec::*;
 pub use crate::bgv::bootstrap::*;
 pub use crate::bgv::bootstrappable::*;
-pub use crate::bgv::bgv_params::*;
+pub use crate::bgv::parameters::*;
 pub use crate::bgv::context::*;
 pub use crate::bgv::error::*;
 

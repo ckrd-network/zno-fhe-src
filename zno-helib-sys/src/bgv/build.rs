@@ -1,4 +1,4 @@
-fn build_bgv(builder: &mut ffi::ContextBuilderWrapper, params: BGVParams) -> UniquePtr<ffi::Context> {
+fn build_bgv(builder: &mut ffi::ContextBuilderWrapper, params: Parameters) -> UniquePtr<ffi::Context> {
     ffi::set_m(builder, params.m.value() as i64); // Assuming `.value()` returns the underlying integer
     ffi::set_p(builder, params.p.value() as i64);
     ffi::set_r(builder, params.r.value() as i64);

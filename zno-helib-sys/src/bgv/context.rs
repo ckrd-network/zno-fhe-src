@@ -2,6 +2,7 @@ use std::convert::TryFrom;
 use std::convert::TryInto;
 
 use crate::prelude::*;
+use super::*;
 
 // Bring `Context` to `bgv` module level, avoiding the need to include `ffi` in the path
 #[cfg(feature = "helib")]
@@ -94,12 +95,12 @@ impl Context {
     // Create a new instance of the C++ object Context.
     // This is safe because we're not exposing the inner pointer directly.
     // Logic specific to the HElib implementation belongs here.
-    pub fn new(params: crate::bgv::BGVParams) -> Result<Self, BGVError> {
+    pub fn new(params: crate::bgv::Parameters) -> Result<Self, BGVError> {
         let mut params = params; // Make params mutable
-        let cb = BGVContextBuilder::new()
+        let cb = Builder::new()
                      .set_m(params.m)?;
 
-        // Build BGV context. Consume the instance of BGVContextBuilder.
+        // Build BGV context. Consume the instance of Builder.
         // return a UniquePtr<ffi::Context>
         let cntxt = cb.build();
         match cntxt {
@@ -122,19 +123,6 @@ impl Context {
             .collect()
     }
 
-
-    /// Get the `m` parameter from the HElib `Context`.
-    ///
-    /// # Errors
-    ///
-    /// Returns an `Err` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
-    pub fn get_m(&self) -> Result<M, MError> {
-        // Call the C++ function through the FFI
-        let m_value = self.inner.getM();
-
-        // Convert the C++ result to Rust M enum
-        M::from_i64(m_value)
-    }
 }
 
 // Implement Display for printing, debugging, etc.
@@ -142,6 +130,23 @@ impl core::fmt::Display for Context {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "Context") // How this type name should appear
     }
+}
+
+impl Getters for Context {
+    /// Get the `m` parameter from the `Context`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `Err` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
+    fn get_m(&self) -> Result<M, MError> {
+        // Call the C++ function through the FFI
+        let m_value = self.inner.getM();
+
+        // Convert the C++ result to Rust M enum
+        M::from_i64(m_value)
+    }
+
+    // Similarly, implement other getters...
 }
 
 #[cfg(test)]
@@ -157,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_build_with_valid_builder() {
-        let builder = BGVContextBuilder::new();
+        let builder = Builder::new();
         let context = builder.build();
         assert!(context.is_ok());
     }
@@ -165,7 +170,7 @@ mod tests {
     #[test]
     fn test_bgv_context_new() {
         // Set up the input parameters
-        let context = Context::new(BGVParams::default()).expect("BGV context creation should succeed");
+        let context = Context::new(Parameters::default()).expect("BGV context creation should succeed");
         let actual_m = context.get_m().expect("Retrieving M value failed"); // Panic if get_m() returns an Err
         let expected_m = M::new(4095).unwrap();
         assert_eq!(actual_m, expected_m, "BGV scheme parameter M, should be set correctly");
@@ -173,7 +178,7 @@ mod tests {
 
     #[test]
     fn test_get_m_valid_value() {
-        let context_result = Context::new(BGVParams::default()); // Create your context
+        let context_result = Context::new(Parameters::default()); // Create your context
         let m = context_result
                     .expect("Expected to successfully retrieve Context")
                     .get_m()
@@ -184,7 +189,7 @@ mod tests {
     // #[test]
     // fn test_get_m_zero() {
     //     let m = M::new(0);
-    //     params = BGVParams { m.unwrap(), ..BGVParams::default() };
+    //     params = Parameters { m.unwrap(), ..Parameters::default() };
     //     let context_result = Context::new(params);
     //     assert!(context_result.is_err(), "Expected error for m_value of 0, but got Ok");
 

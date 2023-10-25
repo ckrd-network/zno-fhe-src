@@ -46,8 +46,9 @@ pub mod ffi {
         // fn set_thickboot(builder: Pin<&mut BGVContextBuilder>);
         // fn set_thinboot(builder: Pin<&mut BGVContextBuilder>);
 
-        fn get_m(context: &Context) -> UniquePtr<OptionalLong>;
+        // fn get_m(context: &Context) -> UniquePtr<OptionalLong>;
 
+        fn getM(self: &Context) -> i64;
     }
 
     extern "Rust" {
@@ -119,6 +120,10 @@ impl BGVContextBuilder {
         // This call is safe because it transfers ownership of the Context
         // to the UniquePtr, which ensures it will be cleaned up correctly.
         let ctx_ptr: UniquePtr<ffi::Context> = ffi::build_ptr(self.inner);
+        // Check if the pointer is null
+        if ctx_ptr.is_null() {
+            return Err(FFIError::NullPointer(NullPointerError));
+        }
         Ok(Context { inner: ctx_ptr })
     }
 
@@ -183,63 +188,57 @@ impl BGVContextBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cxx::CxxVector;
 
     // Helper function to create a Context with default or dummy data.
-    // fn setup_bgv_context_with_m(m_value: u32) -> Context {
-    //     let m = M::new(m_value).expect("Should be able to create a new M");
-
-    //     let params = BGVParams {
-    //         m,
-    //         ..Default::default() // ... other fields with dummy or default data
-    //     };
-
-    //     Context::new(params).expect("BGV context creation")
-    // }
-
+    fn setup_bgv_context(parameters: BGVParams) -> Context {
+        Context::new(parameters).expect("BGV context creation")
+    }
 
     #[test]
-    fn test_build_with_valid_builder() {
-        let builder = BGVContextBuilder::new();
-        let context = builder.build();
+    fn test_context_with_defaults() {
+        let context = Context::new(BGVParams::default());
         assert!(context.is_ok());
     }
+
+    // #[test]
+    // fn test_bgv_context_builder_build_null_pointer() {
+    //     // Mock/stub the ffi::build_ptr to return a null pointer
+    //     // ...
+    //     let builder = BGVContextBuilder::new();
+    //     let result = Context::new(parameters).expect("BGV context creation");
+    //     assert!(result.is_err());
+    //     if let Err(err) = result {
+    //         assert_eq!(err, FFIError::NullPointer(NullPointerError));
+    //     } else {
+    //         panic!("Expected an error!");
+    //     }
+    // }
+
+    // #[test]
+    // fn test_bgv_context_builder_build_cpp_exception() {
+    //     // Mock/stub the ffi::build_ptr to simulate a C++ exception
+    //     // ...
+    //     let builder = BGVContextBuilder::new();
+    //     let result = builder.build();
+    //     assert!(result.is_err());
+    //     if let Err(err) = result {
+    //         match err {
+    //             FFIError::CppException(msg) => assert!(msg.contains("Expected C++ exception message")),
+    //             _ => panic!("Expected a C++ exception!"),
+    //         }
+    //     } else {
+    //         panic!("Expected an error!");
+    //     }
+    // }
 
     // #[test]
     // fn test_bgvcontext_new() {
     //     // Set up the input parameters
     //     let context = setup_bgv_context_with_m(32);
-
     //     let actual_m = context.get_m().unwrap(); // this will panic if get_m() returns an Er
-
     //     let expected_m = M::new(4095).unwrap();
     //     assert_eq!(actual_m, expected_m, "BGV scheme parameter M, should be set correctly");
     // }
 
-    // #[test]
-    // fn test_get_m_valid() {
-    //     // Set up your Context and BGV with valid parameters.
-    //     // This part depends on your specific setup for creating a Context.
-
-    //     let context = setup_bgv_context_with_m(4095); // Create your context
-    //     let expected_m = context.get_m().unwrap();
-    //     assert_eq!(m, M::Some(core::num::NonZeroU32::new(4095).unwrap())); // Use expected value
-    // }
-
-    // #[test]
-    // fn test_get_m_zero() {
-    //     // Set up your Context and BGV in such a way that getM would return 0.
-    //     // This might be tricky, because it depends on the internal state of the Context in C++.
-
-    //     let context = setup_bgv_context_with_m(0); // Create your context
-    //     assert_eq!(context.get_m(), Err(MError { kind: MErrorKind::Zero }));
-    // }
-
-    // #[test]
-    // fn test_get_m_overflow() {
-    //     // Set up your Context and BGV in such a way that getM would return a value larger than u32::MAX.
-    //     // This scenario might be unrealistic depending on the constraints of your actual C++ library.
-
-    //     let context = setup_bgv_context_with_m(4095); // Create your context
-    //     assert!(matches!(context.get_m(), Err(MError { kind: MErrorKind::ParseError(_) })));
-    // }
 }

@@ -50,7 +50,7 @@ impl C {
 /// Provides a default `C` value.
 impl Default for C {
     fn default() -> Self {
-        C::new(32).unwrap_or_else(|_| panic!("Default value for C should be valid!"))
+        C::new(2).unwrap_or_else(|_| panic!("Default value for C should be valid!"))
     }
 }
 

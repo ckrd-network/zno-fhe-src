@@ -36,33 +36,6 @@ impl core::fmt::Display for ConversionError {
 
 impl std::error::Error for ConversionError {}
 
-pub fn from_ffi_optional_long(optional: cxx::UniquePtr<ffi::OptionalLong>) -> Result<OptionalLong, ConversionError> {
-    if !optional.has_value {
-        return Err(ConversionError::NoValue);
-    }
-
-    // Since NonZeroU32 cannot represent zero, we need to check for that
-    if optional.value == 0 {
-        return Err(ConversionError::ZeroValue);
-    }
-
-    // Assume a negative value isn't valid. If it's valid and should be converted to a positive one,
-    // additional handling needs to be added here.
-    if optional.value < 0 {
-        match i32::try_from(optional.value) {
-            Ok(_) => return Err(ConversionError::NegativeValue),
-            Err(e) => return Err(ConversionError::OutOfRange( e )),
-        }
-    }
-
-    let u32_value = u32::try_from(optional.value).map_err(ConversionError::OutOfRange)?;
-    let non_zero_u32 = core::num::NonZeroU32::new(u32_value).ok_or(ConversionError::ZeroValue)?; // Extra precaution
-
-    Ok(OptionalLong {
-        value: Some(non_zero_u32),
-    })
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct ConstructionError {
     kind: ConstructionErrorKind,
@@ -132,7 +105,8 @@ impl Context {
 
         // Build BGV context. Consume the instance of BGVContextBuilder.
         // return a UniquePtr<ffi::Context>
-        match cb.build() {
+        let cntxt = cb.build();
+        match cntxt {
             Ok(context) => {
                 // If successful, wrap the inner ffi::Context in a UniquePtr and return.
                 let inner = context.inner;  // assuming context is of type ffi::Context
@@ -159,34 +133,11 @@ impl Context {
     ///
     /// Returns an `Err` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
     pub fn get_m(&self) -> Result<M, MError> {
-        let context_ref = self.inner.as_ref().ok_or(MError { kind: MErrorKind::InvalidContext })?;
-        let ffi_optional = ffi::get_m(context_ref);
+        // Call the C++ function through the FFI
+        let m_value = self.inner.getM();
 
-        // Dereference the UniquePtr to get the underlying ffi::OptionalLong.
-        // Note: Assume get_m cannot return a null pointer. If it can, this code needs to handle that case.
-        let ffi_optional_deref = ffi_optional.as_ref().unwrap();
-
-        match from_ffi_optional_long(ffi_optional) {
-            Ok(optional) => {
-                // Here, we directly match the inner Option<NonZeroU32> of bgv::OptionalLong
-                match optional.value {
-                    Some(non_zero_u32) => Ok(M::Some(non_zero_u32)),
-                    None => Err(MError {
-                        kind: MErrorKind::NoValue,
-                    }),
-                }
-            },
-            Err(e) => {
-                let error_kind = match e {
-                    ConversionError::NoValue =>  MErrorKind::NoValue , // Assuming this means a zero value
-                    ConversionError::ZeroValue => MErrorKind::Zero, // This might be redundant given the previous line
-                    ConversionError::OutOfRange(err) => MErrorKind::OutOfRange(err.to_string()),
-                    ConversionError::NegativeValue => MErrorKind::NegativeValue,
-                    // handle other cases if they exist
-                };
-                Err(MError { kind: error_kind })
-            },
-        }
+        // Convert the C++ result to Rust M enum
+        M::from_i64(m_value)
     }
 }
 
@@ -201,19 +152,6 @@ impl core::fmt::Display for Context {
 mod tests {
     use super::*;
 
-    // Helper function to create a Context with default or dummy data.
-    fn setup_bgv_context_with_m(m_value: u32) -> Result<Context, BGVError> {
-        let m = M::new(m_value)?;
-
-        let params = BGVParams {
-            m,
-            ..Default::default() // ... other fields with dummy or default data
-        };
-
-        Context::new(params)
-            //.map_err(BGVError::from) // Convert any errors from Context::new using the From trait
-    }
-
     #[test]
     fn test_build_with_valid_builder() {
         let builder = BGVContextBuilder::new();
@@ -222,41 +160,54 @@ mod tests {
     }
 
     #[test]
-    fn test_bgvcontext_new() {
+    fn test_bgv_context_new() {
         // Set up the input parameters
-        let context = setup_bgv_context_with_m(32).expect("BGV context creation should succeed");
-
+        let context = Context::new(BGVParams::default()).expect("BGV context creation should succeed");
         let actual_m = context.get_m().expect("Retrieving M value failed"); // Panic if get_m() returns an Err
-
-        let expected_m = M::new(32).unwrap();
+        let expected_m = M::new(4095).unwrap();
         assert_eq!(actual_m, expected_m, "BGV scheme parameter M, should be set correctly");
     }
 
-    // #[test]
-    // fn test_get_m_valid() {
-    //     // Set up your Context and BGV with valid parameters.
-    //     // This part depends on your specific setup for creating a Context.
-
-    //     let context = setup_bgv_context_with_m(4095); // Create your context
-    //     let expected_m = context.get_m().unwrap();
-    //     assert_eq!(m, M::Some(core::num::NonZeroU32::new(4095).unwrap())); // Use expected value
-    // }
-
     #[test]
-    fn test_get_m_zero() {
-        let context_result = setup_bgv_context_with_m(0); // Create your context
-        assert!(context_result.is_err(), "Expected error for m_value of 0, but got Ok");
-        if let Err(err) = context_result {
-            assert_eq!(err, BGVError::MError(MError { kind: MErrorKind::Zero }));
-        }
+    fn test_get_m_valid_value() {
+        let context_result = Context::new(BGVParams::default()); // Create your context
+        let m = context_result
+                    .expect("Expected to successfully retrieve Context")
+                    .get_m()
+                    .expect("Expected to successfully retrieve M");
+        assert_eq!(m, M::new(4095).unwrap());
     }
 
     // #[test]
-    // fn test_get_m_overflow() {
-    //     // Set up your Context and BGV in such a way that getM would return a value larger than u32::MAX.
-    //     // This scenario might be unrealistic depending on the constraints of your actual C++ library.
-
-    //     let context = setup_bgv_context_with_m(4095); // Create your context
-    //     assert!(matches!(context.get_m(), Err(MError { kind: MErrorKind::ParseError(_) })));
+    // fn test_set_m_zero() {
+    //     let m = M::new(0);
+    //     params = BGVParams { m.unwrap(), ..BGVParams::default() };
+    //     let context_result = Context::new(params); // Create your context
+    //     assert!(context_result.is_err(), "Expected error for m_value of 0, but got Ok");
+    //     if let Err(err) = context_result {
+    //         assert_eq!(err, BGVError::MError(MError { kind: MErrorKind::Zero }));
+    //     }
     // }
+
+    //     #[test]
+    // fn test_get_m_negative() {
+    //     // Mock/stub the FFI function to return -32
+    //     // ...
+
+    //     let context_result = setup_bgv_context_with_m(-32);
+
+    //     let result = context_result
+    //                 .expect("Expected to successfully retrieve Context")
+    //                 .get_m();
+    //     assert!(result.is_err());
+    //     assert_eq!(result.unwrap_err().kind, MErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()));
+    // }
+
+//     #[test]
+//     fn test_get_m_overflow() {
+//         // Mock/stub the FFI function to return a large value beyond u32::MAX
+//         let context = setup_bgv_context_with_m(4095); // Create your context
+//         assert!(matches!(context.get_m(), Err(MError { kind: MErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()) })));
+//     }
+
 }

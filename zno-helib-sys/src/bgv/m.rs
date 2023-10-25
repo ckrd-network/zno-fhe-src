@@ -79,7 +79,7 @@ impl crate::bgv::ToU32<MError> for M {
 /// Provides a default `M` value. A panic should never occur, as this is a safer default.
 impl Default for M {
     fn default() -> Self {
-        M::Some(core::num::NonZeroU32::new(32).expect("32 is a valid non-zero u32 value."))
+        M::Some(core::num::NonZeroU32::new(4095).expect("32 is a valid non-zero u32 value."))
     }
 }
 

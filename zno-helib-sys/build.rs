@@ -86,6 +86,11 @@ fn main() -> miette::Result<()> {
         panic!("Failed to copy library files to integration tests: {}", e);
     }
 
+    // Recursively copy files from ./src/helib_pack/lib to integration tests directory
+    if let Err(e) = copy_dir_to(&rtfcts.lib_dir, &rtfcts.tests_target_dir) {
+        panic!("Failed to copy library files to target integration tests: {}", e);
+    }
+
     rtfcts.print_cargo_metadata();
 
     Ok(())
@@ -132,6 +137,7 @@ pub struct Artifacts {
     lib_dir: PathBuf,
     libs_dir: PathBuf,
     tests_dir: PathBuf,
+    tests_target_dir: PathBuf,
     bin_dir: PathBuf,
     share_dir: PathBuf,
     libs: Vec<String>,
@@ -226,10 +232,12 @@ impl Build {
         fs::create_dir_all(&libs_dir).expect("Failed to create 'libs/' directory");
 
         // Construct the path to the 'libs' directory adjacent to the test binaries
-        let tests_dir = workspace_dir.join("target").join(target).join("debug").join("libs");
+        let tests_dir = workspace_dir.join("target").join("debug").join("libs");
+        let tests_target_dir = workspace_dir.join("target").join(target).join("debug").join("libs");
 
         // Create the "libs" directory in the target location if it doesn't exist
-        fs::create_dir_all(&tests_dir).expect("Could not create 'libs' directory");
+        fs::create_dir_all(&tests_dir).expect("Could not create target 'libs' directory");
+        fs::create_dir_all(&tests_target_dir).expect("Could not create 'libs' directory");
 
         let libs = if target.contains("msvc") {
             vec!["helibw".to_string(), "gmp".to_string(), "ntl".to_string()]
@@ -244,6 +252,7 @@ impl Build {
             lib_dir: pd.clone().join("lib"),
             libs_dir,
             tests_dir,
+            tests_target_dir,
             bin_dir: pd.clone().join("bin"),
             share_dir: pd.clone().join("share"),
             include_dir:pd.clone().join("include"),
@@ -276,6 +285,10 @@ impl Artifacts {
         &self.tests_dir
     }
 
+    pub fn tests_target_dir(&self) -> &Path {
+        &self.tests_target_dir
+    }
+
     pub fn bin_dir(&self) -> &Path {
         &self.bin_dir
     }
@@ -306,7 +319,7 @@ impl Artifacts {
 
         // Set rpath for Library B
         #[cfg(target_os = "macos")]
-        println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/libs");
+        println!("cargo:rustc-link-arg=-Wl,-rpath,@loader_path/../libs:@loader_path/libs:@loader_path");
 
         #[cfg(target_os = "linux")]
         println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN/../libs:$ORIGIN/libs:$ORIGIN");

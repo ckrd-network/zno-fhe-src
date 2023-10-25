@@ -12,6 +12,7 @@ Cargo.lock
 
 # Log files
 **/log*.txt
+**/helib.log
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb

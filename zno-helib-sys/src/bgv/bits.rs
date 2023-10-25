@@ -51,7 +51,7 @@ impl Bits {
 /// Provides a default `Bits` value.
 impl Default for Bits {
     fn default() -> Self {
-        Bits::new(32).unwrap_or_else(|_| panic!("Default value for Bits should be valid!"))
+        Bits::new(500).unwrap_or_else(|_| panic!("Default value for Bits should be valid!"))
     }
 }
 

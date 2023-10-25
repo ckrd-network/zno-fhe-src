@@ -40,11 +40,11 @@ namespace helib {
     BGVContextBuilder& set_thickboot(BGVContextBuilder& builder);
     void set_thinboot(BGVContextBuilder& builder);
 
-    // Error code definitions
-    struct OptionalLong {
-        bool has_value;
-        long value; // used if has_value is true
-    };
+    // // Error code definitions
+    // struct OptionalLong {
+    //     bool has_value;
+    //     long value; // used if has_value is true
+    // };
 
     enum class MErrorKind {
         None,
@@ -53,7 +53,7 @@ namespace helib {
         Generic,
     };
 
-    std::unique_ptr<OptionalLong> get_m(const helib::Context& context);
+    // std::unique_ptr<OptionalLong> get_m(const helib::Context& context);
 
 }  // namespace helib
 

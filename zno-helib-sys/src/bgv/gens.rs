@@ -81,7 +81,7 @@ impl Gens {
 /// Provides a default `Gens` value.
 impl Default for Gens {
     fn default() -> Self {
-        Gens::new(vec![3, 5, 7]).unwrap_or_else(|_| panic!("Default values for Gens should be valid!"))
+        Gens::new(vec![2341, 3277, 911]).unwrap_or_else(|_| panic!("Default values for Gens should be valid!"))
     }
 }
 

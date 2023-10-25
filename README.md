@@ -68,11 +68,11 @@ To generate the FFI bindings in the system crate
 target=x86_64-unknown-linux-gnu
 sys_dir="$(pwd)/zno-helib-sys"
 
-RUST_BACKTRACE=1 cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-sys.txt
+RUST_BACKTRACE=full cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-sys.txt
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
-cargo test --lib bgv::context:: --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+RUST_BACKTRACE=full cargo test --lib bgv::context:: --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 cargo test --lib bgv::m:: --features static helib --manifest-path zno-helib-sys/Cargo.toml --verbose --message-format=json -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 

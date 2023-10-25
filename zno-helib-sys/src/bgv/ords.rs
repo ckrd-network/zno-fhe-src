@@ -88,7 +88,7 @@ impl Ords {
 /// Provides a default `Ords` value.
 impl Default for Ords {
     fn default() -> Self {
-        Ords::new(vec![2, 3, 5]).unwrap_or_else(|_| panic!("Default value for Ords should be valid!"))
+        Ords::new(vec![6, 4, 6]).unwrap_or_else(|_| panic!("Default value for Ords should be valid!"))
     }
 }
 

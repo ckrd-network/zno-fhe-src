@@ -90,20 +90,20 @@ impl Display for FFIError {
 }
 
 // Logic specific to the HElib implementation belongs here.
-pub struct BGVContextBuilder {
+pub struct Builder {
     // Holds a pointer to the C++ object
-    inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
+    pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
 }
 
-impl BGVContextBuilder {
-    // Constructs a new BGVContextBuilder
+impl Builder {
+    // Constructs a new Builder
     pub fn new() -> Self {
-        BGVContextBuilder {
+        Builder {
             inner: ffi::new_bgv_builder(),
         }
     }
 
-    // Note: This consumes the BGVContextBuilder instance when
+    // Note: This consumes the Builder instance when
     // `cb.build()` is called, so you won't be able to use it afterward.
     pub fn build(self) -> Result<Context, FFIError> {
         // This call is safe because it transfers ownership of the Context
@@ -116,24 +116,23 @@ impl BGVContextBuilder {
         Ok(Context { inner: ctx_ptr })
     }
 
-    // pub fn set_m<T: ToU32>(mut self, value: T) -> Result<Self, MError> {
-    //     let value_u32 = value.to_u32()?; // Propagate the error if `to_u32` fails.
-    //     self.inner = ffi::set_m(self.inner, value_u32); // Assume ffi::set_m can't fail for now.
-    //     Ok(self)
-    // }
+    // Similarly, implement other setters following the same pattern...
 
-    pub fn set_m<T, E>(mut self, value: T) -> Result<Self, MError>
+}
+
+impl Setters for Builder {
+    fn set_m<T, E>(mut self, value: T) -> Result<Self, MError>
     where
+        Self: Sized,
         T: ToU32<E>,
-        E: Into<MError>, // Some way to convert E into MError
+        E: Into<MError>,
     {
-        let value_u32 = value.to_u32().map_err(Into::into)?; // Converts E into MError
+        let value_u32 = value.to_u32().map_err(Into::into)?;
         self.inner = ffi::set_m(self.inner, value_u32);
         Ok(self)
     }
 
     // Similarly, implement other setters following the same pattern...
-
 }
 
 /// #Example
@@ -180,13 +179,13 @@ mod tests {
     use cxx::CxxVector;
 
     // Helper function to create a Context with default or dummy data.
-    fn setup_bgv_context(parameters: BGVParams) -> Context {
+    fn setup_bgv_context(parameters: Parameters) -> Context {
         Context::new(parameters).expect("BGV context creation")
     }
 
     #[test]
     fn test_context_with_defaults() {
-        let context = Context::new(BGVParams::default());
+        let context = Context::new(Parameters::default());
         assert!(context.is_ok());
     }
 
@@ -194,7 +193,7 @@ mod tests {
     // fn test_bgv_context_builder_build_null_pointer() {
     //     // Mock/stub the ffi::build_ptr to return a null pointer
     //     // ...
-    //     let builder = BGVContextBuilder::new();
+    //     let builder = Builder::new();
     //     let result = Context::new(parameters).expect("BGV context creation");
     //     assert!(result.is_err());
     //     if let Err(err) = result {
@@ -208,7 +207,7 @@ mod tests {
     // fn test_bgv_context_builder_build_cpp_exception() {
     //     // Mock/stub the ffi::build_ptr to simulate a C++ exception
     //     // ...
-    //     let builder = BGVContextBuilder::new();
+    //     let builder = Builder::new();
     //     let result = builder.build();
     //     assert!(result.is_err());
     //     if let Err(err) = result {

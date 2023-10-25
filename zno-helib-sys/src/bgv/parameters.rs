@@ -53,8 +53,8 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 ///
 /// # Errors
 ///
-/// While the `BGVParams` struct aggregates various parameters and does not directly produce errors,
-/// its individual components can. When initializing or working with `BGVParams`, the following errors
+/// While the `Parameters` struct aggregates various parameters and does not directly produce errors,
+/// its individual components can. When initializing or working with `Parameters`, the following errors
 /// might be encountered from its components:
 ///
 /// - **M**:
@@ -88,7 +88,7 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 ///   - No specific errors. This type just represents a boolean flag indicating if bootstrapping
 ///     is enabled or not.
 ///
-/// It's essential to handle these errors gracefully, especially when initializing the `BGVParams` struct
+/// It's essential to handle these errors gracefully, especially when initializing the `Parameters` struct
 /// from user input or external data sources.
 ///
 /// # Safety
@@ -107,13 +107,13 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 ///
 /// # Lifetimes
 ///
-/// The `BGVParams` struct does not handle references, so there are no explicit lifetimes associated with it.
+/// The `Parameters` struct does not handle references, so there are no explicit lifetimes associated with it.
 /// All contained data has `'static` lifetime unless the parameters are created with references, which is
 /// not the case in the provided implementations.
 ///
 
 
-/// BGVParams encapsulates all the parameters required for the BGV scheme in HElib.
+/// Parameters encapsulates all the parameters required for the BGV scheme in HElib.
 ///
 /// The BGV encryption scheme is versatile, with various parameters affecting its
 /// efficiency, noise growth, and versatility in homomorphic computations. When setting
@@ -127,7 +127,7 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 ///
 /// ```
 /// # use zno::bgv::{M, P, R, C, Bits, Gens, Ords, Mvec, Bootstrappable};
-/// let params = BGVParams {
+/// let params = Parameters {
 ///     m: M::new(4095).unwrap(),
 ///     p: P::new(2).unwrap(),
 ///     r: R::new(1).unwrap(),
@@ -143,7 +143,7 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 use cxx::ExternType;
 
 #[repr(C)]
-pub struct BGVParams {
+pub struct Parameters {
     pub m: M,
     pub p: P,
     pub r: R,
@@ -156,10 +156,10 @@ pub struct BGVParams {
     pub bootstrappable: Bootstrappable,
 }
 
-impl Default for BGVParams {
-    // Use this if all-zero/empty BGVParams makes sense in your context
+impl Default for Parameters {
+    // Use this if all-zero/empty Parameters makes sense in your context
     fn default() -> Self {
-        BGVParams {
+        Parameters {
             m: Default::default(),
             p: Default::default(),
             r: Default::default(),
@@ -174,14 +174,14 @@ impl Default for BGVParams {
     }
 }
 
-impl core::fmt::Display for BGVParams {
+impl core::fmt::Display for Parameters {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "BGVParams(m={}, p={}, r={}, c={}, bits={}, gens={}, ords={}, mvec={}, bootstrappable={})",
+        write!(f, "Parameters(m={}, p={}, r={}, c={}, bits={}, gens={}, ords={}, mvec={}, bootstrappable={})",
                self.m, self.p, self.r, self.c, self.bits, self.gens, self.ords, self.mvec, self.bootstrappable)
     }
 }
 
-impl BGVParams {
+impl Parameters {
     #[cfg(feature = "helib")]
     pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::helib::bgv::ffi::Context>

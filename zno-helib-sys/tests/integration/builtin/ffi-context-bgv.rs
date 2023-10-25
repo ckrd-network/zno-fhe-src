@@ -31,7 +31,7 @@ pub fn setup_ld_library_path() {
 #[test]
 fn test_build_bgv_valid_params() {
 
-    let bgv = BGVParams {
+    let bgv = Parameters {
         m: M::new(4095).unwrap(),
         p: P::new(2).unwrap(),
         r: R::new(1).unwrap(),
@@ -46,7 +46,7 @@ fn test_build_bgv_valid_params() {
 
     let expected_m = M::new(4095).unwrap();
     // let expected_p = P::new(2).unwrap();
-    
+
     let context = Context::new(bgv).expect("BGV context creation");
 
     let actual_m = context.get_m().unwrap(); // this will panic if get_m() returns an Err
@@ -62,7 +62,7 @@ fn test_build_bgv_valid_params() {
 // #[test]
 // fn test_build_bgv_invalid_params() {
 //     let mut builder = ffi::create_context_builder(); // function from your FFI
-//     let bgv = BGVParams {
+//     let bgv = Parameters {
 //         // initialize with invalid test values that should cause the build to fail
 //         // ...
 //     };
@@ -85,7 +85,7 @@ fn test_build_bgv_valid_params() {
 //     let ords: Vec<i64> = vec![-1, -1, -1];
 //     // Call the FFI function
 //     let mut builder = ffi::create_context_builder();
-//     let bgv = BGVParams {
+//     let bgv = Parameters {
 //         m: M::new(4095).unwrap(),
 //         p: P::new(2).unwrap(),
 //         r: R::new(1).unwrap(),

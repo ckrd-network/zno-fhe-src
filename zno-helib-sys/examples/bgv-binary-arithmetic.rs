@@ -7,7 +7,7 @@ use std::num::ParseIntError;
 
 fn main() {
 
-    let params = BGVParams {
+    let params = Parameters {
         m: M::new(4095).unwrap(),
         p: P::new(2).unwrap(),
         r: R::new(1).unwrap(),
@@ -19,7 +19,7 @@ fn main() {
         bootstrappable: Bootstrappable::new(true),
     };
     // Parsing phase
-    let params = BGVParams::try_from("some_input_string")?;
+    let params = Parameters::try_from("some_input_string")?;
 
     let he = HESetup::new(&params);
 
@@ -120,7 +120,7 @@ struct BGV;
 ///
 /// # Example
 /// ```
-/// let params = BGVParams {
+/// let params = Parameters {
 ///     m: 4095,
 ///     p: 2,
 ///     r: 1,
@@ -133,7 +133,7 @@ struct BGV;
 /// };
 /// ```
 #[derive(Clone, Debug)]
-pub struct BGVParams {
+pub struct Parameters {
     /// Defines the cyclotomic polynomial `Φ_m(X)`.
     pub m: i64,
     /// The plaintext base.
@@ -159,7 +159,7 @@ pub enum M {
     Err(ParseIntError),
 }
 
-impl TryFrom<&str> for BGVParams {
+impl TryFrom<&str> for Parameters {
     type Error = Box<dyn Error>;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -287,7 +287,7 @@ impl core::fmt::Display for RandomNumber {
     }
 }
 
-impl TryFrom<&str> for BGVParams {
+impl TryFrom<&str> for Parameters {
     type Error = &'static str;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {

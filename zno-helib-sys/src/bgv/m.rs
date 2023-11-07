@@ -342,10 +342,6 @@ impl TryFrom<u8> for M {
             Err(MError {
                 kind: MErrorKind::Zero,
             })
-        } else if value < 0 {
-            Err(MError {
-                kind: MErrorKind::NegativeValue,
-            })
         } else {
             // Directly construct M, since u8 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
@@ -364,10 +360,6 @@ impl TryFrom<u16> for M {
         if value == 0 {
             Err(MError {
                 kind: MErrorKind::Zero,
-            })
-        } else if value < 0 {
-            Err(MError {
-                kind: MErrorKind::NegativeValue,
             })
         } else {
             // Directly construct M, since u16 values are within u32 range when positive and non-zero.
@@ -388,10 +380,6 @@ impl TryFrom<u32> for M {
             Err(MError {
                 kind: MErrorKind::Zero,
             })
-        } else if value < 0 {
-            Err(MError {
-                kind: MErrorKind::NegativeValue,
-            })
         } else {
             // Directly construct M, since u32 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
@@ -410,10 +398,6 @@ impl TryFrom<u64> for M {
         if value == 0 {
             Err(MError {
                 kind: MErrorKind::Zero,
-            })
-        } else if value < 0 {
-            Err(MError {
-                kind: MErrorKind::NegativeValue,
             })
         } else if value > u32::MAX as u64 {
             // If the u64 value is greater than the maximum for a u32, it's out of bounds.
@@ -438,10 +422,6 @@ impl TryFrom<u128> for M {
         if value == 0 {
             Err(MError {
                 kind: MErrorKind::Zero,
-            })
-        } else if value < 0 {
-            Err(MError {
-                kind: MErrorKind::NegativeValue,
             })
         } else if value > u32::MAX as u128 {
             // If the u128 value is greater than the maximum for a u32, it's out of bounds.
@@ -469,6 +449,10 @@ impl TryFrom<isize> for M {
             Err(MError {
                 kind: MErrorKind::Zero,
             })
+        } else if value < 0 {
+            Err(MError {
+                kind: MErrorKind::NegativeValue,
+            })
         } else if value > u32::MAX as isize {
             Err(MError {
                 kind: MErrorKind::OutOfRange(format!("Value {} is out of range for M", value)),
@@ -492,6 +476,10 @@ impl TryFrom<isize> for M {
         if value == 0 {
             Err(MError {
                 kind: MErrorKind::Zero,
+            })
+        } else if value < 0 {
+            Err(MError {
+                kind: MErrorKind::NegativeValue,
             })
         } else if value > u32::MAX as isize {
             Err(MError {
@@ -895,8 +883,7 @@ mod tests {
         }
     }
 
-
-        // Successful conversion tests
+    // Successful conversion tests
     #[test]
     fn test_new_success() {
         assert_eq!(try_into_m(1u8), Ok(M::Some(core::num::NonZeroU32::new(1).unwrap())));
@@ -950,8 +937,8 @@ mod tests {
             let max_isize_plus_one: isize = (u32::MAX as isize).wrapping_add(1);
             assert!(matches!(try_into_m(max_isize_plus_one), Err(MError { kind: MErrorKind::OutOfRange(_), .. })));
 
-            let min_isize: isize = (i32::MIN as isize).wrapping_sub(1);
-            assert!(matches!(try_into_m(max_isize), Err(MError { kind: MErrorKind::NegativeValue })));
+            let min_isize_minus_one: isize = (i32::MIN as isize).wrapping_sub(1);
+            assert!(matches!(try_into_m(min_isize_minus_one), Err(MError { kind: MErrorKind::NegativeValue })));
         } else if cfg!(target_pointer_width = "32") {
             // For 32-bit architectures, isize max would be within range
             let max_isize: isize = isize::MAX;

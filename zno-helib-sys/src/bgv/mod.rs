@@ -14,6 +14,7 @@ pub mod context;
 pub mod error;
 pub mod getters;
 pub mod setters;
+pub mod metric;
 
 // Re-export the types for external use as `crate::bgv::<type>`
 pub use self::m::*;
@@ -31,23 +32,39 @@ pub use self::context::*;
 pub use self::error::*;
 pub use self::getters::*;
 pub use self::setters::*;
+pub use self::metric::*;
 
 pub trait ToU32<E> {
     fn to_u32(&self) -> Result<u32, E>;
 }
 
-// trait ContextBarred {}
-// trait BuilderBarred {}
+// Homomorphic encryption marker trait
+pub trait He {
+    fn schema(&self) -> Schema;
+}
 
-// impl ContextBarred for Context {}
-// impl BuilderBarred for Builder {}
+pub enum Schema {
+    Bgv,
+    // Bfv,
+    // Ckks,
+}
 
-// impl<T: ContextBarred> Setters for T {
-//     // Intentionally empty.
-//     // Generates a compile-time error on implementing `Setters` for `Context`.
-// }
+// Define a trait for Homomorphic Encryption Schemes
+// A trait that requires both He and Into<Metric>
+// Implementing the Scheme trait, requires implementing traits:
+// - He
+// - Into<Metric>
+pub trait Scheme: He + Into<Metric> {}
 
-// impl<T: BuilderBarred> Getters for T {
-//     // Intentionally empty.
-//     // Generates a compile-time error on implementing `Getters` for `Builder`.
-// }
+// Implement the Scheme marker trait for required types
+// This enforces implementation of required traits: He, Into<Metric>
+// impl Scheme for Bits {}
+// impl Scheme for Bootstrap {}
+// impl Scheme for Bootstrappable {}
+// impl Scheme for C {}
+// impl Scheme for Gens {}
+impl Scheme for M {}
+// impl Scheme for Mvec {}
+// impl Scheme for Ords {}
+// impl Scheme for P {}
+// impl Scheme for R {}

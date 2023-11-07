@@ -144,7 +144,7 @@ impl Getters for Context {
         let m_value = self.inner.getM();
 
         // Convert the C++ result to Rust M enum
-        M::from_i64(m_value)
+        M::try_from(m_value)
     }
 
     // Similarly, implement other getters...

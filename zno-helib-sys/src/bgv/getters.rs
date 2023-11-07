@@ -1,6 +1,8 @@
 pub use super::*;
+use mockall::automock;
 
 pub trait Getters {
     fn get_m(&self) -> Result<M, MError>;
-    // add other getter methods here...
+    // fn get_p(&self) -> Result<P, PError>;
+    // add other getter methods here . . .
 }

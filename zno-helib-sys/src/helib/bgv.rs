@@ -1,14 +1,17 @@
 use core::pin::Pin;
 use core::fmt;
-use cxx::CxxString;
-use cxx::CxxVector;
-use cxx::UniquePtr;
-// use std::convert::TryInto;
+use core::convert::TryFrom;
+use core::convert::TryInto;
 use std::ptr;
 use std::{fmt::{Display, Formatter}, error::Error};
 
+use cxx::CxxString;
+use cxx::CxxVector;
+use cxx::UniquePtr;
+
 // Import the BGV struct and its fields
 use crate::bgv::*;
+use crate::prelude::*;
 
 #[cxx::bridge(namespace="helib")]
 pub mod ffi {
@@ -90,6 +93,7 @@ impl Display for FFIError {
 }
 
 // Logic specific to the HElib implementation belongs here.
+// #[derive(Debug)]
 pub struct Builder {
     // Holds a pointer to the C++ object
     pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
@@ -121,19 +125,90 @@ impl Builder {
 }
 
 impl Setters for Builder {
-    fn set_m<T, E>(mut self, value: T) -> Result<Self, MError>
+    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
     where
         Self: Sized,
         T: ToU32<E>,
-        E: Into<MError>,
+        E: Into<SetError>,
     {
-        let value_u32 = value.to_u32().map_err(Into::into)?;
-        self.inner = ffi::set_m(self.inner, value_u32);
+        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+        // Assuming `ffi::set_m` returns Result<(), MError>
+        self.inner = ffi::set_m(self.inner, u32_value);
+        // .map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
         Ok(self)
     }
-
     // Similarly, implement other setters following the same pattern...
+
+    fn set(self, value: Metric) -> Result<Self, BGVError>
+    {
+
+        // Directly convert `value` into `Metric`, since `Into` is infallible
+        let metric: Metric = value.into();
+
+        // Delegate to the implementation for each field.
+        match metric {
+            // Metric::Bits(value) => self.set_bits(value),
+            // Metric::Bootstrap(value) => self.set_bootstrap(value),
+            // Metric::Bootstrappable(value) => self.set_bootstrappable(value),
+            // Metric::C(value) => self.set_c(value),
+            // Metric::Gens(value) => self.set_gens(value),
+            Metric::M(value) => self.set_m(value),
+            // Metric::Mvec(value) => self.set_mvec(value),
+            // Metric::Ords(value) => self.set_ords(value),
+            // Metric::P(value) => self.set_p(value),
+            // Metric::R(value) => self.set_r(value),
+            _ => todo!()
+        }
+    }
+
+    fn try_set<T: TryInto<Metric, Error=BGVError>>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+    {
+        let metric = value.try_into()?;
+
+        match metric {
+            // Metric::Bits(value) => self.set_bits(value),
+            // Metric::Bootstrap(value) => self.set_bootstrap(value),
+            // Metric::Bootstrappable(value) => self.set_bootstrappable(value),
+            // Metric::C(value) => self.set_c(value),
+            // Metric::Gens(value) => self.set_gens(value),
+            Metric::M(value) => self.set_m(value),
+            // Metric::Mvec(value) => self.set_mvec(value),
+            // Metric::Ords(value) => self.set_ords(value),
+            // Metric::P(value) => self.set_p(value),
+            // Metric::R(value) => self.set_r(value),
+            _ => todo!()
+        }
+    }
 }
+
+// impl<F: Field> Setter<F> for Builder {
+//
+//     /// This approach consumes the builder in case of errors.
+//     /// If you want to get the builder back in case of an error,
+//     /// consider changing the error type to something like
+//     /// Result<Self, (Self, F::ErrorType)> to return the builder
+//     /// alongside the error.
+//     fn set(mut self, value: F::Value) -> Result<Self, F::ErrorType>
+//     where Self: Sized {
+//         match F::field_type() {
+//             FieldType::M => {
+//                 // Convert value to u32 and handle potential error
+//                 let value_u32 = value.to_u32().map_err(Into::into)?;
+
+//                 // Call the ffi function and handle potential error
+//                 self.inner = ffi::set_m(self.inner, value_u32);  // Assuming ffi::set_m modifies in-place
+//             },
+//             // FieldType::P => {
+//             //     let value_u32 = value.to_u32().map_err(Into::into)?;
+//             //     ffi::set_p(&mut self.inner, value_u32)?;
+//             // },
+//             // ... Add other fields as needed
+//         }
+//         Ok(self)
+//     }
+// }
 
 /// #Example
 ///
@@ -181,6 +256,51 @@ mod tests {
     // Helper function to create a Context with default or dummy data.
     fn setup_bgv_context(parameters: Parameters) -> Context {
         Context::new(parameters).expect("BGV context creation")
+    }
+
+    // Test-specific Error types
+    #[derive(Debug, PartialEq)]
+    struct TestError(String);
+
+    // Assuming BGVError can encapsulate or be constructed from TestError
+    impl From<TestError> for BGVError {
+        fn from(e: TestError) -> Self {
+            match e {
+                TestError(s) => BGVError::GenericError(GenericError { kind: GenericErrorKind::Unexpected(s) })
+            }
+        }
+    }
+
+    // The tests below are for an `M` type that can fail on creation, which is not in your code.
+    // You'll need to adjust these tests to your specific types and error handling.
+
+    #[test]
+    fn test_set_m_success() {
+        let builder = Builder::new();
+        let m = M::try_from(42).unwrap(); // Assuming `from` is a `TryFrom` implementation for M that can succeed
+        let result = builder.set(m.into());
+        assert!(result.is_ok());
+        // match M::try_from(42) {
+        //     Ok(m) => {
+        //         // If conversion is successful, pass `m` to the builder
+        //         let result = builder.set(m.into());
+        //         assert!(result.is_ok());
+        //     }
+        //     Err(e) => {
+        //         // Handle the error case, perhaps by converting the error to `BGVError` and returning it
+        //         return Err(BGVError::from(e));
+        //     }
+        // }
+    }
+
+    #[test]
+    fn test_set_m_failure() {
+        let builder = Builder::new();
+        let m = M::try_from(0);
+        match m {
+            Ok(m) => panic!("Expected BGVError"),
+            Err(ref e) => assert!(m.is_err()),
+        };
     }
 
     #[test]

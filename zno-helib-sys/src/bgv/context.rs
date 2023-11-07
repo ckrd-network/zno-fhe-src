@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 use std::convert::TryInto;
+use mockall::automock;
 
 use crate::prelude::*;
 use super::*;
@@ -98,7 +99,7 @@ impl Context {
     pub fn new(params: crate::bgv::Parameters) -> Result<Self, BGVError> {
         let mut params = params; // Make params mutable
         let cb = Builder::new()
-                     .set_m(params.m)?;
+                     .set(params.m.into())?;
 
         // Build BGV context. Consume the instance of Builder.
         // return a UniquePtr<ffi::Context>
@@ -152,13 +153,6 @@ impl Getters for Context {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockall::{automock, predicate::*};
-
-    #[automock]
-    pub trait ContextFFI {
-        fn getM(&self) -> i64;
-        // Add other methods as needed
-    }
 
     #[test]
     fn test_build_with_valid_builder() {
@@ -172,7 +166,7 @@ mod tests {
         // Set up the input parameters
         let context = Context::new(Parameters::default()).expect("BGV context creation should succeed");
         let actual_m = context.get_m().expect("Retrieving M value failed"); // Panic if get_m() returns an Err
-        let expected_m = M::new(4095).unwrap();
+        let expected_m = M::default();
         assert_eq!(actual_m, expected_m, "BGV scheme parameter M, should be set correctly");
     }
 
@@ -183,45 +177,7 @@ mod tests {
                     .expect("Expected to successfully retrieve Context")
                     .get_m()
                     .expect("Expected to successfully retrieve M");
-        assert_eq!(m, M::new(4095).unwrap());
+        assert_eq!(m, M::default());
     }
-
-    // #[test]
-    // fn test_get_m_zero() {
-    //     let m = M::new(0);
-    //     params = Parameters { m.unwrap(), ..Parameters::default() };
-    //     let context_result = Context::new(params);
-    //     assert!(context_result.is_err(), "Expected error for m_value of 0, but got Ok");
-
-    //     // Mock the `getM` method to return a invalid value
-    //     let mut mock_context_ffi = MockContextFFI::new();
-    //     mock_context.expect_getM().returning(|| 0);
-
-    //     let result = get_m(&mock_context_ffi); // Create your context
-    //     if let Err(err) = result {
-    //         assert_eq!(err, BGVError::MError(MError { kind: MErrorKind::Zero }));
-    //     }
-    // }
-
-    //     #[test]
-    // fn test_get_m_negative() {
-    //     // Mock/stub the FFI function to return -32
-    //     // ...
-
-    //     let context_result = setup_bgv_context_with_m(-32);
-
-    //     let result = context_result
-    //                 .expect("Expected to successfully retrieve Context")
-    //                 .get_m();
-    //     assert!(result.is_err());
-    //     assert_eq!(result.unwrap_err().kind, MErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()));
-    // }
-
-//     #[test]
-//     fn test_get_m_overflow() {
-//         // Mock/stub the FFI function to return a large value beyond u32::MAX
-//         let context = setup_bgv_context_with_m(4095); // Create your context
-//         assert!(matches!(context.get_m(), Err(MError { kind: MErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()) })));
-//     }
 
 }

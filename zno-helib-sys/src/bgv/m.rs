@@ -21,10 +21,12 @@ use crate::prelude::*;
 /// - **Slots for Packing:** In homomorphic encryption, one often uses "packing" techniques to encode multiple plaintext values into a single ciphertext. The parameter m affects how many such values can be packed into a single ciphertext, which is crucial for the performance of homomorphic computations on vectors of data.
 ///
 /// ## Range in this FFI Implementation:
+///
 /// This FFI implementation accepts a limited range of values for `m`. Currently, the type
 /// uses `NonZeroU32`. This provides a range between 1 and 4,294,967,295 (both inclusive), excluding the value zero.
 ///
 /// ## Range in HElib:
+///
 /// In HElib, the choice of `m` is significant as it influences the security level and the efficiency of operations. Larger values of `m` provide better security but increase computational requirements.
 /// Users should refer to HElib's official documentation or relevant cryptographic literature for detailed guidelines on selecting `m`.
 ///
@@ -39,7 +41,6 @@ use crate::prelude::*;
 #[derive(Debug, PartialEq)]
 pub enum M {
     Some(core::num::NonZeroU32),
-    // More variants can be added here in the future.
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -56,7 +57,7 @@ pub enum MErrorKind {
     OutOfRange(String),
     ParseError(ParseIntError),
     Zero,
-    Generic(String),// other kinds of errors can be added here
+    Generic(String),
 }
 
 impl M {
@@ -65,20 +66,8 @@ impl M {
         Self: TryFrom<T, Error = MError>,
         T: num_traits::ToPrimitive + std::cmp::PartialOrd + std::fmt::Display + Copy + std::fmt::Debug,
     {
-        // // Delegate to From trait implementation for conversion.
+        // TryFrom trait implementation for conversion.
         M::try_from(value).map_err(MError::from)
-    }
-
-    /// Create an `M` variant from a given i64.
-    pub fn from_i64(value: i64) -> Result<Self, MError> {
-        if (1..=(u32::MAX as i64)).contains(&value) {
-            // Direct conversion as the range has been checked
-            M::new(value as u32)
-        } else if value == 0 {
-            Err(MError { kind: MErrorKind::Zero })
-        } else {
-            Err(MError { kind: MErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()) })
-        }
     }
 }
 
@@ -93,7 +82,7 @@ impl crate::bgv::ToU32<MError> for M {
     }
 }
 
-/// Provides a default `M` value. A panic should never occur, as this is a safer default.
+/// Provides a default `M` value. A error should never occur, as this is a safe default.
 impl Default for M {
     fn default() -> Self {
         M::Some(core::num::NonZeroU32::new(4095).expect("32 is a valid non-zero u32 value."))
@@ -119,40 +108,6 @@ impl From<std::num::ParseIntError> for MError {
     }
 }
 
-// // The enum to encapsulate both infallible and fallible conversions.
-// enum TryFromWrapper<T, E> {
-//     Infallible(T),
-//     Fallible(Result<T, E>),
-// }
-
-// impl<T, E> TryFromWrapper<T, E> {
-//     // Convert into a Result, treating Infallible as Ok and Fallible as is.
-//     fn into_result(self) -> Result<T, E> {
-//         match self {
-//             TryFromWrapper::Infallible(t) => Ok(t),
-//             TryFromWrapper::Fallible(res) => res,
-//         }
-//     }
-// }
-
-// // The Error types that M can convert from.
-// enum ConversionError {
-//     Infallible,
-//     MError(MError),
-// }
-
-// impl From<Infallible> for ConversionError {
-//     fn from(_: Infallible) -> Self {
-//         ConversionError::Infallible
-//     }
-// }
-
-// impl From<MError> for ConversionError {
-//     fn from(e: MError) -> Self {
-//         ConversionError::MError(e)
-//     }
-// }
-
 impl From<Infallible> for MError {
     fn from(_: Infallible) -> Self {
         // Infallible means the error case will never happen
@@ -162,36 +117,6 @@ impl From<Infallible> for MError {
         }
     }
 }
-
-// // Generic TryFrom implementation for numeric types that implement ToPrimitive
-// // (from num-traits crate)
-// impl<T> TryFrom<T> for M
-// where
-//     T: num_traits::ToPrimitive + std::cmp::PartialOrd + std::fmt::Display + Copy,
-// {
-//     type Error = MError;
-
-//     fn try_from(value: T) -> Result<Self, Self::Error> {
-//         if value.is_zero() {
-//             Err(MError {
-//                 kind: MErrorKind::Zero,
-//             })
-//         } else if value < T::zero() {
-//             Err(MError {
-//                 kind: MErrorKind::NegativeValue,
-//             })
-//         } else {
-//             match T::to_u32(&value) {
-//                 Some(u32_value) => M::new(u32_value).map_err(|_| MError {
-//                     kind: MErrorKind::OutOfRange(value.to_string()),
-//                 }),
-//                 None => Err(MError {
-//                     kind: MErrorKind::OutOfRange(value.to_string()),
-//                 }),
-//             }
-//         }
-//     }
-// }
 
 impl He for M {
     fn schema(&self) -> Schema {
@@ -205,7 +130,9 @@ impl Into<Metric> for M {
     }
 }
 
-// Implementations for fixed-size integers
+//
+// Implementations for fixed-size signed integers
+//
 impl TryFrom<i8> for M {
     type Error = MError;
 
@@ -332,7 +259,9 @@ impl TryFrom<i128> for M {
     }
 }
 
-// ... u8, u16, u32, u64, u128 ...
+//
+// Implementations for fixed-size unsigned integers
+// u8, u16, u32, u64, u128
 
 impl TryFrom<u8> for M {
     type Error = MError;
@@ -439,7 +368,9 @@ impl TryFrom<u128> for M {
     }
 }
 
-// Implementations for pointer-sized integers
+//
+// Implementations for pointer-sized signed integers
+//
 #[cfg(target_pointer_width = "32")]
 impl TryFrom<isize> for M {
     type Error = MError;
@@ -496,6 +427,9 @@ impl TryFrom<isize> for M {
     }
 }
 
+//
+// Implementations for pointer-sized unsigned integers
+//
 #[cfg(target_pointer_width = "32")]
 impl TryFrom<usize> for M {
     type Error = MError;
@@ -605,6 +539,15 @@ mod tests {
         M::Some(core::num::NonZeroU32::new(value).unwrap())
     }
 
+    // Tests for usize and isize that depend on the machine architecture
+    fn try_into_m<T>(value: T) -> Result<M, MError>
+    where
+        M: TryFrom<T>,
+        MError: From<<M as TryFrom<T>>::Error>, // Ensures that whatever error TryFrom produces, can be converted to MError
+    {
+        M::try_from(value).map_err(MError::from)
+    }
+
     #[test]
     fn test_from_impl_for_metric() {
         let m = M::try_from(42).unwrap(); // Valid value for M
@@ -671,8 +614,8 @@ mod tests {
 
     #[test]
     fn test_m_from_i64() {
-        assert!(matches!(M::from_i64(1), Ok(M::Some(_))));
-        assert_eq!(M::from_i64(0), Err(MError { kind: MErrorKind::Zero }));
+        assert!(matches!(M::try_from(1i64), Ok(M::Some(_))));
+        assert_eq!(M::try_from(0i64), Err(MError { kind: MErrorKind::Zero }));
     }
 
     #[test]
@@ -911,15 +854,6 @@ mod tests {
     fn test_new_out_of_range() {
         assert!(matches!(try_into_m(u64::MAX), Err(MError { kind: MErrorKind::OutOfRange(_), .. })));
         // Add more tests for other types with values out of u32 range
-    }
-
-    // Tests for usize and isize that depend on the machine architecture
-    fn try_into_m<T>(value: T) -> Result<M, MError>
-    where
-        M: TryFrom<T>,
-        MError: From<<M as TryFrom<T>>::Error>, // Ensures that whatever error TryFrom produces, can be converted to MError
-    {
-        M::try_from(value).map_err(MError::from)
     }
 
     #[test]

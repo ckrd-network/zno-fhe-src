@@ -154,13 +154,13 @@ impl TryFrom<i8> for M {
             Err(MError::new(
                 MErrorKind::Zero,
             "i8",
-            "MError"
+            "M"
         ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
             "i8",
-            "MError"
+            "M"
         ))
         } else {
             // Directly construct M, since i8 values are within u32 range when positive and non-zero.
@@ -168,8 +168,8 @@ impl TryFrom<i8> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "i8",
+            "M"
         ))
         }
     }
@@ -182,14 +182,14 @@ impl TryFrom<i16> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "i16",
+            "M"
         ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "i16",
+            "M"
         ))
         } else {
             // Directly construct M, since i16 values are within u32 range when positive and non-zero.
@@ -197,8 +197,8 @@ impl TryFrom<i16> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "i16",
+            "M"
         ))
         }
     }
@@ -211,14 +211,14 @@ impl TryFrom<i32> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "i32",
+            "M"
         ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "i32",
+            "M"
         ))
         } else {
             // Directly construct M, since i32 values are within u32 range when positive and non-zero.
@@ -226,8 +226,8 @@ impl TryFrom<i32> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "i32",
+            "M"
         ))
         }
     }
@@ -240,21 +240,21 @@ impl TryFrom<i64> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "i64",
+            "M"
         ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "i64",
+            "M"
         ))
         } else if value > u32::MAX as i64 {
             // If the i64 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
-            "",
-            "MError"
+            "i64",
+            "M"
         ))
         } else {
             // Safe to convert i64 to u32 because it's within the valid range and non-zero.
@@ -262,8 +262,8 @@ impl TryFrom<i64> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "i64",
+            "M"
         ))
         }
     }
@@ -276,21 +276,21 @@ impl TryFrom<i128> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "i128",
+            "M"
         ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "i128",
+            "M"
         ))
         } else if value > u32::MAX as i128 {
             // If the i128 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
-            "",
-            "MError"
+            "i128",
+            "M"
         ))
         } else {
             // Safe to convert i128 to u32 because it's within the valid range and non-zero.
@@ -298,8 +298,8 @@ impl TryFrom<i128> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "i128",
+            "M"
         ))
         }
     }
@@ -316,8 +316,8 @@ impl TryFrom<u8> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "u8",
+            "M"
         ))
         } else {
             // Directly construct M, since u8 values are within u32 range when positive and non-zero.
@@ -325,8 +325,8 @@ impl TryFrom<u8> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "u8",
+            "M"
         ))
         }
     }
@@ -339,8 +339,8 @@ impl TryFrom<u16> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "u16",
+            "M"
         ))
         } else {
             // Directly construct M, since u16 values are within u32 range when positive and non-zero.
@@ -348,8 +348,8 @@ impl TryFrom<u16> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "u16",
+            "M"
         ))
         }
     }
@@ -362,8 +362,8 @@ impl TryFrom<u32> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "u32",
+            "M"
         ))
         } else {
             // Directly construct M, since u32 values are within u32 range when positive and non-zero.
@@ -371,8 +371,8 @@ impl TryFrom<u32> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "u32",
+            "M"
         ))
         }
     }
@@ -385,15 +385,15 @@ impl TryFrom<u64> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "u64",
+            "M"
         ))
         } else if value > u32::MAX as u64 {
             // If the u64 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
-            "",
-            "MError"
+            "u64",
+            "M"
         ))
         } else {
             // Safe to convert u64 to u32 because it's within the valid range and non-zero.
@@ -401,8 +401,8 @@ impl TryFrom<u64> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "u64",
+            "M"
         ))
         }
     }
@@ -415,15 +415,15 @@ impl TryFrom<u128> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "u128",
+            "M"
         ))
         } else if value > u32::MAX as u128 {
             // If the u128 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
-            "",
-            "MError"
+            "u128",
+            "M"
         ))
         } else {
             // Safe to convert u128 to u32 because it's within the valid range and non-zero.
@@ -431,8 +431,8 @@ impl TryFrom<u128> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-            "",
-            "MError"
+            "u128",
+            "M"
         ))
         }
     }
@@ -449,19 +449,19 @@ impl TryFrom<isize> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "isize",
+            "M"
             ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "isize",
+            "M"
             ))
         } else if value > u32::MAX as isize {
             Err(MError::new(
                 MErrorKind::OutOfRange(format!("Value {} is out of range for M", value)),
-                "",
+                "isize",
                 "M"))
         } else {
             // It's safe to cast to u32 because we've already checked it's within range.
@@ -469,8 +469,8 @@ impl TryFrom<isize> for M {
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-                "",
-                "MError"
+                "isize",
+                "M"
                 ))
         }
     }
@@ -484,29 +484,28 @@ impl TryFrom<isize> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "isize",
+            "M"
             ))
         } else if value < 0 {
             Err(MError::new(
                 MErrorKind::NegativeValue,
-            "",
-            "MError"
+            "isize",
+            "M"
             ))
         } else if value > u32::MAX as isize {
             Err(MError::new(
                 MErrorKind::OutOfRange(format!("Value {} is out of range for M", value)),
-            "",
-            "MError"
+            "isize",
+            "M"
             ))
         } else {
-            // It's safe to cast to u32 because we've already checked it's within range.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-                "",
-                "MError"
+                "isize",
+                "M"
                 ))
         }
     }
@@ -523,23 +522,22 @@ impl TryFrom<usize> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "usize",
+            "M"
             ))
         } else if value > u32::MAX as usize {
             Err(MError::new(
                 MErrorKind::OutOfRange(format!("Value {} is out of range for M", value)),
-            "",
-            "MError"
+            "usize",
+            "M"
             ))
         } else {
-            // It's safe to cast to u32 because we've already checked it's within range.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-                "",
-                "MError"
+                "usize",
+                "M"
                 ))
         }
     }
@@ -553,23 +551,22 @@ impl TryFrom<usize> for M {
         if value == 0 {
             Err(MError::new(
                 MErrorKind::Zero,
-            "",
-            "MError"
+            "usize",
+            "M"
             ))
         } else if value > u32::MAX as usize {
             Err(MError::new(
                 MErrorKind::OutOfRange(format!("Value {} is out of range for M", value)),
-            "",
-            "MError"
+            "usize",
+            "M"
             ))
         } else {
-            // It's safe to cast to u32 because we've already checked it's within range.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
                     MErrorKind::Generic("Failed to create NonZeroU32".to_string()),
-                "",
-                "MError"
+                "usize",
+                "M"
                 ))
         }
     }
@@ -587,18 +584,18 @@ impl core::str::FromStr for M {
                     Ok(value) => {
                         if value > u32::MAX as u64 {
                             Err(MError::new(
-                                MErrorKind::OutOfRange("Value out of range for u32".to_string()), "",""))
+                                MErrorKind::OutOfRange("Value out of range for u32".to_string()), "str","M"))
                         } else {
                             // This branch implies logical error: the value fits within u32, but parse::<u32>() failed.
                             // It should not actually happen in normal circumstances if the input is a valid number.
                             Err(MError::new(
-                                MErrorKind::Generic("Invalid number format".to_string()), "",""))
+                                MErrorKind::Generic("Invalid number format".to_string()), "str","M"))
                         }
                     },
                     Err(_) => {
                         // If parsing as u64 also failed, then the string does not represent a valid number.
                         Err(MError::new(
-                            MErrorKind::ParseError(s.parse::<u32>().unwrap_err()), "",""))
+                            MErrorKind::ParseError(s.parse::<u32>().unwrap_err()), "str","M"))
                     }
                 }
             }
@@ -639,11 +636,10 @@ mod tests {
         M::Some(core::num::NonZeroU32::new(value).unwrap())
     }
 
-    // Tests for usize and isize that depend on the machine architecture
     fn try_into_m<T>(value: T) -> Result<M, MError>
     where
         M: TryFrom<T>,
-        MError: From<<M as TryFrom<T>>::Error>, // Ensures that whatever error TryFrom produces, can be converted to MError
+        MError: From<<M as TryFrom<T>>::Error>, // Errors via TryFrom are converted to MError
     {
         M::try_from(value).map_err(MError::from)
     }
@@ -686,7 +682,7 @@ mod tests {
         // Trying to parse "0" into M should yield a Zero error.
         let m = "0".parse::<M>();
         assert_eq!(m, Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "u32", "M" )));
     }
 
     #[test]
@@ -718,7 +714,7 @@ mod tests {
     fn test_m_from_i64() {
         assert!(matches!(M::try_from(1i64), Ok(M::Some(_))));
         assert_eq!(M::try_from(0i64), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "i64", "M" )));
     }
 
     #[test]
@@ -757,35 +753,35 @@ mod tests {
     fn conversion_from_i8_min() {
         let value = i8::MIN;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::NegativeValue, "", "MError" )));
+            MErrorKind::NegativeValue, "i8", "M" )));
     }
 
     #[test]
     fn conversion_from_i16_min() {
         let value = i16::MIN;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::NegativeValue, "", "MError" )));
+            MErrorKind::NegativeValue, "i16", "M" )));
     }
 
     #[test]
     fn conversion_from_i32_min() {
         let value = i32::MIN;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::NegativeValue, "", "MError" )));
+            MErrorKind::NegativeValue, "i32", "M" )));
     }
 
     #[test]
     fn conversion_from_i64_min() {
         let value = i64::MIN;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::NegativeValue, "", "MError" )));
+            MErrorKind::NegativeValue, "i64", "M" )));
     }
 
     #[test]
     fn conversion_from_u64_above_max() {
         let value = u64::from(u32::MAX) + 1;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::OutOfRange(value.to_string()), "", "MError" )));
+            MErrorKind::OutOfRange(value.to_string()), "u64", "M" )));
     }
 
     #[test]
@@ -798,14 +794,14 @@ mod tests {
     fn conversion_from_isize_min() {
         let value = isize::MIN;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::NegativeValue, "", "MError" )));
+            MErrorKind::NegativeValue, "isize", "M" )));
     }
 
     #[test]
     fn conversion_from_usize_above_max() {
         let value = u32::MAX as usize + 1;
         assert_eq!(M::try_from(value as u64), Err(MError::new(
-            MErrorKind::OutOfRange(value.to_string()), "", "MError" )));
+            MErrorKind::OutOfRange(value.to_string()), "u64", "M" )));
     }
 
     // Tests for zero conversions
@@ -813,35 +809,35 @@ mod tests {
     fn conversion_from_zero_i32() {
         let value = 0_i32;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "i32", "M" )));
     }
 
     #[test]
     fn conversion_from_zero_i64() {
         let value = 0_i64;
         assert_eq!(M::try_from(value), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "i64", "M" )));
     }
 
     // u8 tests
     #[test]
     fn conversion_from_u8_zero() {
         assert_eq!(M::try_from(0_u8), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "u8", "M" )));
     }
 
     // u16 tests
     #[test]
     fn conversion_from_u16_zero() {
         assert_eq!(M::try_from(0_u16), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "u16", "M" )));
     }
 
     // i8 tests
     #[test]
     fn conversion_from_i8_zero() {
         assert_eq!(M::try_from(0_i8), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "i8", "M" )));
     }
 
     #[test]
@@ -853,7 +849,7 @@ mod tests {
     #[test]
     fn conversion_from_i16_zero() {
         assert_eq!(M::try_from(0_i16), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "i16", "M" )));
     }
 
     #[test]
@@ -861,12 +857,8 @@ mod tests {
         assert_eq!(M::try_from(i16::MAX), Ok(m_some(i16::MAX as u32)));
     }
 
-    // Tests for larger types at the boundary of u32::MAX are similar to the above.
-
-    // Comprehensive coverage for usize and isize depend on the architecture of
+    // Tests for usize and isize depend on the architecture of
     // the machine (32-bit or 64-bit).
-    // Here are examples for a 64-bit architecture:
-
     // usize tests for 32-bit architecture
     #[cfg(target_pointer_width = "32")]
     mod usize_tests {
@@ -875,7 +867,7 @@ mod tests {
         #[test]
         fn conversion_from_usize_zero_32bit() {
             assert_eq!(M::try_from(0_usize), Err(MError::new(
-                MErrorKind::Zero, "", "MError" )));
+                MErrorKind::Zero, "usize", "M" )));
         }
 
         #[test]
@@ -892,13 +884,12 @@ mod tests {
         #[test]
         fn conversion_from_usize_zero_64bit() {
             assert_eq!(M::try_from(0_usize), Err(MError::new(
-                MErrorKind::Zero, "", "MError" )));
+                MErrorKind::Zero, "usize", "M" )));
         }
 
         #[test]
         fn conversion_from_usize_max_64bit() {
             assert_eq!(M::try_from(u32::MAX as usize), Ok(m_some(u32::MAX)));
-            // Testing usize::MAX would result in an error, since it's greater than u32::MAX
         }
     }
 
@@ -910,7 +901,7 @@ mod tests {
         #[test]
         fn conversion_from_isize_zero_32bit() {
             assert_eq!(M::try_from(0_isize), Err(MError::new(
-                MErrorKind::Zero, "", "MError" )));
+                MErrorKind::Zero, "isize", "M" )));
         }
 
         #[test]
@@ -921,7 +912,7 @@ mod tests {
         #[test]
         fn conversion_from_isize_min_32bit() {
             assert_eq!(M::try_from(isize::MIN), Err(MError::new(
-                MErrorKind::NegativeValue, "", "MError" )));
+                MErrorKind::NegativeValue, "isize", "M" )));
         }
     }
 
@@ -933,7 +924,7 @@ mod tests {
         #[test]
         fn conversion_from_isize_zero_64bit() {
             assert_eq!(M::try_from(0_isize), Err(MError::new(
-                MErrorKind::Zero, "", "MError" )));
+                MErrorKind::Zero, "isize", "M" )));
         }
 
         #[test]
@@ -945,7 +936,7 @@ mod tests {
         #[test]
         fn conversion_from_isize_min_64bit() {
             assert_eq!(M::try_from(isize::MIN), Err(MError::new(
-                MErrorKind::NegativeValue, "", "MError" )));
+                MErrorKind::NegativeValue, "isize", "M" )));
         }
     }
 
@@ -962,7 +953,7 @@ mod tests {
     #[test]
     fn test_new_zero() {
         assert_eq!(try_into_m(0u32), Err(MError::new(
-            MErrorKind::Zero, "", "MError" )));
+            MErrorKind::Zero, "u32", "M" )));
         // Add more tests for other types with value zero
     }
 
@@ -999,7 +990,7 @@ mod tests {
 
             let min_isize_minus_one: isize = (i32::MIN as isize).wrapping_sub(1);
             assert!(matches!(try_into_m(min_isize_minus_one),
-                Err(MError { kind: MErrorKind::OutOfRange(_), .. })));
+                Err(MError { kind: MErrorKind::NegativeValue, .. })));
         } else if cfg!(target_pointer_width = "32") {
             // For 32-bit architectures, isize max would be within range
             let max_isize: isize = isize::MAX;

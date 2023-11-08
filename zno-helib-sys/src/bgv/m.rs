@@ -51,7 +51,6 @@ pub struct MError {
 }
 
 impl MError {
-    // You can provide a constructor to create MError with source_type information.
     pub fn new(kind: MErrorKind, from: &'static str, to: &'static str) -> Self {
         MError { kind, from, to }
     }
@@ -69,17 +68,62 @@ pub enum MErrorKind {
     Generic(String),
 }
 
+/// Constructs a new `M` from a given value.
+///
+/// This function attempts to create an `M` from `value`. It relies on
+/// `TryFrom<T>` to do so. If the conversion fails, it returns an `MError`.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::M;
+/// let m = M::new(42);
+/// assert!(m.is_ok());
+///
+/// let m = M::new(-1);
+/// assert!(m.is_err());
+/// ```
+///
+/// # Errors
+///
+/// Returns an `MError` if:
+///
+/// - The value is zero, which is not allowed.
+/// - The value is negative, which is not allowed.
+/// - The value exceeds the maximum allowed size.
+///
+/// # Type Parameters
+///
+/// - `T`: The type of value to convert from. Must be able to be compared,
+///   displayed, and debugged. It should also be convertible to a primitive number.
+///
+/// # Panics
+///
+/// This function will not panic.
+///
+/// # See Also
+///
+/// See `TryFrom` and `MError` for more details.
 impl M {
     pub fn new<T>(value: T) -> Result<Self, MError>
     where
         Self: TryFrom<T, Error = MError>,
         T: num_traits::ToPrimitive + std::cmp::PartialOrd + std::fmt::Display + Copy + std::fmt::Debug,
     {
-        // TryFrom trait implementation for conversion.
         M::try_from(value).map_err(MError::from)
     }
 }
 
+/// Convert `M` to `u32`.
+///
+/// `M` holds a number that cannot be zero. This function extracts that number
+/// if it exists.
+///
+/// # Errors
+///
+/// Returns an `MError` with the kind `OutOfRange` if `self` is not a `Some`,
+/// meaning the number was zero or never there.
+/// The error details where the problem happened: from "u32" to "M".
 impl crate::bgv::ToU32<MError> for M {
     fn to_u32(&self) -> Result<u32, MError> {
         match self {
@@ -89,16 +133,52 @@ impl crate::bgv::ToU32<MError> for M {
     }
 }
 
-/// Provides a default `M` value. A error should never occur, as this is a safe default.
+/// Returns the default value for `M`.
+///
+/// This is the smallest non-zero `u32` value that is permitted within `M`, namely `4095`.
+/// It is a constant, not arbitrary, chosen with purpose.
+///
+/// # Panics
+///
+/// This function will panic if `4095` cannot be represented as a `NonZeroU32`.
+/// Such a panic is not a concern in practical use; `4095` is a valid non-zero `u32` value.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let m = M::default();
+/// assert_eq!(m.unwrap().get(), 4095);
+/// ```
 impl Default for M {
     fn default() -> Self {
-        M::Some(core::num::NonZeroU32::new(4095).expect("32 is a valid non-zero u32 value."))
+        M::Some(core::num::NonZeroU32::new(4095).expect("4095 is a valid non-zero u32 value."))
     }
 }
 
 impl std::error::Error for MError {}
 
-// Implement From for each error type to convert into MError
+/// Converts an `std::io::Error` to `MError`.
+///
+/// # Examples
+///
+/// ```
+/// use std::fs::File;
+/// use std::io::{self, Read};
+/// use your_crate::MError;
+///
+/// fn read_file() -> Result<(), MError> {
+///     let mut file = File::open("foo.txt").map_err(MError::from)?;
+///     let mut contents = String::new();
+///     file.read_to_string(&mut contents).map_err(MError::from)?;
+///     Ok(())
+/// }
+/// ```
+///
+/// # Errors
+///
+/// Returns `MError::Generic` containing the error message from `std::io::Error`.
 impl From<std::io::Error> for MError {
     fn from(e: std::io::Error) -> MError {
         MError::new(
@@ -109,6 +189,15 @@ impl From<std::io::Error> for MError {
     }
 }
 
+/// Converts a `ParseIntError` to `MError`.
+///
+/// # Arguments
+///
+/// * `error` - The parse error encountered.
+///
+/// # Returns
+///
+/// Returns an `MError` with a `ParseError` kind, indicating a parsing failure.
 impl From<std::num::ParseIntError> for MError {
     fn from(error: std::num::ParseIntError) -> Self {
         MError::new(
@@ -119,10 +208,24 @@ impl From<std::num::ParseIntError> for MError {
     }
 }
 
+/// Converts from `Infallible` to `MError`.
+///
+/// Since `Infallible` implies no error can occur, this conversion
+/// yields a variant representing an unreachable state. It should not
+/// be possible for this code to run.
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::Infallible;
+/// use your_crate::MError;
+///
+/// // Example of infallible conversion, which should not occur:
+/// let error: MError = Infallible.into();
+/// // Assertions about the error kind can be made here if necessary
+/// ```
 impl From<Infallible> for MError {
     fn from(_: Infallible) -> Self {
-        // Infallible means the error case will never happen
-        // However, return an error variant denoting an unreachable state
         MError::new(
             MErrorKind::Unreachable,
             "Infallible",
@@ -131,21 +234,64 @@ impl From<Infallible> for MError {
     }
 }
 
+/// Returns the schema type.
+///
+/// This method declares the homomorphic encryption schema for the implementing
+/// type.
+/// It is straightforward and utilitarian, reflecting the singular
+/// purpose of the `M` type within the cryptographic framework.
+///
+/// # Examples
+///
+/// ```
+/// let m = M::default();
+/// assert_eq!(m.schema(), Schema::Bgv);
+/// ```
 impl He for M {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }
 }
 
+/// Converts `M` into a `Metric`.
+///
+/// # Examples
+///
+/// ```
+/// let m = M::from_non_zero_u32(non_zero_u32);
+/// let metric: Metric = m.into();
+/// ```
 impl Into<Metric> for M {
     fn into(self) -> Metric {
         Metric::M(self)
     }
 }
 
-//
-// Implementations for fixed-size signed integers
-//
+/// Convert an `i8` to `M`.
+///
+/// # Errors
+///
+/// Returns `MError` in these cases:
+///
+/// - If `value` is zero, `MErrorKind::Zero` is returned.
+/// - If `value` is negative, `MErrorKind::NegativeValue` is returned.
+/// - If `NonZeroU32` cannot be created, `MErrorKind::Generic` is returned.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::prelude::*;
+///
+/// let m = M::try_from(5i8);
+/// assert_eq!(m.is_ok(), true);
+///
+/// let m = M::try_from(0i8);
+/// assert!(matches!(m, Err(MError { kind: MErrorKind::Zero, .. })));
+///
+/// let m = M::try_from(-1i8);
+/// assert!(matches!(m, Err(MError { kind: MErrorKind::NegativeValue, .. })));
+/// ```
 impl TryFrom<i8> for M {
     type Error = MError;
 
@@ -163,7 +309,6 @@ impl TryFrom<i8> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since i8 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -175,6 +320,29 @@ impl TryFrom<i8> for M {
     }
 }
 
+/// Convert an `i16` to `M`.
+///
+/// # Errors
+///
+/// Returns `MError` for the following reasons:
+/// - The input is zero. No place for nothing.
+/// - The value is negative. It's wrong.
+/// - Cannot make `NonZeroU32` from `i16`. It fails silently.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{M, MError, MErrorKind};
+/// let positive = M::try_from(5i16);
+/// assert!(positive.is_ok());
+///
+/// let zero = M::try_from(0i16);
+/// assert_eq!(zero.unwrap_err().kind(), &MErrorKind::Zero);
+///
+/// let negative = M::try_from(-1i16);
+/// assert_eq!(negative.unwrap_err().kind(), &MErrorKind::NegativeValue);
+/// ```
 impl TryFrom<i16> for M {
     type Error = MError;
 
@@ -192,7 +360,6 @@ impl TryFrom<i16> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since i16 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -204,6 +371,25 @@ impl TryFrom<i16> for M {
     }
 }
 
+/// Convert an `i32` to `M`.
+///
+/// # Errors
+///
+/// Returns `MError` in the following cases:
+///
+/// - If `value` is zero, `MError` signifies an attempt to create an `M` from nothing.
+/// - If `value` is negative, `MError` signifies an attempt to invert the natural order.
+/// - If unable to represent `value` as `NonZeroU32`, `MError` indicates a failure in creation.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use your_crate::{M, MError, MErrorKind};
+/// assert_eq!(M::try_from(5), Ok(M::Some(nonzero::NonZeroU32::new(5).unwrap())));
+/// assert!(matches!(M::try_from(0), Err(MError::new(MErrorKind::Zero, "i32", "M"))));
+/// assert!(matches!(M::try_from(-1), Err(MError::new(MErrorKind::NegativeValue, "i32", "M"))));
+/// ```
 impl TryFrom<i32> for M {
     type Error = MError;
 
@@ -221,7 +407,6 @@ impl TryFrom<i32> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since i32 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -233,6 +418,30 @@ impl TryFrom<i32> for M {
     }
 }
 
+/// Convert an `i64` to `M`.
+///
+/// # Errors
+///
+/// Returns `Err` with `MError` if:
+///
+/// - The value is zero (zero is not allowed).
+/// - The value is negative (negatives are not allowed).
+/// - The value exceeds `u32`'s maximum (too large for `M`).
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use crate::{M, MError};
+///
+/// let value = 42i64;
+/// let m = M::try_from(value);
+/// assert!(m.is_ok());
+///
+/// let zero = 0i64;
+/// let m = M::try_from(zero);
+/// assert!(matches!(m, Err(MError { .. })));
+/// ```
 impl TryFrom<i64> for M {
     type Error = MError;
 
@@ -250,14 +459,12 @@ impl TryFrom<i64> for M {
             "M"
         ))
         } else if value > u32::MAX as i64 {
-            // If the i64 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
             "i64",
             "M"
         ))
         } else {
-            // Safe to convert i64 to u32 because it's within the valid range and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -269,6 +476,37 @@ impl TryFrom<i64> for M {
     }
 }
 
+/// Converts an `i128` to `M`.
+///
+/// # Errors
+///
+/// Returns an `Err` with `MError` in the following cases:
+///
+/// - If the value is `0`, the error kind will be `Zero`.
+/// - If the value is negative, the error kind will be `NegativeValue`.
+/// - If the value exceeds `u32::MAX`, the error kind will be `OutOfRange`.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use your_crate::{M, MError, MErrorKind};
+/// let value = 42i128;
+/// let m = M::try_from(value);
+/// assert_eq!(m.unwrap(), M::Some(NonZeroU32::new(42).unwrap()));
+///
+/// let zero = 0i128;
+/// let m = M::try_from(zero);
+/// assert_eq!(m.unwrap_err().kind, MErrorKind::Zero);
+///
+/// let negative = -1i128;
+/// let m = M::try_from(negative);
+/// assert_eq!(m.unwrap_err().kind, MErrorKind::NegativeValue);
+///
+/// let too_large = i128::from(u32::MAX) + 1;
+/// let m = M::try_from(too_large);
+/// assert_eq!(m.unwrap_err().kind, MErrorKind::OutOfRange);
+/// ```
 impl TryFrom<i128> for M {
     type Error = MError;
 
@@ -286,14 +524,12 @@ impl TryFrom<i128> for M {
             "M"
         ))
         } else if value > u32::MAX as i128 {
-            // If the i128 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
             "i128",
             "M"
         ))
         } else {
-            // Safe to convert i128 to u32 because it's within the valid range and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -309,6 +545,38 @@ impl TryFrom<i128> for M {
 // Implementations for fixed-size unsigned integers
 // u8, u16, u32, u64, u128
 
+/// Attempts to convert a `u8` to `M`.
+///
+/// This operation fails if the input is zero, as `M` is designed to
+/// encapsulate only non-zero values. For non-zero inputs, the value is
+/// safely converted and wrapped within `M`.
+///
+/// # Examples
+///
+/// Successful conversion:
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use your_crate::M;
+/// let value: u8 = 5;
+/// assert!(M::try_from(value).is_ok());
+/// ```
+///
+/// Failing conversion due to zero:
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use your_crate::{M, MError, MErrorKind};
+/// let value: u8 = 0;
+/// assert_eq!(M::try_from(value), Err(MError::new(MErrorKind::Zero, "u8", "M")));
+/// ```
+///
+/// # Errors
+///
+/// Will return `MError` with kind:
+///
+/// - `MErrorKind::Zero` if the given value is zero.
+/// - `MErrorKind::Generic` if a `NonZeroU32` could not be created, which should not occur with valid `u8` inputs.
 impl TryFrom<u8> for M {
     type Error = MError;
 
@@ -320,7 +588,6 @@ impl TryFrom<u8> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since u8 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -332,6 +599,33 @@ impl TryFrom<u8> for M {
     }
 }
 
+/// Attempts to create `M` from `u16`.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use your_module::{M, MError};
+///
+/// let value = 5u16;
+/// let m = M::try_from(value);
+///
+/// assert!(m.is_ok());
+///
+/// let value = 0u16;
+/// let m = M::try_from(value);
+///
+/// assert!(matches!(m, Err(MError { kind: MErrorKind::Zero, .. })));
+/// ```
+///
+/// # Errors
+///
+/// Returns `MError` if:
+///
+/// - Value is zero (`MErrorKind::Zero`).
+/// - Creation of `NonZeroU32` fails internally, though unlikely (`MErrorKind::Generic`).
 impl TryFrom<u16> for M {
     type Error = MError;
 
@@ -343,7 +637,6 @@ impl TryFrom<u16> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since u16 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -355,6 +648,25 @@ impl TryFrom<u16> for M {
     }
 }
 
+/// Attempts to create an `M` from a `u32`.
+///
+/// # Errors
+///
+/// Returns an `Err` if `value` is zero, as `M` cannot be zero.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// # use your_crate::M;
+/// # use std::convert::TryFrom;
+/// let m = M::try_from(42u32);
+/// assert!(m.is_ok());
+///
+/// let m = M::try_from(0u32);
+/// assert!(m.is_err());
+/// ```
 impl TryFrom<u32> for M {
     type Error = MError;
 
@@ -366,7 +678,6 @@ impl TryFrom<u32> for M {
             "M"
         ))
         } else {
-            // Directly construct M, since u32 values are within u32 range when positive and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -377,7 +688,31 @@ impl TryFrom<u32> for M {
         }
     }
 }
-
+/// Attempts to convert a `u64` to `M`.
+///
+/// # Errors
+///
+/// Returns `MError` if:
+///
+/// - The value is `0` (as `M` cannot be zero).
+/// - The value exceeds `u32::MAX`, as `M` only supports `u32` range.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::{M, MError, MErrorKind};
+/// # use std::convert::TryFrom;
+/// assert!(M::try_from(0_u64).is_err());
+///
+/// let large_value = u64::from(u32::MAX) + 1;
+/// assert_eq!(
+///     M::try_from(large_value),
+///     Err(MError::new(MErrorKind::OutOfRange(large_value.to_string()), "u64", "M"))
+/// );
+///
+/// let value_within_range = 42_u64;
+/// assert_eq!(M::try_from(value_within_range), Ok(M::Some(non_zero_u32::new(42).unwrap())));
+/// ```
 impl TryFrom<u64> for M {
     type Error = MError;
 
@@ -389,14 +724,12 @@ impl TryFrom<u64> for M {
             "M"
         ))
         } else if value > u32::MAX as u64 {
-            // If the u64 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
             "u64",
             "M"
         ))
         } else {
-            // Safe to convert u64 to u32 because it's within the valid range and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -407,7 +740,33 @@ impl TryFrom<u64> for M {
         }
     }
 }
-
+/// Attempts to convert a `u128` into `M`.
+///
+/// # Examples
+///
+/// ```
+/// use my_crate::M;
+/// use std::convert::TryFrom;
+///
+/// // Successful conversion
+/// let m = M::try_from(42u128);
+/// assert!(m.is_ok());
+///
+/// // Zero value, which is an error case
+/// let m = M::try_from(0u128);
+/// assert!(m.is_err());
+///
+/// // Value too large for `M`, which is an error case
+/// let m = M::try_from(u128::MAX);
+/// assert!(m.is_err());
+/// ```
+///
+/// # Errors
+///
+/// This will return an `Err` if:
+///
+/// - The value is zero, as `M` cannot represent a zero value.
+/// - The value exceeds the maximum value that can be represented by a `u32`.
 impl TryFrom<u128> for M {
     type Error = MError;
 
@@ -419,14 +778,12 @@ impl TryFrom<u128> for M {
             "M"
         ))
         } else if value > u32::MAX as u128 {
-            // If the u128 value is greater than the maximum for a u32, it's out of bounds.
             Err(MError::new(
                 MErrorKind::OutOfRange(value.to_string()),
             "u128",
             "M"
         ))
         } else {
-            // Safe to convert u128 to u32 because it's within the valid range and non-zero.
             core::num::NonZeroU32::new(value as u32)
                 .map(M::Some)
                 .ok_or_else(|| MError::new(
@@ -438,9 +795,42 @@ impl TryFrom<u128> for M {
     }
 }
 
-//
-// Implementations for pointer-sized signed integers
-//
+/// Fallible conversion of a `isize` value into an `M` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{M, MError, MErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_isize;
+/// assert!(M::try_from(positive_value).is_ok());
+///
+/// let negative_value = -42_isize;
+/// assert_eq!(
+///     M::try_from(negative_value).unwrap_err().kind,
+///     MErrorKind::NegativeValue
+/// );
+///
+/// let zero_value = 0_isize;
+/// assert_eq!(
+///     M::try_from(zero_value).unwrap_err().kind,
+///     MErrorKind::Zero
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing an `MError` if:
+///
+/// - The value is zero, yielding `MErrorKind::Zero`.
+/// - The value is negative, yielding `MErrorKind::NegativeValue`.
+/// - The value exceeds the maximum for `u32`, yielding `MErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `isize` type varies in size depending on the target architecture:
+/// 32 bits on x86 and 64 bits on x86_64. This implementation ensures that
+/// an `isize` value within the range of `u32` can be safely converted to an `M`.
 #[cfg(target_pointer_width = "32")]
 impl TryFrom<isize> for M {
     type Error = MError;
@@ -475,7 +865,6 @@ impl TryFrom<isize> for M {
         }
     }
 }
-
 #[cfg(target_pointer_width = "64")]
 impl TryFrom<isize> for M {
     type Error = MError;
@@ -511,9 +900,41 @@ impl TryFrom<isize> for M {
     }
 }
 
-//
-// Implementations for pointer-sized unsigned integers
-//
+/// Fallible conversion of a `usize` value into an `M` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::{M, MError, MErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_isize;
+/// assert!(M::try_from(positive_value).is_ok());
+///
+/// let negative_value = -42_isize;
+/// assert_eq!(
+///     M::try_from(negative_value).unwrap_err().kind,
+///     MErrorKind::NegativeValue
+/// );
+///
+/// let zero_value = 0_isize;
+/// assert_eq!(
+///     M::try_from(zero_value).unwrap_err().kind,
+///     MErrorKind::Zero
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing an `MError` if:
+///
+/// - The value is zero, yielding `MErrorKind::Zero`.
+/// - The value exceeds the maximum for `u32`, yielding `MErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `usize` type varies in size depending on the target architecture:
+/// 32 bits on x86 and 64 bits on x86_64. This implementation ensures that
+/// an `usize` value within the range of `u32` can be safely converted to an `M`.
 #[cfg(target_pointer_width = "32")]
 impl TryFrom<usize> for M {
     type Error = MError;
@@ -542,7 +963,6 @@ impl TryFrom<usize> for M {
         }
     }
 }
-
 #[cfg(target_pointer_width = "64")]
 impl TryFrom<usize> for M {
     type Error = MError;
@@ -574,7 +994,27 @@ impl TryFrom<usize> for M {
 
 impl core::str::FromStr for M {
     type Err = MError;
-
+    /// Converts a string slice to `M`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the string does not represent a valid non-zero u32 value.
+    /// This includes zero values, negative values, and values out of range for u32.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use crate::{M, MError, MErrorKind};
+    ///
+    /// let m: Result<M, _> = "42".parse();
+    /// assert!(m.is_ok());
+    ///
+    /// let m: Result<M, _> = "-42".parse();
+    /// assert!(matches!(m, Err(MError { kind: MErrorKind::NegativeValue, .. })));
+    ///
+    /// let m: Result<M, _> = "18446744073709551616".parse();
+    /// assert!(matches!(m, Err(MError { kind: MErrorKind::OutOfRange(_), .. })));
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.parse::<u32>() {
             Ok(value) => M::new(value),
@@ -603,6 +1043,25 @@ impl core::str::FromStr for M {
     }
 }
 
+/// `M` represents a positive, non-zero `u32` value.
+///
+/// # Examples
+///
+/// ```
+/// use your_crate::M;
+///
+/// let m = M::Some(nonzero::NonZeroU32::new(42).unwrap());
+/// assert_eq!(format!("{}", m), "42");
+/// ```
+///
+/// Attempting to create `M` with a zero or negative value will yield an error:
+///
+/// ```
+/// use your_crate::{M, MError, MErrorKind};
+///
+/// let m_result = M::new(0); // or any negative number
+/// assert_eq!(m_result.unwrap_err().kind, MErrorKind::Zero); // or `MErrorKind::NegativeValue`
+/// ```
 impl core::fmt::Display for M {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
@@ -612,6 +1071,26 @@ impl core::fmt::Display for M {
     }
 }
 
+/// `MError` denotes the different kinds of errors that can arise from creating or using `M`.
+///
+/// # Examples
+///
+/// Creating `M` with an invalid value:
+///
+/// ```
+/// use your_crate::{M, MError};
+///
+/// let m = M::new(0); // Zero is not a valid value for `M`
+/// assert!(m.is_err());
+/// assert_eq!(format!("{}", m.unwrap_err()), "zero is not allowed");
+/// ```
+///
+/// # Errors
+///
+/// - `MErrorKind::Zero`: The value provided is zero.
+/// - `MErrorKind::NegativeValue`: The value provided is negative.
+/// - `MErrorKind::OutOfRange`: The value provided is outside the range of `u32`.
+/// - `MErrorKind::ParseError`: The provided string cannot be parsed into a `u32`.
 impl core::fmt::Display for MError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match &self.kind {

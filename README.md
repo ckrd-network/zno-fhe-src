@@ -74,7 +74,7 @@ cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocaptu
 
 RUST_BACKTRACE=full cargo test --lib bgv::context:: --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
-cargo test --lib --features "static helib" --manifest-path $sys_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+RUST_BACKTRACE=full cargo test --lib --features "static helib" --manifest-path $sys_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
 cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 ```

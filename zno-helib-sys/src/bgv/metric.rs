@@ -13,11 +13,8 @@ pub enum Metric {
     R(R),
 }
 
-// You might need some helper functions or a factory pattern to construct Metrics
-// Here's a simple factory approach for illustration purposes
-// Implement Metric creation for types implementing HeScheme
+// Implement Metric creation for types implementing a HE Scheme
 impl Metric {
-    // Use `where` syntax to specify the trait bounds for the generic type T
     fn new<T>(value: T) -> Self
     where
         T: Scheme + Into<Metric>,

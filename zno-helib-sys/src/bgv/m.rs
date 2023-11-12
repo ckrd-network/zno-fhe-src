@@ -38,11 +38,38 @@ use crate::prelude::*;
 /// assert_eq!(m.to_string(), "32");
 /// ```
 ///
+
+
+/// A non-zero unsigned 32-bit integer.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::M;
+/// let m = M::Some(non_zero_u32::new(5).unwrap());
+///
+/// assert_eq!(m, M::Some(5));
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum M {
     Some(core::num::NonZeroU32),
 }
 
+/// An error related to `M` operations.
+///
+/// This error encapsulates various kinds of issues that can arise
+/// when working with `M`, such as conversion errors or invalid values.
+///
+/// # Examples
+///
+/// Creating an error due to a negative value:
+///
+/// ```
+/// # use crate::{MError, MErrorKind};
+/// let error = MError::new(MErrorKind::NegativeValue, "i32", "M");
+///
+/// assert_eq!(error.kind, MErrorKind::NegativeValue);
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct MError {
     pub kind: MErrorKind,
@@ -51,11 +78,48 @@ pub struct MError {
 }
 
 impl MError {
+    /// Constructs a new `MError`.
+    ///
+    /// # Arguments
+    ///
+    /// * `kind` - The kind of error.
+    /// * `from` - The source type that failed to convert.
+    /// * `to` - The target type to which conversion was attempted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::{MError, MErrorKind};
+    /// let error = MError::new(MErrorKind::Zero, "usize", "M");
+    ///
+    /// assert_eq!(error.kind, MErrorKind::Zero);
+    /// ```
     pub fn new(kind: MErrorKind, from: &'static str, to: &'static str) -> Self {
         MError { kind, from, to }
     }
 }
 
+/// The specific kind of error that `MError` can represent.
+///
+/// # Variants
+///
+/// * `InvalidContext` - The context in which `M` is used is invalid.
+/// * `Unreachable` - An unreachable state, indicating a bug.
+/// * `NegativeValue` - Attempted to create `M` from a negative value.
+/// * `NoValue` - A required value for `M` was not provided.
+/// * `OutOfRange` - A value was out of the valid range for `M`.
+/// * `ParseError` - Failed to parse a string as `M`.
+/// * `Zero` - Attempted to create `M` with a value of zero.
+/// * `Generic` - A generic error, use when none of the others apply.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{MError, MErrorKind};
+/// let error = MError::new(MErrorKind::OutOfRange("too large".into()), "u128", "M");
+///
+/// assert_eq!(error.kind, MErrorKind::OutOfRange("too large".into()));
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub enum MErrorKind {
     InvalidContext,
@@ -76,7 +140,7 @@ pub enum MErrorKind {
 /// # Examples
 ///
 /// ```
-/// # use your_crate::M;
+/// # use crate::M;
 /// let m = M::new(42);
 /// assert!(m.is_ok());
 ///
@@ -140,7 +204,7 @@ impl crate::bgv::ToU32<MError> for M {
 ///
 /// # Panics
 ///
-/// This function will panic if `4095` cannot be represented as a `NonZeroU32`.
+/// This function will panic if the default value cannot be represented as a `NonZeroU32`.
 /// Such a panic is not a concern in practical use; `4095` is a valid non-zero `u32` value.
 ///
 /// # Examples
@@ -166,10 +230,10 @@ impl std::error::Error for MError {}
 /// ```
 /// use std::fs::File;
 /// use std::io::{self, Read};
-/// use your_crate::MError;
+/// use crate::MError;
 ///
 /// fn read_file() -> Result<(), MError> {
-///     let mut file = File::open("foo.txt").map_err(MError::from)?;
+///     let mut file = File::open("m.txt").map_err(MError::from)?;
 ///     let mut contents = String::new();
 ///     file.read_to_string(&mut contents).map_err(MError::from)?;
 ///     Ok(())
@@ -218,7 +282,7 @@ impl From<std::num::ParseIntError> for MError {
 ///
 /// ```
 /// use std::convert::Infallible;
-/// use your_crate::MError;
+/// use crate::MError;
 ///
 /// // Example of infallible conversion, which should not occur:
 /// let error: MError = Infallible.into();
@@ -258,7 +322,7 @@ impl He for M {
 /// # Examples
 ///
 /// ```
-/// let m = M::from_non_zero_u32(non_zero_u32);
+/// let m = M::new(1i64);
 /// let metric: Metric = m.into();
 /// ```
 impl Into<Metric> for M {
@@ -385,7 +449,7 @@ impl TryFrom<i16> for M {
 ///
 /// ```
 /// # use core::convert::TryFrom;
-/// # use your_crate::{M, MError, MErrorKind};
+/// # use crate::{M, MError, MErrorKind};
 /// assert_eq!(M::try_from(5), Ok(M::Some(nonzero::NonZeroU32::new(5).unwrap())));
 /// assert!(matches!(M::try_from(0), Err(MError::new(MErrorKind::Zero, "i32", "M"))));
 /// assert!(matches!(M::try_from(-1), Err(MError::new(MErrorKind::NegativeValue, "i32", "M"))));
@@ -490,7 +554,7 @@ impl TryFrom<i64> for M {
 ///
 /// ```
 /// # use core::convert::TryFrom;
-/// # use your_crate::{M, MError, MErrorKind};
+/// # use crate::{M, MError, MErrorKind};
 /// let value = 42i128;
 /// let m = M::try_from(value);
 /// assert_eq!(m.unwrap(), M::Some(NonZeroU32::new(42).unwrap()));
@@ -557,7 +621,7 @@ impl TryFrom<i128> for M {
 ///
 /// ```
 /// # use core::convert::TryFrom;
-/// # use your_crate::M;
+/// # use crate::M;
 /// let value: u8 = 5;
 /// assert!(M::try_from(value).is_ok());
 /// ```
@@ -566,7 +630,7 @@ impl TryFrom<i128> for M {
 ///
 /// ```
 /// # use core::convert::TryFrom;
-/// # use your_crate::{M, MError, MErrorKind};
+/// # use crate::{M, MError, MErrorKind};
 /// let value: u8 = 0;
 /// assert_eq!(M::try_from(value), Err(MError::new(MErrorKind::Zero, "u8", "M")));
 /// ```
@@ -659,7 +723,7 @@ impl TryFrom<u16> for M {
 /// Basic usage:
 ///
 /// ```
-/// # use your_crate::M;
+/// # use crate::M;
 /// # use std::convert::TryFrom;
 /// let m = M::try_from(42u32);
 /// assert!(m.is_ok());
@@ -700,7 +764,7 @@ impl TryFrom<u32> for M {
 /// # Examples
 ///
 /// ```
-/// # use your_crate::{M, MError, MErrorKind};
+/// # use crate::{M, MError, MErrorKind};
 /// # use std::convert::TryFrom;
 /// assert!(M::try_from(0_u64).is_err());
 ///
@@ -905,7 +969,7 @@ impl TryFrom<isize> for M {
 /// # Examples
 ///
 /// ```
-/// # use your_crate::{M, MError, MErrorKind};
+/// # use crate::{M, MError, MErrorKind};
 /// # use std::convert::TryFrom;
 /// let positive_value = 42_isize;
 /// assert!(M::try_from(positive_value).is_ok());
@@ -1048,7 +1112,7 @@ impl core::str::FromStr for M {
 /// # Examples
 ///
 /// ```
-/// use your_crate::M;
+/// use crate::M;
 ///
 /// let m = M::Some(nonzero::NonZeroU32::new(42).unwrap());
 /// assert_eq!(format!("{}", m), "42");
@@ -1057,7 +1121,7 @@ impl core::str::FromStr for M {
 /// Attempting to create `M` with a zero or negative value will yield an error:
 ///
 /// ```
-/// use your_crate::{M, MError, MErrorKind};
+/// use crate::{M, MError, MErrorKind};
 ///
 /// let m_result = M::new(0); // or any negative number
 /// assert_eq!(m_result.unwrap_err().kind, MErrorKind::Zero); // or `MErrorKind::NegativeValue`
@@ -1078,7 +1142,7 @@ impl core::fmt::Display for M {
 /// Creating `M` with an invalid value:
 ///
 /// ```
-/// use your_crate::{M, MError};
+/// use crate::{M, MError};
 ///
 /// let m = M::new(0); // Zero is not a valid value for `M`
 /// assert!(m.is_err());
@@ -1125,8 +1189,8 @@ mod tests {
 
     #[test]
     fn test_from_impl_for_metric() {
-        let m = M::try_from(42).unwrap(); // Valid value for M
-        let metric: Metric = m.into(); // Should not fail
+        let m = M::try_from(42).unwrap();
+        let metric: Metric = m.into();
         assert!(matches!(metric, Metric::M(_)));
     }
 
@@ -1160,8 +1224,7 @@ mod tests {
     fn test_m_from_str_zero() {
         // Trying to parse "0" into M should yield a Zero error.
         let m = "0".parse::<M>();
-        assert_eq!(m, Err(MError::new(
-            MErrorKind::Zero, "u32", "M" )));
+        assert_eq!(m, Err(MError::new(MErrorKind::Zero, "u32", "M" )));
     }
 
     #[test]

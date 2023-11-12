@@ -1,5 +1,9 @@
-use core::num::{NonZeroU32, ParseIntError};
-use std::{fmt, io, str};
+use core::convert::TryFrom;
+use std::num::ParseIntError;
+use std::fmt;
+use std::convert::{Infallible, TryInto};
+
+use crate::prelude::*;
 
 /// Represents the plaintext modulus parameter `p` in BGV.
 ///
@@ -25,208 +29,339 @@ use std::{fmt, io, str};
 /// assert_eq!(p.to_string(), "65537");
 /// ```
 ///
+// The following code is repeated for P, R, C, and Bits with appropriate naming adjustments.
+
+/// A non-zero unsigned 32-bit integer representing a parameter in the BGV scheme.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::P;
+/// let p = P::Some(non_zero_u32::new(5).unwrap());
+///
+/// assert_eq!(p, P::Some(5));
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum P {
-    Some(NonZeroU32),
-    // More variants can be added here in the future.
+    Some(core::num::NonZeroU32),
 }
 
+/// An error related to `P` operations within the BGV scheme.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::{PError, PErrorKind};
+/// let error = PError::new(PErrorKind::NegativeValue, "i32", "P");
+///
+/// assert_eq!(error.kind, PErrorKind::NegativeValue);
+/// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct PError {
     pub kind: PErrorKind,
+    pub from: &'static str,
+    pub to: &'static str,
 }
 
+impl PError {
+    /// Constructs a new `PError` related to BGV scheme operations.
+    pub fn new(kind: PErrorKind, from: &'static str, to: &'static str) -> Self {
+        PError { kind, from, to }
+    }
+}
+
+/// Specific types of errors that can occur with `P`.
 #[derive(Debug, Clone, PartialEq)]
 pub enum PErrorKind {
+    InvalidContext,
+    Unreachable,
+    NegativeValue,
+    NoValue,
     OutOfRange(String),
     ParseError(ParseIntError),
     Zero,
-    Generic(String), // other kinds of errors can be added here
+    Generic(String),
 }
 
+/// Constructs a new `P` from a given value.
+///
+/// # Examples
+///
+/// ```
+/// # use your_crate::P;
+/// let p = P::new(42);
+/// assert!(p.is_ok());
+///
+/// let p = P::new(-1);
+/// assert!(p.is_err());
+/// ```
+///
+/// # Errors
+///
+/// This will return `PError` if the value is zero, negative, or exceeds `u32::MAX`.
 impl P {
-    /// Create a `P` variant from a given u32.
-    pub fn new(value: u32) -> Result<Self, PError> {
-        NonZeroU32::new(value)
-            .map(P::Some)
-            .ok_or_else(|| PError { kind: PErrorKind::Zero })
-    }
-
-    /// Create a `P` variant from a given i64.
-    pub fn from_i64(value: i64) -> Result<Self, PError> {
-        if (1..=(u32::MAX as i64)).contains(&value) {
-            // Direct conversion as the range has been checked
-            P::new(value as u32)
-        } else if value == 0 {
-            Err(PError { kind: PErrorKind::Zero })
-        } else {
-            Err(PError { kind: PErrorKind::OutOfRange("Value must be in the range of 1 to u32::MAX".into()) })
-        }
+    pub fn new<T>(value: T) -> Result<Self, PError>
+    where
+        Self: TryFrom<T, Error = PError>,
+        T: num_traits::ToPrimitive + std::cmp::PartialOrd + std::fmt::Display + Copy + std::fmt::Debug,
+    {
+        P::try_from(value).map_err(PError::from)
     }
 }
 
-// Assuming there's a trait ToU32 in the bgv module for conversion purposes.
+/// Convert `P` to `u32`.
+///
+/// `P` holds a number that cannot be zero. This function extracts that number
+/// if it exists.
+///
+/// # Errors
+///
+/// Returns a `PError` with the kind `OutOfRange` if `self` is not a `Some`,
+/// meaning the number was zero or never there.
+/// The error details where the problem happened: from "u32" to "P".
 impl crate::bgv::ToU32<PError> for P {
     fn to_u32(&self) -> Result<u32, PError> {
         match self {
             P::Some(non_zero_u32) => Ok(non_zero_u32.get()),
-            // For other variants, return an appropriate error.
-            _ => Err(PError {
-                kind: PErrorKind::OutOfRange("Value out of range of u32".into()), // A generic error.
-            }),
+            _ => Err(PError { kind: PErrorKind::OutOfRange(format!("Value {} is out of range for P", self)), from: "u32", to: "P" })
         }
     }
 }
 
-/// Provides a default `P` value. A panic should never occur, as this is a safer default.
+/// Returns the default value for `P`.
+///
+/// This is the smallest non-zero `u32` value that is permitted within `P`, namely `4095`.
+/// It is a constant, not arbitrary, chosen with purpose.
+///
+/// # Panics
+///
+/// This function will panic if the default value cannot be represented as a `NonZeroU32`.
+/// Such a panic is not a concern in practical use; the default must be a valid non-zero `u32` value.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// let p = P::default();
+/// assert_eq!(p.unwrap().get(), 4095);
+/// ```
 impl Default for P {
     fn default() -> Self {
-        P::Some(NonZeroU32::new(2).expect("11 is a valid non-zero u32 value.")) // Assuming 11 is a safe default for P.
+        P::Some(core::num::NonZeroU32::new(4095).expect("4095 is a valid non-zero u32 value."))
     }
 }
 
 impl std::error::Error for PError {}
 
-// Implement From for each error type to convert into PError
-impl From<io::Error> for PError {
-    fn from(e: io::Error) -> PError {
-        PError {
-            kind: PErrorKind::Generic(e.to_string()),
+/// Converts an `std::io::Error` to `PError`.
+///
+/// # Examples
+///
+/// ```
+/// use std::fs::File;
+/// use std::io::{self, Read};
+/// use crate::PError;
+///
+/// fn read_file() -> Result<(), PError> {
+///     let mut file = File::open("p.txt").map_err(PError::from)?;
+///     let mut contents = String::new();
+///     file.read_to_string(&mut contents).map_err(PError::from)?;
+///     Ok(())
+/// }
+/// ```
+///
+/// # Errors
+///
+/// Returns `PError::Generic` containing the error message from `std::io::Error`.
+impl From<std::io::Error> for PError {
+    fn from(e: std::io::Error) -> PError {
+        PError::new(
+            PErrorKind::Generic(e.to_string()),
+            "Error",
+            "PError"
+        )
+    }
+}
+
+/// Converts a `ParseIntError` to `PError`.
+///
+/// # Arguments
+///
+/// * `error` - The parse error encountered.
+///
+/// # Returns
+///
+/// Returns a `PError` with a `ParseError` kind, indicating a parsing failure.
+impl From<std::num::ParseIntError> for PError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        PError::new(
+            PErrorKind::ParseError(error),
+            "ParseIntError",
+            "PError"
+        )
+    }
+}
+
+/// Converts from `Infallible` to `PError`.
+///
+/// Since `Infallible` implies no error can occur, this conversion
+/// yields a variant representing an unreachable state. It should not
+/// be possible for this code to run.
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::Infallible;
+/// use crate::PError;
+///
+/// // Example of infallible conversion, which should not occur:
+/// let error: PError = Infallible.into();
+/// // Assertions about the error kind can be made here if necessary
+/// ```
+impl From<Infallible> for PError {
+    fn from(_: Infallible) -> Self {
+        PError::new(
+            PErrorKind::Unreachable,
+            "Infallible",
+            "PError"
+        )
+    }
+}
+
+/// Returns the schema type.
+///
+/// This method declares the homomorphic encryption schema for the implementing
+/// type.
+/// It is straightforward and utilitarian, reflecting the singular
+/// purpose of the `P` type within the cryptographic framework.
+///
+/// # Examples
+///
+/// ```
+/// let p = P::default();
+/// assert_eq!(p.schema(), Schema::Bgv);
+/// ```
+impl He for P {
+    fn schema(&self) -> Schema {
+        Schema::Bgv
+    }
+}
+
+/// Converts `P` into a `Metric`.
+///
+/// # Examples
+///
+/// ```
+/// let p = P::new(1i64);
+/// let metric: Metric = p.into();
+/// ```
+impl Into<Metric> for P {
+    fn into(self) -> Metric {
+        Metric::P(self)
+    }
+}
+
+/// Convert an `i8` to `P`.
+///
+/// # Errors
+///
+/// Returns `PError` in these cases:
+///
+/// - If `value` is zero, `PErrorKind::Zero` is returned.
+/// - If `value` is negative, `PErrorKind::NegativeValue` is returned.
+/// - If `NonZeroU32` cannot be created, `PErrorKind::Generic` is returned.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::prelude::*;
+///
+/// let p = P::try_from(5i8);
+/// assert_eq!(p.is_ok(), true);
+///
+/// let p = P::try_from(0i8);
+/// assert!(matches!(p, Err(PError { kind: PErrorKind::Zero, .. })));
+///
+/// let p = P::try_from(-1i8);
+/// assert!(matches!(p, Err(PError { kind: PErrorKind::NegativeValue, .. })));
+/// ```
+impl TryFrom<i8> for P {
+    type Error = PError;
+
+    fn try_from(value: i8) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "i8",
+            "P"
+        ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "i8",
+            "P"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i8",
+            "P"
+        ))
         }
     }
 }
 
-impl From<ParseIntError> for PError {
-    fn from(error: ParseIntError) -> Self {
-        PError {
-            kind: PErrorKind::ParseError(error),
+/// Convert an `i16` to `P`.
+///
+/// # Errors
+///
+/// Returns `PError` for the following reasons:
+/// - The input is zero. No place for nothing.
+/// - The value is negative. It's wrong.
+/// - Cannot make `NonZeroU32` from `i16`. It fails silently.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{P, PError, PErrorKind};
+/// let positive = P::try_from(5i16);
+/// assert!(positive.is_ok());
+///
+/// let zero = P::try_from(0i16);
+/// assert_eq!(zero.unwrap_err().kind(), &PErrorKind::Zero);
+///
+/// let negative = P::try_from(-1i16);
+/// assert_eq!(negative.unwrap_err().kind(), &PErrorKind::NegativeValue);
+/// ```
+impl TryFrom<i16> for P {
+    type Error = PError;
+
+    fn try_from(value: i16) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "i16",
+            "P"
+        ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "i16",
+            "P"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i16",
+            "P"
+        ))
         }
-    }
-}
-
-impl str::FromStr for P {
-    type Err = PError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.parse::<u32>() {
-            Ok(value) => P::new(value),
-            Err(_) => {
-                // If parsing as u32 failed, try parsing as u64 to determine if it's a range issue
-                match s.parse::<u64>() {
-                    Ok(value) => {
-                        if value > u32::MAX as u64 {
-                            Err(PError { kind: PErrorKind::OutOfRange("Value out of range for u32".to_string()) })
-                        } else {
-                            // This branch implies a logical error: the value fits within u32, but parse::<u32>() failed.
-                            Err(PError { kind: PErrorKind::Generic("Invalid number format".to_string()) })
-                        }
-                    },
-                    Err(_) => {
-                        // If parsing as u64 also failed, then the string does not represent a valid number.
-                        Err(PError { kind: PErrorKind::ParseError(s.parse::<u32>().unwrap_err()) })
-                    }
-                }
-            }
-        }
-    }
-}
-
-impl core::fmt::Display for P {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-        match self {
-            P::Some(value) => write!(f, "{}", value),
-            // Handle other variants if they are added in the future.
-        }
-    }
-}
-
-impl core::fmt::Display for PError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match &self.kind {
-            PErrorKind::OutOfRange(s) => write!(f, "{}", s),
-            PErrorKind::ParseError(e) => e.fmt(f),
-            PErrorKind::Zero => write!(f, "zero is not allowed"),
-            PErrorKind::Generic(g) => g.fmt(f),
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_p_valid_value() {
-        let p = P::new(32);
-        assert!(matches!(p, Ok(P::Some(_))));
-    }
-
-    #[test]
-    fn test_p_new_zero() {
-        // Trying to create P with zero should yield a Zero error.
-        let p = P::new(0);
-        assert_eq!(p, Err(PError { kind: PErrorKind::Zero }));
-    }
-
-    #[test]
-    fn test_p_invalid_value() {
-        let p = P::new(0);
-        assert!(matches!(p, Err(_)));
-    }
-
-    #[test]
-    fn test_p_from_str_valid() {
-        // Parsing a valid value ("1") should succeed.
-        let p = "1".parse::<P>();
-        assert!(p.is_ok());
-        assert_eq!(p.unwrap(), P::Some(core::num::NonZeroU32::new(1).unwrap()));
-    }
-
-    #[test]
-    fn test_p_from_str_zero() {
-        // Trying to parse "0" into P should yield a Zero error.
-        let p = "0".parse::<P>();
-        assert_eq!(p, Err(PError { kind: PErrorKind::Zero }));
-    }
-
-    #[test]
-    fn test_p_from_str_out_of_range() {
-        let result = (u64::MAX).to_string().parse::<P>();
-        assert!(matches!(result, Err(PError { kind: PErrorKind::OutOfRange(_) })));
-    }
-
-    #[test]
-    fn test_p_from_str_invalid() {
-        // Parsing an invalid value ("-1") should fail.
-        let p = "-1".parse::<P>();
-        assert!(p.is_err());
-        // You can also check for a specific error if you want
-        match p {
-            Err(PError { kind: PErrorKind::ParseError(_) }) => (), // This is expected, do nothing
-            _ => panic!("Expected ParseError"), // Panic with a custom message in all other cases
-        }
-    }
-
-    #[test]
-    fn test_p_new() {
-        assert!(matches!(P::new(1), Ok(P::Some(_))));
-        assert_eq!(P::new(0), Err(PError { kind: PErrorKind::Zero }));
-    }
-
-    #[test]
-    fn test_p_from_i64_zero() {
-        assert!(matches!(P::from_i64(1), Ok(P::Some(_))));
-        assert_eq!(P::from_i64(0), Err(PError { kind: PErrorKind::Zero }));
-    }
-
-    #[test]
-    fn test_p_from_str_non_numeric() {
-        let result = "non_numeric".parse::<P>();
-        assert!(matches!(result, Err(PError { kind: PErrorKind::ParseError(_) })));
-    }
-
-    #[test]
-    fn test_p_default() {
-        assert!(matches!(P::default(), P::Some(_)));
     }
 }

@@ -25,6 +25,7 @@ pub mod ffi {
         fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
 
         fn new_bgv_builder() -> UniquePtr<BGVContextBuilder>;
+        
         fn set_m(builder: UniquePtr<BGVContextBuilder>, m: u32) -> UniquePtr<BGVContextBuilder>;
 
         fn build_ptr(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;

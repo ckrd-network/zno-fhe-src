@@ -607,7 +607,7 @@ impl TryFrom<i128> for M {
 
 //
 // Implementations for fixed-size unsigned integers
-// u8, u16, u32, u64, u128
+// u8, u16, u32, u64, u128 and usize
 
 /// Attempts to convert a `u8` to `M`.
 ///
@@ -1220,7 +1220,7 @@ mod tests {
         assert_eq!(m.unwrap(), M::Some(core::num::NonZeroU32::new(1).unwrap()));
     }
 
-        #[test]
+    #[test]
     fn test_m_from_str_zero() {
         // Trying to parse "0" into M should yield a Zero error.
         let m = "0".parse::<M>();
@@ -1325,6 +1325,8 @@ mod tests {
         assert_eq!(M::try_from(value), Err(MError::new(
             MErrorKind::OutOfRange(value.to_string()), "u64", "M" )));
     }
+
+
 
     #[test]
     fn conversion_from_isize_max() {

@@ -172,15 +172,15 @@ impl Bits {
 ///
 /// # Errors
 ///
-/// Returns an `MError` with the kind `OutOfRange` if `self` is not a `Some`,
+/// Returns an `BitsError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// meaning the number was zero or never there.
 /// The error details where the problem happened: from "u32" to "Bits".
-impl crate::bgv::ToU32<MError> for Bits {
-    fn to_u32(&self) -> Result<u32, MError> {
+impl crate::bgv::ToU32<BitsError> for Bits {
+    fn to_u32(&self) -> Result<u32, BitsError> {
         match self {
             Bits::Some(non_zero_u32) => Ok(non_zero_u32.get()),
-            _ => Err(MError {
-                kind: MErrorKind::OutOfRange(format!("Value {} is out of range for Bits", self)),
+            _ => Err(BitsError {
+                kind: BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", self)),
                 from: "u32",
                 to: "Bits"
             })
@@ -212,10 +212,89 @@ impl Default for Bits {
     }
 }
 
-/// Represents a single bit within a larger cryptographic framework.
+impl std::error::Error for BitsError {}
+
+/// Converts an `std::io::Error` to `BitsError`.
 ///
-/// The `Bits` type encapsulates the notion of a single bit and is used to
-/// build up more complex cryptographic structures.
+/// # Examples
+///
+/// ```
+/// use std::fs::File;
+/// use std::io::{self, Read};
+/// use crate::BitsError;
+///
+/// fn read_file() -> Result<(), BitsError> {
+///     let mut file = File::open("m.txt").map_err(BitsError::from)?;
+///     let mut contents = String::new();
+///     file.read_to_string(&mut contents).map_err(BitsError::from)?;
+///     Ok(())
+/// }
+/// ```
+///
+/// # Errors
+///
+/// Returns `BitsError::Generic` containing the error message from `std::io::Error`.
+impl From<std::io::Error> for BitsError {
+    fn from(e: std::io::Error) -> BitsError {
+        BitsError::new(
+            BitsErrorKind::Generic(e.to_string()),
+            "Error",
+            "BitsError"
+        )
+    }
+}
+
+/// Converts a `ParseIntError` to `BitsError`.
+///
+/// # Arguments
+///
+/// * `error` - The parse error encountered.
+///
+/// # Returns
+///
+/// Returns an `BitsError` with a `ParseError` kind, indicating a parsing failure.
+impl From<std::num::ParseIntError> for BitsError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        BitsError::new(
+            BitsErrorKind::ParseError(error),
+            "ParseIntError",
+            "BitsError"
+        )
+    }
+}
+
+/// Converts from `Infallible` to `BitsError`.
+///
+/// Since `Infallible` implies no error can occur, this conversion
+/// yields a variant representing an unreachable state. It should not
+/// be possible for this code to run.
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::Infallible;
+/// use crate::BitsError;
+///
+/// // Example of infallible conversion, which should not occur:
+/// let error: BitsError = Infallible.into();
+/// // Assertions about the error kind can be made here if necessary
+/// ```
+impl From<Infallible> for BitsError {
+    fn from(_: Infallible) -> Self {
+        BitsError::new(
+            BitsErrorKind::Unreachable,
+            "Infallible",
+            "BitsError"
+        )
+    }
+}
+
+/// Returns the schema type.
+///
+/// This method declares the homomorphic encryption schema for the implementing
+/// type.
+/// It is straightforward and utilitarian, reflecting the singular
+/// purpose of the `Bits` type within the cryptographic framework.
 ///
 /// # Examples
 ///
@@ -344,5 +423,821 @@ impl TryFrom<i16> for Bits {
                     "Bits"
                 ))
         }
+    }
+}
+/// Convert an `i32` to `Bits`.
+///
+/// # Errors
+///
+/// Returns `BitsError` in the following cases:
+///
+/// - If `value` is zero, `BitsError` signifies an attempt to create `Bits` from nothing.
+/// - If `value` is negative, `BitsError` signifies an attempt to invert the natural order.
+/// - If unable to represent `value` as `NonZeroU32`, `BitsError` indicates a failure in creation.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// assert_eq!(Bits::try_from(5), Ok(Bits::Some(nonzero::NonZeroU32::new(5).unwrap())));
+/// assert!(matches!(Bits::try_from(0), Err(BitsError::new(BitsErrorKind::Zero, "i32", "Bits"))));
+/// assert!(matches!(Bits::try_from(-1), Err(BitsError::new(BitsErrorKind::NegativeValue, "i32", "Bits"))));
+/// ```
+impl TryFrom<i32> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "i32",
+            "Bits"
+        ))
+        } else if value < 0 {
+            Err(BitsError::new(
+                BitsErrorKind::NegativeValue,
+            "i32",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i32",
+            "Bits"
+        ))
+        }
+    }
+}
+
+/// Convert an `i64` to `Bits`.
+///
+/// # Errors
+///
+/// Returns `BitsError` if:
+///
+/// - The value is zero (zero is not allowed).
+/// - The value is negative (negatives are not allowed).
+/// - The value exceeds `u32`'s maximum (too large for `Bits`).
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use crate::{Bits, BitsError};
+///
+/// let value = 42i64;
+/// let bits = Bits::try_from(value);
+/// assert!(bits.is_ok());
+///
+/// let zero = 0i64;
+/// let bits = Bits::try_from(zero);
+/// assert!(matches!(bits, Err(BitsError { .. })));
+/// ```
+impl TryFrom<i64> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "i64",
+            "Bits"
+        ))
+        } else if value < 0 {
+            Err(BitsError::new(
+                BitsErrorKind::NegativeValue,
+            "i64",
+            "Bits"
+        ))
+        } else if value > u32::MAX as i64 {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(value.to_string()),
+            "i64",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i64",
+            "Bits"
+        ))
+        }
+    }
+}
+
+/// Converts an `i128` to `Bits`.
+///
+/// # Errors
+///
+/// Returns `Err` with `BitsError` if:
+///
+/// - Value is `0` (`BitsErrorKind::Zero`).
+/// - Value is negative (`BitsErrorKind::NegativeValue`).
+/// - Value exceeds `u32::MAX` (`BitsErrorKind::OutOfRange`).
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// let value = 42i128;
+/// let bits = Bits::try_from(value);
+/// assert_eq!(bits.unwrap(), Bits::Some(NonZeroU32::new(42).unwrap()));
+///
+/// let zero = 0i128;
+/// let bits = Bits::try_from(zero);
+/// assert_eq!(bits.unwrap_err().kind, BitsErrorKind::Zero);
+///
+/// let negative = -1i128;
+/// let bits = Bits::try_from(negative);
+/// assert_eq!(bits.unwrap_err().kind, BitsErrorKind::NegativeValue);
+///
+/// let too_large = i128::from(u32::MAX) + 1;
+/// let bits = Bits::try_from(too_large);
+/// assert_eq!(bits.unwrap_err().kind, BitsErrorKind::OutOfRange);
+/// ```
+impl TryFrom<i128> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: i128) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "i128",
+            "Bits"
+        ))
+        } else if value < 0 {
+            Err(BitsError::new(
+                BitsErrorKind::NegativeValue,
+            "i128",
+            "Bits"
+        ))
+        } else if value > u32::MAX as i128 {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(value.to_string()),
+            "i128",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i128",
+            "Bits"
+        ))
+        }
+    }
+}
+
+/// Fallible conversion of an `isize` value into a `Bits` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_isize;
+/// assert!(Bits::try_from(positive_value).is_ok());
+///
+/// let negative_value = -42_isize;
+/// assert_eq!(
+///     Bits::try_from(negative_value).unwrap_err().kind,
+///     BitsErrorKind::NegativeValue
+/// );
+///
+/// let zero_value = 0_isize;
+/// assert_eq!(
+///     Bits::try_from(zero_value).unwrap_err().kind,
+///     BitsErrorKind::Zero
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing a `BitsError` if:
+///
+/// - The value is zero, yielding `BitsErrorKind::Zero`.
+/// - The value is negative, yielding `BitsErrorKind::NegativeValue`.
+/// - The value exceeds the maximum for `u32`, yielding `BitsErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `isize` type varies in size depending on the target architecture:
+/// 32 bits on x86 and 64 bits on x86_64. This implementation ensures that
+/// an `isize` value within the range of `u32` can be safely converted to `Bits`.
+#[cfg(target_pointer_width = "32")]
+impl TryFrom<isize> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "isize",
+            "Bits"
+            ))
+        } else if value < 0 {
+            Err(BitsError::new(
+                BitsErrorKind::NegativeValue,
+            "isize",
+            "Bits"
+            ))
+        } else if value > u32::MAX as isize {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", value)),
+                "isize",
+                "Bits"))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "isize",
+                "Bits"
+                ))
+        }
+    }
+}
+#[cfg(target_pointer_width = "64")]
+impl TryFrom<isize> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "isize",
+            "Bits"
+            ))
+        } else if value < 0 {
+            Err(BitsError::new(
+                BitsErrorKind::NegativeValue,
+            "isize",
+            "Bits"
+            ))
+        } else if value > u32::MAX as isize {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", value)),
+            "isize",
+            "Bits"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "isize",
+                "Bits"
+                ))
+        }
+    }
+}
+
+/// Attempts to convert a `u8` to `Bits`.
+///
+/// Fails if input is zero. Non-zero values are safely converted and encapsulated.
+///
+/// # Examples
+///
+/// Success:
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::Bits;
+/// let value: u8 = 5;
+/// assert!(Bits::try_from(value).is_ok());
+/// ```
+///
+/// Failure (zero):
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// let value: u8 = 0;
+/// assert_eq!(Bits::try_from(value), Err(BitsError::new(BitsErrorKind::Zero, "u8", "Bits")));
+/// ```
+///
+/// # Errors
+///
+/// Returns `BitsError` if:
+///
+/// - Input is zero (`BitsErrorKind::Zero`).
+/// - `NonZeroU32` creation fails, unlikely with valid `u8` inputs (`BitsErrorKind::Generic`).
+impl TryFrom<u8> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "u8",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "u8",
+            "Bits"
+        ))
+        }
+    }
+}
+
+use core::convert::TryFrom;
+use crate::{Bits, BitsError, BitsErrorKind};
+
+/// Attempts to create `Bits` from `u16`.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use your_module::{Bits, BitsError};
+///
+/// let value = 5u16;
+/// let bits = Bits::try_from(value);
+///
+/// assert!(bits.is_ok());
+///
+/// let value = 0u16;
+/// let bits = Bits::try_from(value);
+///
+/// assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::Zero, .. })));
+/// ```
+///
+/// # Errors
+///
+/// Returns `BitsError` if:
+///
+/// - Value is zero (`BitsErrorKind::Zero`).
+/// - Creation of `NonZeroU32` fails internally, though unlikely (`BitsErrorKind::Generic`).
+impl TryFrom<u16> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "u16",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "u16",
+            "Bits"
+        ))
+        }
+    }
+}
+
+/// Attempts to create an `Bits` from a `u32`.
+///
+/// # Errors
+///
+/// Returns an `Err` if `value` is zero, as `Bits` cannot be zero.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// # use crate::Bits;
+/// # use std::convert::TryFrom;
+/// let bits = Bits::try_from(42u32);
+/// assert!(bits.is_ok());
+///
+/// let bits = Bits::try_from(0u32);
+/// assert!(bits.is_err());
+/// ```
+impl TryFrom<u32> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "u32",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "u32",
+            "Bits"
+        ))
+        }
+    }
+}
+
+/// Attempts to convert a `u64` to `Bits`.
+///
+/// # Errors
+///
+/// Returns `BitsError` if:
+///
+/// - The value is `0` (as `Bits` cannot be zero).
+/// - The value exceeds `u32::MAX`, as `Bits` only supports `u32` range.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// # use std::convert::TryFrom;
+/// assert!(Bits::try_from(0_u64).is_err());
+///
+/// let large_value = u64::from(u32::MAX) + 1;
+/// assert_eq!(
+///     Bits::try_from(large_value),
+///     Err(BitsError::new(BitsErrorKind::OutOfRange(large_value.to_string()), "u64", "Bits"))
+/// );
+///
+/// let value_within_range = 42_u64;
+/// assert_eq!(Bits::try_from(value_within_range), Ok(Bits::Some(non_zero_u32::new(42).unwrap())));
+/// ```
+impl TryFrom<u64> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+            "u64",
+            "Bits"
+        ))
+        } else if value > u32::MAX as u64 {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(value.to_string()),
+            "u64",
+            "Bits"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "u64",
+            "Bits"
+        ))
+        }
+    }
+}
+
+// Implementation for u128
+/// Convert a `u128` to `Bits`.
+///
+/// # Errors
+///
+/// Returns `BitsError` in the following cases:
+///
+/// - If `value` is zero, `BitsError` signifies an attempt to create a `Bits` from nothing.
+/// - If `value` exceeds `u64::MAX`, `BitsError` indicates the value is too large for `Bits`.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// assert_eq!(Bits::try_from(5u128), Ok(Bits::Some(nonzero::NonZeroU64::new(5).unwrap())));
+/// assert!(matches!(Bits::try_from(0u128), Err(BitsError::new(BitsErrorKind::Zero, "u128", "Bits"))));
+/// assert!(matches!(Bits::try_from(u128::MAX), Err(BitsError::new(BitsErrorKind::OutOfRange("u128::MAX".to_string()), "u128", "Bits"))));
+/// ```
+impl TryFrom<u128> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: u128) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+                "u128",
+                "Bits",
+            ))
+        } else if value > u64::MAX as u128 {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(value.to_string()),
+                "u128",
+                "Bits",
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "u128",
+            "Bits"
+        ))
+        }
+    }
+}
+
+use core::convert::TryFrom;
+use crate::{Bits, BitsError, BitsErrorKind};
+
+/// Fallible conversion of a `usize` value into a `Bits` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{Bits, BitsError, BitsErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_usize;
+/// assert!(Bits::try_from(positive_value).is_ok());
+///
+/// let zero_value = 0_usize;
+/// assert_eq!(
+///     Bits::try_from(zero_value).unwrap_err().kind,
+///     BitsErrorKind::Zero
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing a `BitsError` if:
+///
+/// - The value is zero, yielding `BitsErrorKind::Zero`.
+/// - The value exceeds the maximum for `u64`, yielding `BitsErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `usize` type varies in size depending on the target architecture:
+/// 32 bits on x86 and 64 bits on x86_64. This implementation ensures that
+/// a `usize` value within the range of `u64` can be safely converted to a `Bits`.
+#[cfg(target_pointer_width = "32")]
+impl TryFrom<usize> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+                "usize",
+                "Bits"
+            ))
+        } else if value > u64::MAX as usize {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", value)),
+                "usize",
+                "Bits"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "usize",
+                "Bits"
+                ))
+        }
+    }
+}
+
+#[cfg(target_pointer_width = "64")]
+impl TryFrom<usize> for Bits {
+    type Error = BitsError;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(BitsError::new(
+                BitsErrorKind::Zero,
+                "usize",
+                "Bits"
+            ))
+        } else if value > u64::MAX as usize {
+            Err(BitsError::new(
+                BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", value)),
+                "usize",
+                "Bits"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(Bits::Some)
+                .ok_or_else(|| BitsError::new(
+                    BitsErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "usize",
+                "Bits"
+                ))
+        }
+    }
+}
+
+impl core::str::FromStr for Bits {
+    type Err = BitsError;
+    /// Converts a string slice to `Bits`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the string does not represent a valid non-zero u64 value.
+    /// This includes zero values, negative values, and values out of range for u64.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use crate::{Bits, BitsError, BitsErrorKind};
+    ///
+    /// let bits: Result<Bits, _> = "42".parse();
+    /// assert!(bits.is_ok());
+    ///
+    /// let bits: Result<Bits, _> = "-42".parse();
+    /// assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::NegativeValue, .. })));
+    ///
+    /// let bits: Result<Bits, _> = "18446744073709551616".parse();
+    /// assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::OutOfRange(_), .. })));
+    /// ```
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.parse::<u64>() {
+            Ok(value) => Bits::new(value),
+            Err(_) => {
+                // If parsing as u64 failed, try parsing as u128 to determine if it's a range issue
+                match s.parse::<u128>() {
+                    Ok(value) => {
+                        if value > u64::MAX as u128 {
+                            Err(BitsError::new(
+                                BitsErrorKind::OutOfRange("Value out of range for u64".to_string()), "str","Bits"))
+                        } else {
+                            // This branch implies logical error: the value fits within u64, but parse::<u64>() failed.
+                            // It should not actually happen in normal circumstances if the input is a valid number.
+                            Err(BitsError::new(
+                                BitsErrorKind::Generic("Invalid number format".to_string()), "str","Bits"))
+                        }
+                    },
+                    Err(_) => {
+                        // If parsing as u128 also failed, then the string does not represent a valid number.
+                        Err(BitsError::new(
+                            BitsErrorKind::ParseError(s.parse::<u64>().unwrap_err()), "str","Bits"))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// `Bits` represents a positive, non-zero `u64` value.
+///
+/// # Examples
+///
+/// ```
+/// use crate::Bits;
+///
+/// let bits = Bits::Some(nonzero::NonZeroU64::new(42).unwrap());
+/// assert_eq!(format!("{}", bits), "42");
+/// ```
+///
+/// Attempting to create `Bits` with a zero or negative value will yield an error:
+///
+/// ```
+/// use crate::{Bits, BitsError, BitsErrorKind};
+///
+/// let bits_result = Bits::new(0); // or any negative number
+/// assert_eq!(bits_result.unwrap_err().kind, BitsErrorKind::Zero); // or `BitsErrorKind::NegativeValue`
+/// ```
+impl core::fmt::Display for Bits {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match self {
+            Bits::Some(value) => write!(f, "{}", value),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+/// `BitsError` denotes the different kinds of errors that can arise from creating or using `Bits`.
+///
+/// # Examples
+///
+/// Creating `Bits` with an invalid value:
+///
+/// ```
+/// use crate::{Bits, BitsError};
+///
+/// let bits = Bits::new(0); // Zero is not a valid value for `Bits`
+/// assert!(bits.is_err());
+/// assert_eq!(format!("{}", bits.unwrap_err()), "zero is not allowed");
+/// ```
+///
+/// # Errors
+///
+/// - `BitsErrorKind::Zero`: The value provided is zero.
+/// - `BitsErrorKind::NegativeValue`: The value provided is negative.
+/// - `BitsErrorKind::OutOfRange`: The value provided is outside the range of `u64`.
+/// - `BitsErrorKind::ParseError`: The provided string cannot be parsed into a `u64`.
+impl core::fmt::Display for BitsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match &self.kind {
+            BitsErrorKind::Unreachable => write!(f, "the Infallible place holder"),
+            BitsErrorKind::InvalidContext => write!(f, "the UniquePtr to Context is null"),
+            BitsErrorKind::NegativeValue => write!(f, "negative value is not allowed"),
+            BitsErrorKind::NoValue => write!(f, "absent value is not allowed"),
+            BitsErrorKind::OutOfRange(s) => write!(f, "{}", s),
+            BitsErrorKind::ParseError(e) => e.fmt(f),
+            BitsErrorKind::Zero => write!(f, "zero is not allowed"),
+            BitsErrorKind::Generic(g) => g.fmt(f),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Helper function to simplify the creation of Bits::Some with NonZeroU64
+    fn bits_some(value: u64) -> Bits {
+        Bits::Some(core::num::NonZeroU64::new(value).unwrap())
+    }
+
+    fn try_into_bits<T>(value: T) -> Result<Bits, BitsError>
+    where
+        Bits: TryFrom<T>,
+        BitsError: From<<Bits as TryFrom<T>>::Error>, // Errors via TryFrom are converted to BitsError
+    {
+        Bits::try_from(value).map_err(BitsError::from)
+    }
+
+    #[test]
+    fn test_from_impl_for_bits() {
+        let bits = Bits::try_from(42u64).unwrap();
+        assert!(matches!(bits, Bits::Some(_)));
+    }
+
+    #[test]
+    fn test_bits_valid_value() {
+        let bits = Bits::new(32u64);
+        assert!(matches!(bits, Ok(Bits::Some(_))));
+    }
+
+    #[test]
+    fn test_bits_new_zero() {
+        let bits = Bits::new(0u64);
+        assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::Zero, .. })));
+    }
+
+    #[test]
+    fn test_bits_invalid_value() {
+        let bits = Bits::new(0u64);
+        assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::Zero, .. })));
+    }
+
+    #[test]
+    fn test_bits_from_str_valid() {
+        let bits = "1".parse::<Bits>();
+        assert!(bits.is_ok());
+        assert_eq!(bits.unwrap(), Bits::Some(core::num::NonZeroU64::new(1).unwrap()));
+    }
+
+    #[test]
+    fn test_bits_from_str_zero() {
+        let bits = "0".parse::<Bits>();
+        assert_eq!(bits, Err(BitsError::new(BitsErrorKind::Zero, "u64", "Bits" )));
+    }
+
+    #[test]
+    fn test_bits_from_str_out_of_range() {
+        let result = (u128::MAX).to_string().parse::<Bits>();
+        assert!(matches!(result,
+            Err(BitsError { kind: BitsErrorKind::OutOfRange(_), .. })));
+    }
+
+    #[test]
+    fn test_bits_from_str_invalid() {
+        let bits = "-1".parse::<Bits>();
+        assert!(bits.is_err());
+        match bits {
+            Ok(_) => panic!("Expected error, got Ok(_)"),
+            Err(e) => match e.kind {
+                BitsErrorKind::ParseError(_) => (),
+                _ => panic!("Expected ParseError, got {:?}", e.kind),
+            },
+        }
+    }
+
+    #[test]
+    fn test_bits_new() {
+        assert!(matches!(try_into_bits(1u64), Ok(Bits::Some(_))));
+    }
+
+    #[test]
+    fn test_bits_from_i64() {
+        assert!(matches!(Bits::try_from(1i64), Ok(Bits::Some(_))));
+        assert_eq!(Bits::try_from(0i64), Err(BitsError::new(
+            BitsErrorKind::Zero, "i64", "Bits" )));
+    }
+
+    #[test]
+    fn test_bits_from_str_non_numeric() {
+        let result = "non_numeric".parse::<Bits>();
+        assert!(matches!(result,
+            Err(BitsError { kind: BitsErrorKind::ParseError(_), .. })));
     }
 }

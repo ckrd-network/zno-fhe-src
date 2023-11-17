@@ -365,3 +365,778 @@ impl TryFrom<i16> for P {
         }
     }
 }
+
+/// Convert an `i32` to `P`.
+///
+/// # Errors
+///
+/// Returns `PError` in the following cases:
+///
+/// - If `value` is zero, `PError` signifies an attempt to create an `P` from nothing.
+/// - If `value` is negative, `PError` signifies an attempt to invert the natural order.
+/// - If unable to represent `value` as `NonZeroU32`, `PError` indicates a failure in creation.
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{P, PError, PErrorKind};
+/// assert_eq!(P::try_from(5), Ok(P::Some(nonzero::NonZeroU32::new(5).unwrap())));
+/// assert!(matches!(P::try_from(0), Err(PError::new(PErrorKind::Zero, "i32", "P"))));
+/// assert!(matches!(P::try_from(-1), Err(PError::new(PErrorKind::NegativeValue, "i32", "P"))));
+/// ```
+impl TryFrom<i32> for P {
+    type Error = PError;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "i32",
+            "P"
+        ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "i32",
+            "P"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i32",
+            "P"
+        ))
+        }
+    }
+}
+
+/// Convert an `i64` to `P`.
+///
+/// # Errors
+///
+/// Returns `Err` with `PError` if:
+///
+/// - The value is zero (zero is not allowed).
+/// - The value is negative (negatives are not allowed).
+/// - The value exceeds `u32`'s maximum (too large for `P`).
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use crate::{P, PError};
+///
+/// let value = 42i64;
+/// let p = P::try_from(value);
+/// assert!(p.is_ok());
+///
+/// let zero = 0i64;
+/// let p = P::try_from(zero);
+/// assert!(matches!(p, Err(PError { .. })));
+/// ```
+impl TryFrom<i64> for P {
+    type Error = PError;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "i64",
+            "P"
+        ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "i64",
+            "P"
+        ))
+        } else if value > u32::MAX as i64 {
+            Err(PError::new(
+                PErrorKind::OutOfRange(value.to_string()),
+            "i64",
+            "P"
+        ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+            "i64",
+            "P"
+        ))
+        }
+    }
+}
+
+/// Converts an `i128` to `P`.
+///
+/// # Errors
+///
+/// Returns `Err` with `PError` if:
+///
+/// - Value is `0` (`PErrorKind::Zero`).
+/// - Value is negative (`PErrorKind::NegativeValue`).
+/// - Value exceeds `u32::MAX` (`PErrorKind::OutOfRange`).
+///
+/// # Examples
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{P, PError, PErrorKind};
+/// let value = 42i128;
+/// let p = P::try_from(value);
+/// assert_eq!(p.unwrap(), P::Some(NonZeroU32::new(42).unwrap()));
+///
+/// let zero = 0i128;
+/// let p = P::try_from(zero);
+/// assert_eq!(p.unwrap_err().kind, PErrorKind::Zero);
+///
+/// let negative = -1i128;
+/// let p = P::try_from(negative);
+/// assert_eq!(p.unwrap_err().kind, PErrorKind::NegativeValue);
+///
+/// let too_large = i128::from(u32::MAX) + 1;
+/// let p = P::try_from(too_large);
+/// assert_eq!(p.unwrap_err().kind, PErrorKind::OutOfRange);
+/// ```
+impl TryFrom<i128> for P {
+    type Error = PError;
+
+    fn try_from(value: i128) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "i128",
+                "P"
+            ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+                "i128",
+                "P"
+            ))
+        } else if value > u32::MAX as i128 {
+            Err(PError::new(
+                PErrorKind::OutOfRange(value.to_string()),
+                "i128",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "i128",
+                    "P"
+                ))
+        }
+    }
+}
+
+/// Fallible conversion of a `isize` value into a `P` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{P, PError, PErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_isize;
+/// assert!(P::try_from(positive_value).is_ok());
+///
+/// let negative_value = -42_isize;
+/// assert_eq!(
+///     P::try_from(negative_value).unwrap_err().kind,
+///     PErrorKind::NegativeValue
+/// );
+///
+/// let zero_value = 0_isize;
+/// assert_eq!(
+///     P::try_from(zero_value).unwrap_err().kind,
+///     PErrorKind::Zero
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing a `PError` if:
+///
+/// - The value is zero, yielding `PErrorKind::Zero`.
+/// - The value is negative, yielding `PErrorKind::NegativeValue`.
+/// - The value exceeds the maximum for `u32`, yielding `PErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `isize` type varies in size depending on the target architecture:
+/// 32 bits on x86 and 64 bits on x86_64. This implementation ensures that
+/// an `isize` value within the range of `u32` can be safely converted to a `P`.
+#[cfg(target_pointer_width = "32")]
+impl TryFrom<isize> for P {
+    type Error = PError;
+
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "isize",
+            "P"
+            ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "isize",
+            "P"
+            ))
+        } else if value > u32::MAX as isize {
+            Err(PError::new(
+                PErrorKind::OutOfRange(format!("Value {} is out of range for P", value)),
+                "isize",
+                "P"))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "isize",
+                "P"
+                ))
+        }
+    }
+}
+#[cfg(target_pointer_width = "64")]
+impl TryFrom<isize> for P {
+    type Error = PError;
+
+    fn try_from(value: isize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "isize",
+            "P"
+            ))
+        } else if value < 0 {
+            Err(PError::new(
+                PErrorKind::NegativeValue,
+            "isize",
+            "P"
+            ))
+        } else if value > u32::MAX as isize {
+            Err(PError::new(
+                PErrorKind::OutOfRange(format!("Value {} is out of range for P", value)),
+            "isize",
+            "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "isize",
+                "P"
+                ))
+        }
+    }
+}
+
+/// Attempts to convert a `u8` to `P`.
+///
+/// Fails if input is zero. Non-zero values are safely converted and encapsulated.
+///
+/// # Examples
+///
+/// Success:
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::P;
+/// let value: u8 = 5;
+/// assert!(P::try_from(value).is_ok());
+/// ```
+///
+/// Failure (zero):
+///
+/// ```
+/// # use core::convert::TryFrom;
+/// # use crate::{P, PError, PErrorKind};
+/// let value: u8 = 0;
+/// assert_eq!(P::try_from(value), Err(PError::new(PErrorKind::Zero, "u8", "P")));
+/// ```
+///
+/// # Errors
+///
+/// Returns `PError` if:
+///
+/// - Input is zero (`PErrorKind::Zero`).
+/// - `NonZeroU32` creation fails, unlikely with valid `u8` inputs (`PErrorKind::Generic`).
+impl TryFrom<u8> for P {
+    type Error = PError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "u8",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "u8",
+                    "P"
+                ))
+        }
+    }
+}
+use core::convert::TryFrom;
+use crate::{P, PError, PErrorKind};
+
+// Implementation for u16
+/// Attempts to create `P` from `u16`.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// use std::convert::TryFrom;
+/// use your_module::{P, PError};
+///
+/// let value = 5u16;
+/// let p = P::try_from(value);
+///
+/// assert!(p.is_ok());
+///
+/// let value = 0u16;
+/// let p = P::try_from(value);
+///
+/// assert!(matches!(p, Err(PError { kind: PErrorKind::Zero, .. })));
+/// ```
+///
+/// # Errors
+///
+/// Returns `PError` if:
+///
+/// - Value is zero (`PErrorKind::Zero`).
+/// - Creation of `NonZeroU32` fails internally, though unlikely (`PErrorKind::Generic`).
+impl TryFrom<u16> for P {
+    type Error = PError;
+
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "u16",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "u16",
+                    "P"
+                ))
+        }
+    }
+}
+
+// Similar implementations for u32, u64, u128, usize, isize
+
+// Implementation for u32
+/// Attempts to create a `P` from a `u32`.
+///
+/// # Errors
+///
+/// Returns an `Err` if `value` is zero, as `P` cannot be zero.
+///
+/// # Examples
+///
+/// Basic usage:
+///
+/// ```
+/// # use crate::P;
+/// # use std::convert::TryFrom;
+/// let p = P::try_from(42u32);
+/// assert!(p.is_ok());
+///
+/// let p = P::try_from(0u32);
+/// assert!(p.is_err());
+/// ```
+impl TryFrom<u32> for P {
+    type Error = PError;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "u32",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "u32",
+                    "P"
+                ))
+        }
+    }
+}
+
+// Implementation for u64
+/// Attempts to convert a `u64` to `P`.
+///
+/// # Errors
+///
+/// Returns `PError` if:
+///
+/// - The value is `0` (as `P` cannot be zero).
+/// - The value exceeds `u32::MAX`, as `P` only supports `u32` range.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{P, PError, PErrorKind};
+/// # use std::convert::TryFrom;
+/// assert!(P::try_from(0_u64).is_err());
+///
+/// let large_value = u64::from(u32::MAX) + 1;
+/// assert_eq!(
+///     P::try_from(large_value),
+///     Err(PError::new(PErrorKind::OutOfRange(large_value.to_string()), "u64", "P"))
+/// );
+///
+/// let value_within_range = 42_u64;
+/// assert_eq!(P::try_from(value_within_range), Ok(P::Some(non_zero_u32::new(42).unwrap())));
+/// ```
+impl TryFrom<u64> for P {
+    type Error = PError;
+
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "u64",
+                "P"
+            ))
+        } else if value > u32::MAX as u64 {
+            Err(PError::new(
+                PErrorKind::OutOfRange(value.to_string()),
+                "u64",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "u64",
+                    "P"
+                ))
+        }
+    }
+}
+
+// Implementation for u128
+/// Attempts to convert a `u128` into `P`.
+///
+/// # Examples
+///
+/// ```
+/// use my_crate::P;
+/// use std::convert::TryFrom;
+///
+/// // Successful conversion
+/// let p = P::try_from(42u128);
+/// assert!(p.is_ok());
+///
+/// // Zero value, which is an error case
+/// let p = P::try_from(0u128);
+/// assert!(p.is_err());
+///
+/// // Value too large for `P`, which is an error case
+/// let p = P::try_from(u128::MAX);
+/// assert!(p.is_err());
+/// ```
+///
+/// # Errors
+///
+/// This will return an `Err` if:
+///
+/// - The value is zero, as `P` cannot represent a zero value.
+/// - The value exceeds the maximum value that can be represented by a `u32`.
+impl TryFrom<u128> for P {
+    type Error = PError;
+
+    fn try_from(value: u128) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+                "u128",
+                "P"
+            ))
+        } else if value > u32::MAX as u128 {
+            Err(PError::new(
+                PErrorKind::OutOfRange(value.to_string()),
+                "u128",
+                "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                    "u128",
+                    "P"
+                ))
+        }
+    }
+}
+
+use core::convert::TryFrom;
+use core::str::FromStr;
+use crate::{P, PError, PErrorKind};
+
+// Implementation for TryFrom<usize> for P
+/// Fallible conversion of a `usize` value into a `P` instance.
+///
+/// # Examples
+///
+/// ```
+/// # use crate::{P, PError, PErrorKind};
+/// # use std::convert::TryFrom;
+/// let positive_value = 42_usize;
+/// assert!(P::try_from(positive_value).is_ok());
+///
+/// let zero_value = 0_usize;
+/// assert_eq!(
+///     P::try_from(zero_value).unwrap_err().kind,
+///     PErrorKind::Zero
+/// );
+///
+/// let large_value = usize::MAX;
+/// assert_eq!(
+///     P::try_from(large_value).unwrap_err().kind,
+///     PErrorKind::OutOfRange
+/// );
+/// ```
+///
+/// # Errors
+///
+/// Returns an `Err` containing a `PError` if:
+///
+/// - The value is zero, yielding `PErrorKind::Zero`.
+/// - The value exceeds the maximum for `u32`, yielding `PErrorKind::OutOfRange`.
+///
+/// # Notes
+///
+/// The `usize` type varies in size depending on the target architecture.
+/// This implementation ensures that a `usize` value within the range of `u32` can be safely converted to a `P`.
+#[cfg(target_pointer_width = "32")]
+impl TryFrom<usize> for P {
+    type Error = PError;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "usize",
+            "P"
+            ))
+        } else if value > u32::MAX as usize {
+            Err(PError::new(
+                PErrorKind::OutOfRange(format!("Value {} is out of range for P", value)),
+            "usize",
+            "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "usize",
+                "P"
+                ))
+        }
+    }
+}
+#[cfg(target_pointer_width = "64")]
+impl TryFrom<usize> for P {
+    type Error = PError;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        if value == 0 {
+            Err(PError::new(
+                PErrorKind::Zero,
+            "usize",
+            "P"
+            ))
+        } else if value > u32::MAX as usize {
+            Err(PError::new(
+                PErrorKind::OutOfRange(format!("Value {} is out of range for P", value)),
+            "usize",
+            "P"
+            ))
+        } else {
+            core::num::NonZeroU32::new(value as u32)
+                .map(P::Some)
+                .ok_or_else(|| PError::new(
+                    PErrorKind::Generic("Failed to create NonZeroU32".to_string()),
+                "usize",
+                "P"
+                ))
+        }
+    }
+}
+
+// Implementation for FromStr for P
+impl FromStr for P {
+    type Err = PError;
+    /// Converts a string slice to `P`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the string does not represent a valid non-zero u32 value.
+    /// This includes zero values, negative values, and values out of range for u32.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use crate::{P, PError, PErrorKind};
+    ///
+    /// let p: Result<P, _> = "42".parse();
+    /// assert!(p.is_ok());
+    ///
+    /// let p: Result<P, _> = "-42".parse();
+    /// assert!(matches!(p, Err(PError { kind: PErrorKind::NegativeValue, .. })));
+    ///
+    /// let p: Result<P, _> = "18446744073709551616".parse();
+    /// assert!(matches!(p, Err(PError { kind: PErrorKind::OutOfRange(_), .. })));
+    /// ```
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.parse::<u32>() {
+            Ok(value) => P::new(value),
+            Err(_) => {
+                // If parsing as u32 failed, try parsing as u64 to determine if it's a range issue
+                match s.parse::<u64>() {
+                    Ok(value) => {
+                        if value > u32::MAX as u64 {
+                            Err(PError::new(
+                                PErrorKind::OutOfRange("Value out of range for u32".to_string()), "str","P"))
+                        } else {
+                            // This branch implies logical error: the value fits within u32, but parse::<u32>() failed.
+                            // It should not actually happen in normal circumstances if the input is a valid number.
+                            Err(PError::new(
+                                PErrorKind::Generic("Invalid number format".to_string()), "str","P"))
+                        }
+                    },
+                    Err(_) => {
+                        // If parsing as u64 also failed, then the string does not represent a valid number.
+                        Err(PError::new(
+                            PErrorKind::ParseError(s.parse::<u32>().unwrap_err()), "str","P"))
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Helper function to simplify the creation of P::Some with NonZeroU32
+    fn p_some(value: u32) -> P {
+        P::Some(core::num::NonZeroU32::new(value).unwrap())
+    }
+
+    fn try_into_p<T>(value: T) -> Result<P, PError>
+    where
+        P: TryFrom<T>,
+        PError: From<<P as TryFrom<T>>::Error>, // Errors via TryFrom are converted to PError
+    {
+        P::try_from(value).map_err(PError::from)
+    }
+
+    #[test]
+    fn test_from_impl_for_metric() {
+        let p = P::try_from(42).unwrap();
+        let metric: Metric = p.into();
+        assert!(matches!(metric, Metric::P(_)));
+    }
+
+    #[test]
+    fn test_p_valid_value() {
+        let p = P::new(32);
+        assert!(matches!(p, Ok(P::Some(_))));
+    }
+
+    #[test]
+    fn test_p_new_zero() {
+        let p = P::new(0);
+        assert!(matches!(p, Err(PError { kind: PErrorKind::Zero, .. })));
+    }
+
+    #[test]
+    fn test_p_invalid_value() {
+        let p = P::new(0);
+        assert!(matches!(p, Err(PError { kind: PErrorKind::Zero, .. })));
+    }
+
+    #[test]
+    fn test_p_from_str_valid() {
+        let p = "1".parse::<P>();
+        assert!(p.is_ok());
+        assert_eq!(p.unwrap(), P::Some(core::num::NonZeroU32::new(1).unwrap()));
+    }
+
+    #[test]
+    fn test_p_from_str_zero() {
+        let p = "0".parse::<P>();
+        assert_eq!(p, Err(PError::new(PErrorKind::Zero, "u32", "P")));
+    }
+
+    #[test]
+    fn test_p_from_str_out_of_range() {
+        let result = (u64::MAX).to_string().parse::<P>();
+        assert!(matches!(result,
+            Err(PError { kind: PErrorKind::OutOfRange(_), .. })));
+    }
+
+    #[test]
+    fn test_p_from_str_invalid() {
+        let p = "-1".parse::<P>();
+        assert!(p.is_err());
+        match p {
+            Ok(_) => panic!("Expected error, got Ok(_)"),
+            Err(e) => match e.kind {
+                PErrorKind::ParseError(_) => (),
+                _ => panic!("Expected ParseError, got {:?}", e.kind),
+            },
+        }
+    }
+
+    #[test]
+    fn test_p_new() {
+        assert!(matches!(try_into_p(1), Ok(P::Some(_))));
+    }
+
+    #[test]
+    fn test_p_from_i64() {
+        assert!(matches!(P::try_from(1i64), Ok(P::Some(_))));
+        assert_eq!(P::try_from(0i64), Err(PError::new(
+            PErrorKind::Zero, "i64", "P" )));
+    }
+
+    #[test]
+    fn test_p_from_str_non_numeric() {
+        let result = "non_numeric".parse::<P>();
+        assert!(matches!(result,
+            Err(PError { kind: PErrorKind::ParseError(_), .. })));
+    }
+}

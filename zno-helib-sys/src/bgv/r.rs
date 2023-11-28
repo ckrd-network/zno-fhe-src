@@ -166,6 +166,83 @@ impl Default for R {
     }
 }
 
+impl std::error::Error for RError {}
+
+/// Converts an `std::io::Error` to `RError`.
+///
+/// # Examples
+///
+/// ```
+/// use std::fs::File;
+/// use std::io::{self, Read};
+/// use crate::RError;
+///
+/// fn read_file() -> Result<(), RError> {
+///     let mut file = File::open("r.txt").map_err(RError::from)?;
+///     let mut contents = String::new();
+///     file.read_to_string(&mut contents).map_err(RError::from)?;
+///     Ok(())
+/// }
+/// ```
+///
+/// # Errors
+///
+/// Returns `RError::Generic` containing the error message from `std::io::Error`.
+impl From<std::io::Error> for RError {
+    fn from(e: std::io::Error) -> RError {
+        RError::new(
+            RErrorKind::Generic(e.to_string()),
+            "Error",
+            "RError"
+        )
+    }
+}
+
+/// Converts a `ParseIntError` to `RError`.
+///
+/// # Arguments
+///
+/// * `error` - The parse error encountered.
+///
+/// # Returns
+///
+/// Returns an `RError` with a `ParseError` kind, indicating a parsing failure.
+impl From<std::num::ParseIntError> for RError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        RError::new(
+            RErrorKind::ParseError(error),
+            "ParseIntError",
+            "RError"
+        )
+    }
+}
+
+/// Converts from `Infallible` to `RError`.
+///
+/// Since `Infallible` implies no error can occur, this conversion
+/// yields a variant representing an unreachable state. It should not
+/// be possible for this code to run.
+///
+/// # Examples
+///
+/// ```
+/// use std::convert::Infallible;
+/// use crate::RError;
+///
+/// // Example of infallible conversion, which should not occur:
+/// let error: RError = Infallible.into();
+/// // Assertions about the error kind can be made here if necessary
+/// ```
+impl From<Infallible> for RError {
+    fn from(_: Infallible) -> Self {
+        RError::new(
+            RErrorKind::Unreachable,
+            "Infallible",
+            "RError"
+        )
+    }
+}
+
 /// Defines the homomorphic encryption schema type for `R`.
 ///
 /// The `schema` method for `R` provides a straightforward declaration of the

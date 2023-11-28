@@ -1139,4 +1139,280 @@ mod tests {
         assert!(matches!(result,
             Err(PError { kind: PErrorKind::ParseError(_), .. })));
     }
+
+    // Default test
+    #[test]
+    fn test_p_default() {
+        assert!(matches!(P::default(), P::Some(_)));
+    }
+
+    // Tests for successful conversions
+    #[test]
+    fn conversion_from_u8_max() {
+        let value = u8::MAX;
+        assert_eq!(P::try_from(value), Ok(p_some(u32::from(value))));
+    }
+
+    #[test]
+    fn conversion_from_u16_max() {
+        let value = u16::MAX;
+        assert_eq!(P::try_from(value), Ok(p_some(u32::from(value))));
+    }
+
+    #[test]
+    fn conversion_from_u32_max() {
+        let value = u32::MAX;
+        assert_eq!(P::try_from(value), Ok(p_some(value)));
+    }
+
+    // Tests for out-of-range conversions
+    #[test]
+    fn conversion_from_i8_min() {
+        let value = i8::MIN;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::NegativeValue, "i8", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_i16_min() {
+        let value = i16::MIN;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::NegativeValue, "i16", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_i32_min() {
+        let value = i32::MIN;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::NegativeValue, "i32", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_i64_min() {
+        let value = i64::MIN;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::NegativeValue, "i64", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_u64_above_max() {
+        let value = u64::from(u32::MAX) + 1;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::OutOfRange(value.to_string()), "u64", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_isize_max() {
+        let value = isize::MAX.min(u32::MAX as isize) as u32;
+        assert_eq!(P::try_from(value), Ok(p_some(value)));
+    }
+
+    #[test]
+    fn conversion_from_isize_min() {
+        let value = isize::MIN;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::NegativeValue, "isize", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_usize_above_max() {
+        let value = u32::MAX as usize + 1;
+        assert_eq!(P::try_from(value as u64), Err(PError::new(
+            PErrorKind::OutOfRange(value.to_string()), "u64", "P" )));
+    }
+
+    // Tests for zero conversions
+    #[test]
+    fn conversion_from_zero_i32() {
+        let value = 0_i32;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::Zero, "i32", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_zero_i64() {
+        let value = 0_i64;
+        assert_eq!(P::try_from(value), Err(PError::new(
+            PErrorKind::Zero, "i64", "P" )));
+    }
+
+    // u8 tests
+    #[test]
+    fn conversion_from_u8_zero() {
+        assert_eq!(P::try_from(0_u8), Err(PError::new(
+            PErrorKind::Zero, "u8", "P" )));
+    }
+
+    // u16 tests
+    #[test]
+    fn conversion_from_u16_zero() {
+        assert_eq!(P::try_from(0_u16), Err(PError::new(
+            PErrorKind::Zero, "u16", "P" )));
+    }
+
+    // i8 tests
+    #[test]
+    fn conversion_from_i8_zero() {
+        assert_eq!(P::try_from(0_i8), Err(PError::new(
+            PErrorKind::Zero, "i8", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_i8_max() {
+        assert_eq!(P::try_from(i8::MAX), Ok(p_some(i8::MAX as u32)));
+    }
+
+    // i16 tests
+    #[test]
+    fn conversion_from_i16_zero() {
+        assert_eq!(P::try_from(0_i16), Err(PError::new(
+            PErrorKind::Zero, "i16", "P" )));
+    }
+
+    #[test]
+    fn conversion_from_i16_max() {
+        assert_eq!(P::try_from(i16::MAX), Ok(p_some(i16::MAX as u32)));
+    }
+
+    // Tests for usize and isize depend on the architecture of
+    // the machine (32-bit or 64-bit).
+    // usize tests for 32-bit architecture
+    #[cfg(target_pointer_width = "32")]
+    mod usize_tests {
+        use super::*;
+
+        #[test]
+        fn conversion_from_usize_zero_32bit() {
+            assert_eq!(P::try_from(0_usize), Err(PError::new(
+                PErrorKind::Zero, "usize", "P" )));
+        }
+
+        #[test]
+        fn conversion_from_usize_max_32bit() {
+            assert_eq!(P::try_from(usize::MAX), Ok(p_some(usize::MAX as u32)));
+        }
+    }
+
+    // usize tests for 64-bit architecture
+    #[cfg(target_pointer_width = "64")]
+    mod usize_tests {
+        use super::*;
+
+        #[test]
+        fn conversion_from_usize_zero_64bit() {
+            assert_eq!(P::try_from(0_usize), Err(PError::new(
+                PErrorKind::Zero, "usize", "P" )));
+        }
+
+        #[test]
+        fn conversion_from_usize_max_64bit() {
+            assert_eq!(P::try_from(u32::MAX as usize), Ok(p_some(u32::MAX)));
+        }
+    }
+
+    // isize tests for 32-bit architecture
+    #[cfg(target_pointer_width = "32")]
+    mod isize_tests {
+        use super::*;
+
+        #[test]
+        fn conversion_from_isize_zero_32bit() {
+            assert_eq!(P::try_from(0_isize), Err(PError::new(
+                PErrorKind::Zero, "isize", "P" )));
+        }
+
+        #[test]
+        fn conversion_from_isize_max_32bit() {
+            assert_eq!(P::try_from(isize::MAX), Ok(p_some(isize::MAX as u32)));
+        }
+
+        #[test]
+        fn conversion_from_isize_min_32bit() {
+            assert_eq!(P::try_from(isize::MIN), Err(PError::new(
+                PErrorKind::NegativeValue, "isize", "P" )));
+        }
+    }
+
+    // isize tests for 64-bit architecture
+    #[cfg(target_pointer_width = "64")]
+    mod isize_tests {
+        use super::*;
+
+        #[test]
+        fn conversion_from_isize_zero_64bit() {
+            assert_eq!(P::try_from(0_isize), Err(PError::new(
+                PErrorKind::Zero, "isize", "P" )));
+        }
+
+        #[test]
+        fn conversion_from_isize_max_64bit() {
+            let value = isize::MAX.min(u32::MAX as isize) as u32;
+            assert_eq!(P::try_from(value), Ok(p_some(value)));
+        }
+
+        #[test]
+        fn conversion_from_isize_min_64bit() {
+            assert_eq!(P::try_from(isize::MIN), Err(PError::new(
+                PErrorKind::NegativeValue, "isize", "P" )));
+        }
+    }
+
+    // Successful conversion tests
+    #[test]
+    fn test_new_success() {
+        assert_eq!(try_into_p(1u8), Ok(P::Some(core::num::NonZeroU32::new(1).unwrap())));
+        assert_eq!(try_into_p(1u16), Ok(P::Some(core::num::NonZeroU32::new(1).unwrap())));
+        assert_eq!(try_into_p(1u32), Ok(P::Some(core::num::NonZeroU32::new(1).unwrap())));
+        // Add more tests for u64, usize if within u32 range, and all i8, i16, i32, i64, isize within range
+    }
+
+    // Error case: zero
+    #[test]
+    fn test_new_zero_p() {
+        assert_eq!(try_into_p(0u32), Err(PError::new(
+            PErrorKind::Zero, "u32", "P" )));
+        // Add more tests for other types with value zero
+    }
+
+    // Error case: negative value
+    #[test]
+    fn test_new_negative_p() {
+        assert!(matches!(try_into_p(-1i32), Err(PError { kind: PErrorKind::NegativeValue, .. })));
+    }
+
+    // Error case: out of range
+    #[test]
+    fn test_new_out_of_range_p() {
+        assert!(matches!(try_into_p(u64::MAX),
+            Err(PError { kind: PErrorKind::OutOfRange(_), .. })));
+        // Add more tests for other types with values out of u32 range
+    }
+
+    #[test]
+    fn test_new_usize_isize_arch_dependent_p() {
+        let max_usize: usize = u32::MAX as usize;
+        assert_eq!(try_into_p(max_usize), Ok(P::Some(core::num::NonZeroU32::new(max_usize as u32).unwrap())));
+
+        let max_usize_plus_one: usize = (u32::MAX as usize).wrapping_add(1);
+        assert!(matches!(try_into_p(max_usize_plus_one),
+            Err(PError { kind: PErrorKind::OutOfRange(_), .. })));
+
+        if cfg!(target_pointer_width = "64") {
+            let max_isize: isize = u32::MAX as isize;
+            assert_eq!(try_into_p(max_isize), Ok(P::Some(core::num::NonZeroU32::new(max_isize as u32).unwrap())));
+
+            let max_isize_plus_one: isize = (u32::MAX as isize).wrapping_add(1);
+            assert!(matches!(try_into_p(max_isize_plus_one),
+                Err(PError { kind: PErrorKind::OutOfRange(_), .. })));
+
+            let min_isize_minus_one: isize = (i32::MIN as isize).wrapping_sub(1);
+            assert!(matches!(try_into_p(min_isize_minus_one),
+                Err(PError { kind: PErrorKind::NegativeValue, .. })));
+        } else if cfg!(target_pointer_width = "32") {
+            // For 32-bit architectures, isize max would be within range
+            let max_isize: isize = isize::MAX;
+            assert_eq!(try_into_p(max_isize), Ok(P::Some(core::num::NonZeroU32::new(max_isize as u32).unwrap())));
+        }
+    }
+
 }

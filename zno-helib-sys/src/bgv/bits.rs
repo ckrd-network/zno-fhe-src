@@ -751,9 +751,6 @@ impl TryFrom<u8> for Bits {
     }
 }
 
-use core::convert::TryFrom;
-use crate::{Bits, BitsError, BitsErrorKind};
-
 /// Attempts to create `Bits` from `u16`.
 ///
 /// # Examples
@@ -912,7 +909,7 @@ impl TryFrom<u64> for Bits {
 /// ```
 /// # use core::convert::TryFrom;
 /// # use crate::{Bits, BitsError, BitsErrorKind};
-/// assert_eq!(Bits::try_from(5u128), Ok(Bits::Some(nonzero::NonZeroU64::new(5).unwrap())));
+/// assert_eq!(Bits::try_from(5u128), Ok(Bits::Some(nonzero::NonZeroU32::new(5).unwrap())));
 /// assert!(matches!(Bits::try_from(0u128), Err(BitsError::new(BitsErrorKind::Zero, "u128", "Bits"))));
 /// assert!(matches!(Bits::try_from(u128::MAX), Err(BitsError::new(BitsErrorKind::OutOfRange("u128::MAX".to_string()), "u128", "Bits"))));
 /// ```
@@ -943,9 +940,6 @@ impl TryFrom<u128> for Bits {
         }
     }
 }
-
-use core::convert::TryFrom;
-use crate::{Bits, BitsError, BitsErrorKind};
 
 /// Fallible conversion of a `usize` value into a `Bits` instance.
 ///
@@ -1016,7 +1010,7 @@ impl TryFrom<usize> for Bits {
                 "usize",
                 "Bits"
             ))
-        } else if value > u64::MAX as usize {
+        } else if value > u32::MAX as usize {
             Err(BitsError::new(
                 BitsErrorKind::OutOfRange(format!("Value {} is out of range for Bits", value)),
                 "usize",
@@ -1040,15 +1034,15 @@ impl core::str::FromStr for Bits {
     ///
     /// # Errors
     ///
-    /// Returns an error if the string does not represent a valid non-zero u64 value.
-    /// This includes zero values, negative values, and values out of range for u64.
+    /// Returns an error if the string does not represent a valid non-zero u32 value.
+    /// This includes zero values, negative values, and values out of range for u32.
     ///
     /// # Examples
     ///
     /// ```
     /// use crate::{Bits, BitsError, BitsErrorKind};
     ///
-    /// let bits: Result<Bits, _> = "42".parse();
+    /// let bits: Result<Bits, _> = "32".parse();
     /// assert!(bits.is_ok());
     ///
     /// let bits: Result<Bits, _> = "-42".parse();
@@ -1058,26 +1052,26 @@ impl core::str::FromStr for Bits {
     /// assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::OutOfRange(_), .. })));
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.parse::<u64>() {
+        match s.parse::<u32>() {
             Ok(value) => Bits::new(value),
             Err(_) => {
-                // If parsing as u64 failed, try parsing as u128 to determine if it's a range issue
-                match s.parse::<u128>() {
+                // If parsing as u32 failed, try parsing as u64 to determine if it's a range issue
+                match s.parse::<u64>() {
                     Ok(value) => {
-                        if value > u64::MAX as u128 {
+                        if value > u32::MAX as u64 {
                             Err(BitsError::new(
-                                BitsErrorKind::OutOfRange("Value out of range for u64".to_string()), "str","Bits"))
+                                BitsErrorKind::OutOfRange("Value out of range for u32".to_string()), "str","Bits"))
                         } else {
-                            // This branch implies logical error: the value fits within u64, but parse::<u64>() failed.
+                            // This branch implies logical error: the value fits within u32, but parse::<u32>() failed.
                             // It should not actually happen in normal circumstances if the input is a valid number.
                             Err(BitsError::new(
                                 BitsErrorKind::Generic("Invalid number format".to_string()), "str","Bits"))
                         }
                     },
                     Err(_) => {
-                        // If parsing as u128 also failed, then the string does not represent a valid number.
+                        // If parsing as u64 also failed, then the string does not represent a valid number.
                         Err(BitsError::new(
-                            BitsErrorKind::ParseError(s.parse::<u64>().unwrap_err()), "str","Bits"))
+                            BitsErrorKind::ParseError(s.parse::<u32>().unwrap_err()), "str","Bits"))
                     }
                 }
             }
@@ -1092,7 +1086,7 @@ impl core::str::FromStr for Bits {
 /// ```
 /// use crate::Bits;
 ///
-/// let bits = Bits::Some(nonzero::NonZeroU64::new(42).unwrap());
+/// let bits = Bits::Some(nonzero::NonZeroU32::new(42).unwrap());
 /// assert_eq!(format!("{}", bits), "42");
 /// ```
 ///
@@ -1152,9 +1146,9 @@ impl core::fmt::Display for BitsError {
 mod tests {
     use super::*;
 
-    // Helper function to simplify the creation of Bits::Some with NonZeroU64
-    fn bits_some(value: u64) -> Bits {
-        Bits::Some(core::num::NonZeroU64::new(value).unwrap())
+    // Helper function to simplify the creation of Bits::Some with NonZeroU32
+    fn bits_some(value: u32) -> Bits {
+        Bits::Some(core::num::NonZeroU32::new(value).unwrap())
     }
 
     fn try_into_bits<T>(value: T) -> Result<Bits, BitsError>
@@ -1167,25 +1161,25 @@ mod tests {
 
     #[test]
     fn test_from_impl_for_bits() {
-        let bits = Bits::try_from(42u64).unwrap();
+        let bits = Bits::try_from(42).unwrap();
         assert!(matches!(bits, Bits::Some(_)));
     }
 
     #[test]
     fn test_bits_valid_value() {
-        let bits = Bits::new(32u64);
+        let bits = Bits::new(32);
         assert!(matches!(bits, Ok(Bits::Some(_))));
     }
 
     #[test]
     fn test_bits_new_zero() {
-        let bits = Bits::new(0u64);
+        let bits = Bits::new(0);
         assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::Zero, .. })));
     }
 
     #[test]
     fn test_bits_invalid_value() {
-        let bits = Bits::new(0u64);
+        let bits = Bits::new(0);
         assert!(matches!(bits, Err(BitsError { kind: BitsErrorKind::Zero, .. })));
     }
 
@@ -1193,18 +1187,18 @@ mod tests {
     fn test_bits_from_str_valid() {
         let bits = "1".parse::<Bits>();
         assert!(bits.is_ok());
-        assert_eq!(bits.unwrap(), Bits::Some(core::num::NonZeroU64::new(1).unwrap()));
+        assert_eq!(bits.unwrap(), Bits::Some(core::num::NonZeroU32::new(1).unwrap()));
     }
 
     #[test]
     fn test_bits_from_str_zero() {
         let bits = "0".parse::<Bits>();
-        assert_eq!(bits, Err(BitsError::new(BitsErrorKind::Zero, "u64", "Bits" )));
+        assert_eq!(bits, Err(BitsError::new(BitsErrorKind::Zero, "u32", "Bits" )));
     }
 
     #[test]
     fn test_bits_from_str_out_of_range() {
-        let result = (u128::MAX).to_string().parse::<Bits>();
+        let result = (u64::MAX).to_string().parse::<Bits>();
         assert!(matches!(result,
             Err(BitsError { kind: BitsErrorKind::OutOfRange(_), .. })));
     }
@@ -1224,7 +1218,7 @@ mod tests {
 
     #[test]
     fn test_bits_new() {
-        assert!(matches!(try_into_bits(1u64), Ok(Bits::Some(_))));
+        assert!(matches!(try_into_bits(1), Ok(Bits::Some(_))));
     }
 
     #[test]
@@ -1250,19 +1244,19 @@ mod tests {
     #[test]
     fn conversion_from_u8_max() {
         let value = u8::MAX;
-        assert_eq!(Bits::try_from(value), Ok(Bits::Some(u32::from(value))));
+        assert_eq!(Bits::try_from(value), Ok(bits_some(u32::from(value))));
     }
 
     #[test]
     fn conversion_from_u16_max() {
         let value = u16::MAX;
-        assert_eq!(Bits::try_from(value), Ok(Bits::Some(u32::from(value))));
+        assert_eq!(Bits::try_from(value), Ok(bits_some(u32::from(value))));
     }
 
     #[test]
     fn conversion_from_u32_max() {
         let value = u32::MAX;
-        assert_eq!(Bits::try_from(value), Ok(Bits::Some(value)));
+        assert_eq!(Bits::try_from(value), Ok(bits_some(value)));
     }
 
     // Tests for out-of-range conversions
@@ -1304,7 +1298,7 @@ mod tests {
     #[test]
     fn conversion_from_isize_max() {
         let value = isize::MAX.min(u32::MAX as isize) as u32;
-        assert_eq!(Bits::try_from(value), Ok(Bits::Some(value)));
+        assert_eq!(Bits::try_from(value), Ok(bits_some(value)));
     }
 
     #[test]
@@ -1489,7 +1483,7 @@ mod tests {
     }
 
     #[test]
-    fn test_new_usize_isize_arch_dependent_bits() {
+    fn test_new_usize_isize_arch_dependent() {
         let max_usize: usize = u32::MAX as usize;
         assert_eq!(try_into_bits(max_usize), Ok(Bits::Some(core::num::NonZeroU32::new(max_usize as u32).unwrap())));
 

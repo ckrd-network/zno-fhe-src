@@ -64,7 +64,22 @@ pub struct PError {
 }
 
 impl PError {
-    /// Constructs a new `PError` related to BGV scheme operations.
+    /// Constructs a new `PError`.
+    ///
+    /// # Arguments
+    ///
+    /// * `kind` - The kind of error.
+    /// * `from` - The source type that failed to convert.
+    /// * `to` - The target type to which conversion was attempted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::{PError, PErrorKind};
+    /// let error = PError::new(PErrorKind::Zero, "usize", "P");
+    ///
+    /// assert_eq!(error.kind, PErrorKind::Zero);
+    /// ```
     pub fn new(kind: PErrorKind, from: &'static str, to: &'static str) -> Self {
         PError { kind, from, to }
     }
@@ -691,8 +706,6 @@ impl TryFrom<u8> for P {
         }
     }
 }
-use core::convert::TryFrom;
-use crate::{P, PError, PErrorKind};
 
 // Implementation for u16
 /// Attempts to create `P` from `u16`.
@@ -898,10 +911,6 @@ impl TryFrom<u128> for P {
     }
 }
 
-use core::convert::TryFrom;
-use core::str::FromStr;
-use crate::{P, PError, PErrorKind};
-
 // Implementation for TryFrom<usize> for P
 /// Fallible conversion of a `usize` value into a `P` instance.
 ///
@@ -995,7 +1004,7 @@ impl TryFrom<usize> for P {
 }
 
 // Implementation for FromStr for P
-impl FromStr for P {
+impl core::str::FromStr for P {
     type Err = PError;
     /// Converts a string slice to `P`.
     ///
@@ -1042,6 +1051,69 @@ impl FromStr for P {
                     }
                 }
             }
+        }
+    }
+}
+
+/// `P` represents a positive, non-zero `u32` value.
+///
+/// # Examples
+///
+/// ```
+/// use crate::P;
+///
+/// let p = P::Some(nonzero::NonZeroU32::new(42).unwrap());
+/// assert_eq!(format!("{}", p), "42");
+/// ```
+///
+/// Attempting to create `P` with a zero or negative value will yield an error:
+///
+/// ```
+/// use crate::{P, PError, PErrorKind};
+///
+/// let p_result = P::new(0); // or any negative number
+/// assert_eq!(p_result.unwrap_err().kind, PErrorKind::Zero); // or `PErrorKind::NegativeValue`
+/// ```
+impl core::fmt::Display for P {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match self {
+            P::Some(value) => write!(f, "{}", value),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+/// `PError` denotes the different kinds of errors that can arise from creating or using `P`.
+///
+/// # Examples
+///
+/// Creating `P` with an invalid value:
+///
+/// ```
+/// use crate::{P, PError};
+///
+/// let p = P::new(0); // Zero is not a valid value for `P`
+/// assert!(p.is_err());
+/// assert_eq!(format!("{}", p.unwrap_err()), "zero is not allowed");
+/// ```
+///
+/// # Errors
+///
+/// - `PErrorKind::Zero`: The value provided is zero.
+/// - `PErrorKind::NegativeValue`: The value provided is negative.
+/// - `PErrorKind::OutOfRange`: The value provided is outside the range of `u32`.
+/// - `PErrorKind::ParseError`: The provided string cannot be parsed into a `u32`.
+impl core::fmt::Display for PError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match &self.kind {
+            PErrorKind::Unreachable => write!(f, "the Infallible place holder"),
+            PErrorKind::InvalidContext => write!(f, "the UniquePtr to Context is null"),
+            PErrorKind::NegativeValue => write!(f, "negative value is not allowed"),
+            PErrorKind::NoValue => write!(f, "absent value is not allowed"),
+            PErrorKind::OutOfRange(s) => write!(f, "{}", s),
+            PErrorKind::ParseError(e) => e.fmt(f),
+            PErrorKind::Zero => write!(f, "zero is not allowed"),
+            PErrorKind::Generic(g) => g.fmt(f),
         }
     }
 }

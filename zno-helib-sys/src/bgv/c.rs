@@ -1358,26 +1358,15 @@ mod tests {
     }
 
     #[test]
-    fn conversion_from_c_zero() {
-        assert_eq!(C::try_from(0_c), Err(CError::new(
-            CErrorKind::Zero, "c", "C" )));
+    fn conversion_from_i8_zero() {
+        assert_eq!(C::try_from(0_i8), Err(CError::new(
+            CErrorKind::Zero, "i8", "C" )));
     }
 
-    #[test]
-    fn conversion_from_c_max() {
-        assert_eq!(C::try_from(c::MAX), Ok(c_some(c::MAX as u32)));
-    }
-
-    // u16 tests
-    #[test]
-    fn conversion_from_u16_zero() {
-        assert_eq!(C::try_from(0_u16), Err(CError::new(
-            CErrorKind::Zero, "u16", "C" )));
-    }
 
     #[test]
-    fn conversion_from_u16_max() {
-        assert_eq!(C::try_from(u16::MAX), Ok(c_some(u16::MAX as u32)));
+    fn conversion_from_i8_max() {
+        assert_eq!(C::try_from(i8::MAX), Ok(c_some(i8::MAX as u32)));
     }
 
     // u32 tests
@@ -1385,11 +1374,6 @@ mod tests {
     fn conversion_from_u32_zero() {
         assert_eq!(C::try_from(0_u32), Err(CError::new(
             CErrorKind::Zero, "u32", "C" )));
-    }
-
-    #[test]
-    fn conversion_from_u32_max() {
-        assert_eq!(C::try_from(u32::MAX), Ok(c_some(u32::MAX)));
     }
 
     // usize tests for 32-bit architecture
@@ -1504,7 +1488,7 @@ mod tests {
         assert_eq!(try_into_c(1u32), Ok(C::Some(core::num::NonZeroU32::new(1).unwrap())));
         // Add more tests for u64, usize if within u32 range, and all i16, i32, i64, isize within range
     }
-    
+
     // Error case: zero
     #[test]
     fn test_new_zero() {

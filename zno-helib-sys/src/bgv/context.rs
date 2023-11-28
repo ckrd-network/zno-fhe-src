@@ -1,6 +1,5 @@
 use std::convert::TryFrom;
 use std::convert::TryInto;
-use mockall::automock;
 
 use crate::prelude::*;
 use super::*;

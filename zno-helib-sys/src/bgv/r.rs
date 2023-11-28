@@ -65,6 +65,28 @@ pub struct RError {
     pub to: &'static str,
 }
 
+impl RError {
+    /// Constructs a new `RError`.
+    ///
+    /// # Arguments
+    ///
+    /// * `kind` - The kind of error.
+    /// * `from` - The source type that failed to convert.
+    /// * `to` - The target type to which conversion was attempted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::{RError, RErrorKind};
+    /// let error = RError::new(RErrorKind::Zero, "usize", "M");
+    ///
+    /// assert_eq!(error.kind, RErrorKind::Zero);
+    /// ```
+    pub fn new(kind: RErrorKind, from: &'static str, to: &'static str) -> Self {
+        RError { kind, from, to }
+    }
+}
+
 /// The specific kind of error that `RError` can represent.
 ///
 /// # Variants
@@ -130,14 +152,14 @@ impl R {
 ///
 /// # Errors
 ///
-/// Returns an `MError` with the kind `OutOfRange` if `self` is not a `Some`,
+/// Returns an `RError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// indicating the number was zero or never present.
 /// The error specifies the conversion attempt from "R" to "u32".
-impl crate::bgv::ToU32<MError> for R {
-    fn to_u32(&self) -> Result<u32, MError> {
+impl crate::bgv::ToU32<RError> for R {
+    fn to_u32(&self) -> Result<u32, RError> {
         match self {
             R::Some(non_zero_u32) => Ok(non_zero_u32.get()),
-            _ => Err(MError { kind: MErrorKind::OutOfRange(format!("Value {:?} is out of range for R", self)), from: "R", to: "u32" })
+            _ => Err(RError { kind: RErrorKind::OutOfRange(format!("Value {:?} is out of range for R", self)), from: "R", to: "u32" })
         }
     }
 }
@@ -706,8 +728,6 @@ impl TryFrom<u8> for R {
         }
     }
 }
-use core::convert::TryFrom;
-use crate::{R, RError, RErrorKind};
 
 /// Attempts to create `R` from `u16`.
 ///
@@ -1052,6 +1072,69 @@ impl core::str::FromStr for R {
                     }
                 }
             }
+        }
+    }
+}
+
+/// `R` represents a positive, non-zero `u64` value.
+///
+/// # Examples
+///
+/// ```
+/// use crate::R;
+///
+/// let r = R::Some(nonzero::NonZeroU64::new(12345).unwrap());
+/// assert_eq!(format!("{}", r), "12345");
+/// ```
+///
+/// Attempting to create `R` with a zero or negative value will yield an error:
+///
+/// ```
+/// use crate::{R, RError, RErrorKind};
+///
+/// let r_result = R::new(0); // or any negative number
+/// assert_eq!(r_result.unwrap_err().kind, RErrorKind::Zero); // or `RErrorKind::NegativeValue`
+/// ```
+impl core::fmt::Display for R {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match self {
+            R::Some(value) => write!(f, "{}", value),
+            // Handle other variants if they are added in the future
+        }
+    }
+}
+
+/// `RError` denotes the different kinds of errors that can arise from creating or using `R`.
+///
+/// # Examples
+///
+/// Creating `R` with an invalid value:
+///
+/// ```
+/// use crate::{R, RError};
+///
+/// let r = R::new(0); // Zero is not a valid value for `R`
+/// assert!(r.is_err());
+/// assert_eq!(format!("{}", r.unwrap_err()), "zero is not allowed");
+/// ```
+///
+/// # Errors
+///
+/// - `RErrorKind::Zero`: The value provided is zero.
+/// - `RErrorKind::NegativeValue`: The value provided is negative.
+/// - `RErrorKind::OutOfRange`: The value provided is outside the range of `u64`.
+/// - `RErrorKind::ParseError`: The provided string cannot be parsed into a `u64`.
+impl core::fmt::Display for RError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match &self.kind {
+            RErrorKind::Unreachable => write!(f, "the Infallible place holder"),
+            RErrorKind::InvalidContext => write!(f, "the UniquePtr to Context is null"),
+            RErrorKind::NegativeValue => write!(f, "negative value is not allowed"),
+            RErrorKind::NoValue => write!(f, "absent value is not allowed"),
+            RErrorKind::OutOfRange(s) => write!(f, "{}", s),
+            RErrorKind::ParseError(e) => e.fmt(f),
+            RErrorKind::Zero => write!(f, "zero is not allowed"),
+            RErrorKind::Generic(g) => g.fmt(f),
         }
     }
 }

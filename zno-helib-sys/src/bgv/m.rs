@@ -17,8 +17,8 @@ use crate::prelude::*;
 /// The value of $m$ is a trade-off between security and performance, and it is chosen according to the specific requirements of the application and the computational resources available.
 ///
 /// - **Security:** The security of the scheme is based on the hardness of lattice problems, and the parameter m influences the complexity of these problems. Specifically, it affects the dimension of the lattice, which is a key factor in its security.
-/// - **Efficiency:** The value of m also determines the efficiency of the scheme. Larger m can provide better security but at the cost of increased computational overhead. It affects the size of the polynomials and thus the computational complexity of the scheme's operations.
-/// - **Slots for Packing:** In homomorphic encryption, one often uses "packing" techniques to encode multiple plaintext values into a single ciphertext. The parameter m affects how many such values can be packed into a single ciphertext, which is crucial for the performance of homomorphic computations on vectors of data.
+/// - **Efficiency:** The value of $m$ also determines the efficiency of the scheme. Larger m can provide better security but at the cost of increased computational overhead. It affects the size of the polynomials and thus the computational complexity of the scheme's operations.
+/// - **Slots for Packing:** In homomorphic encryption, one often uses "packing" techniques to encode multiple plaintext values into a single ciphertext. The parameter $m$ affects how many such values can be packed into a single ciphertext, which is crucial for the performance of homomorphic computations on vectors of data.
 ///
 /// ## Range in this FFI Implementation:
 ///

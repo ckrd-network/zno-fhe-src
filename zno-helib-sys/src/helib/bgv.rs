@@ -25,21 +25,21 @@ pub mod ffi {
         fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
 
         fn new_bgv_builder() -> UniquePtr<BGVContextBuilder>;
-        
+
+        fn set_bits(builder: UniquePtr<BGVContextBuilder>, bits: u32) -> UniquePtr<BGVContextBuilder>;
+        fn set_c(builder: UniquePtr<BGVContextBuilder>, c: u32) -> UniquePtr<BGVContextBuilder>;
         fn set_m(builder: UniquePtr<BGVContextBuilder>, m: u32) -> UniquePtr<BGVContextBuilder>;
+        fn set_p(builder: UniquePtr<BGVContextBuilder>, p: u32) -> UniquePtr<BGVContextBuilder>;
+        fn set_r(builder: UniquePtr<BGVContextBuilder>, r: u32) -> UniquePtr<BGVContextBuilder>;
+        fn is_bootstrappable(builder: UniquePtr<BGVContextBuilder>, flag: bool) -> UniquePtr<BGVContextBuilder>;
+        fn set_thickboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
+        fn set_thinboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
 
         fn build_ptr(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
-        // fn is_bootstrappable(builder: Pin<&mut BGVContextBuilder>, flag: bool);
-        // fn set_bits(builder: Pin<&mut BGVContextBuilder>, bits: i64);
-        // fn set_c(builder: Pin<&mut BGVContextBuilder>, c: i64);
-        // fn set_gens(builder: Pin<&mut BGVContextBuilder>, gens: &CxxVector<i64>);
-        // fn set_m(builder: Pin<&mut BGVContextBuilder>, m: i64);
-        // fn set_mvec(builder: Pin<&mut BGVContextBuilder>, mvec: &CxxVector<i64>);
-        // fn set_ords(builder: Pin<&mut BGVContextBuilder>, ords: &CxxVector<i64>);
-        // fn set_p(builder: Pin<&mut BGVContextBuilder>, p: i64);
-        // fn set_r(builder: Pin<&mut BGVContextBuilder>, r: i64);
-        // fn set_thickboot(builder: Pin<&mut BGVContextBuilder>);
-        // fn set_thinboot(builder: Pin<&mut BGVContextBuilder>);
+
+        // fn set_gens(builder: UniquePtr<BGVContextBuilder>, gens: &CxxVector<i64>);
+        // fn set_mvec(builder: UniquePtr<BGVContextBuilder>, mvec: &CxxVector<i64>);
+        // fn set_ords(builder: UniquePtr<BGVContextBuilder>, ords: &CxxVector<i64>);
 
         fn getM(self: &Context) -> i64;
     }

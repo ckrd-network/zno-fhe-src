@@ -76,6 +76,8 @@ RUST_BACKTRACE=full cargo test --lib bgv::m:: --features "static helib" --manife
 
 RUST_BACKTRACE=full cargo test --lib --features "static helib" --manifest-path $sys_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 
+RUST_BACKTRACE=full cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent --lib --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+
 cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
 ```
 

@@ -70,8 +70,7 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 ///   - `C::new(u32)`: Can error if the provided value is `0`.
 ///
 /// - **Bits**:
-///   - `Bits::new(String)`: Can error if the provided string is not a valid binary representation
-///     or if it's not a valid u32 representation.
+///   - `Bits::new(u32)`: Can error if the provided value is not a valid u32.
 ///
 /// - **Gens**:
 ///   - `Gens::new(Vec<u32>)`: Can error if any value in the vector is `0` or if there are more than

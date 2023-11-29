@@ -190,7 +190,7 @@ impl crate::bgv::ToU32<BitsError> for Bits {
 
 /// Returns the default value for `Bits`.
 ///
-/// This is the smallest non-zero `u32` value that is permitted within `Bits`, namely `4095`.
+/// This is the smallest non-zero `u32` value that is permitted within `Bits`, namely `500`.
 /// It is a constant, not arbitrary, chosen with purpose.
 ///
 /// # Panics
@@ -204,11 +204,11 @@ impl crate::bgv::ToU32<BitsError> for Bits {
 ///
 /// ```
 /// let bits = Bits::default();
-/// assert_eq!(bits.unwrap().get(), 4095);
+/// assert_eq!(bits.unwrap().get(), 500);
 /// ```
 impl Default for Bits {
     fn default() -> Self {
-        Bits::Some(core::num::NonZeroU32::new(4095).expect("4095 is a valid non-zero u32 value."))
+        Bits::Some(core::num::NonZeroU32::new(500).expect("500 is a valid non-zero u32 value."))
     }
 }
 

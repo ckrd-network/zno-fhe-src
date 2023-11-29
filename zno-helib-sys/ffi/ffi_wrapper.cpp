@@ -42,33 +42,28 @@ namespace helib {
 
 
     std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
-        builder->m(m);  // Assumes `m` modifies the object and is void.
+        builder->m(m);  // Assume `m` modifies the object and is void.
         return builder; // Return the unique_ptr.
     }
 
-    BGVContextBuilder& set_p(BGVContextBuilder& builder, uint32_t p) {
-        builder.p(p);
-        return builder;
+    std::unique_ptr<::helib::BGVContextBuilder> set_p(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t p) {
+        builder->p(p);  // Assume `p` modifies the object and is void.
+        return builder; // Return the unique_ptr.
     }
 
-    BGVContextBuilder& set_r(BGVContextBuilder& builder, uint32_t r) {
-        builder.r(r);
-        return builder;
+    std::unique_ptr<::helib::BGVContextBuilder> set_r(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t r) {
+        builder->r(r);  // Assume `r` modifies the object and is void.
+        return builder; // Return the unique_ptr.
     }
 
-    BGVContextBuilder& set_bits(BGVContextBuilder& builder, uint32_t bits) {
-        builder.bits(bits);
-        return builder;
+    std::unique_ptr<::helib::BGVContextBuilder> set_bits(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t bits) {
+        builder->bits(bits);  // Assume `bits` modifies the object and is void.
+        return builder; // Return the unique_ptr.
     }
 
-    BGVContextBuilder& set_c(BGVContextBuilder& builder, uint32_t c) {
-        builder.c(c);
-        return builder;
-    }
-
-    BGVContextBuilder& is_bootstrappable(BGVContextBuilder& builder, bool flag) {
-        builder.bootstrappable(flag);
-        return builder;
+    std::unique_ptr<::helib::BGVContextBuilder> set_c(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t c) {
+        builder->c(c);  // Assume `c` modifies the object and is void.
+        return builder; // Return the unique_ptr.
     }
 
     BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens) {
@@ -89,14 +84,19 @@ namespace helib {
         return builder;
     }
 
-    BGVContextBuilder& set_thickboot(BGVContextBuilder& builder) {
-        builder.thickboot();
+    std::unique_ptr<::helib::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::helib::BGVContextBuilder> builder, bool flag) {
+        builder->bootstrappable(flag);  // Assume `bootstrappable` modifies the object and is void.
+        return builder; // Return the unique_ptr.
+    }
+
+    std::unique_ptr<::helib::BGVContextBuilder> set_thickboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+        builder->thickboot();
         return builder;
     }
 
-    void set_thinboot(BGVContextBuilder& builder) {
-        builder.thinboot();
-        // return builder;
+    std::unique_ptr<::helib::BGVContextBuilder> set_thinboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+        builder->thinboot();
+        return builder;
     }
 
     long get_m(const Context& context) { return context.getM(); }

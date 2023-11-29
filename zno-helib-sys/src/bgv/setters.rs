@@ -11,23 +11,40 @@ pub trait Setters {
     where
         Self: Sized;// The `Into` `M` conversion doesn't fail
 
-
     fn try_set<T>(self, value: T) -> Result<Self, BGVError>
     where
         Self: Sized,
         T: TryInto<Metric, Error=BGVError>;
+
+    fn set_bits<T, E>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>;
+
+    fn set_c<T, E>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>;
 
     fn set_m<T, E>(self, value: T) -> Result<Self, BGVError>
     where
         Self: Sized,
         T: ToU32<E>,
         E: Into<SetError>;
-    // fn set_p<T, E>(self, value: T) -> Result<Self, PError>
-    // where
-    //     Self: Sized,
-    //     T: ToU32<E>,
-    //     E: Into<PError>;
-    // add other setter methods here...
+
+    fn set_p<T, E>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>;
+
+    fn set_r<T, E>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>;
 }
 
 // // Example type implementing the Setter trait

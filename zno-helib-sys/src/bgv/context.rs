@@ -137,7 +137,7 @@ impl Getters for Context {
     ///
     /// # Errors
     ///
-    /// Returns an `Err` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
+    /// Returns an `MError` if `m` is zero or negative or if `m` is larger than `u32::MAX`.
     fn get_m(&self) -> Result<M, MError> {
         // Call the C++ function through the FFI
         let m_value = self.inner.getM();

@@ -145,7 +145,7 @@ impl crate::bgv::ToU32<PError> for P {
 
 /// Returns the default value for `P`.
 ///
-/// This is the smallest non-zero `u32` value that is permitted within `P`, namely `4095`.
+/// This is the smallest non-zero `u32` value that is permitted within `P`, namely `2`.
 /// It is a constant, not arbitrary, chosen with purpose.
 ///
 /// # Panics
@@ -159,11 +159,11 @@ impl crate::bgv::ToU32<PError> for P {
 ///
 /// ```
 /// let p = P::default();
-/// assert_eq!(p.unwrap().get(), 4095);
+/// assert_eq!(p.unwrap().get(), 2);
 /// ```
 impl Default for P {
     fn default() -> Self {
-        P::Some(core::num::NonZeroU32::new(4095).expect("4095 is a valid non-zero u32 value."))
+        P::Some(core::num::NonZeroU32::new(2).expect("2 is a valid non-zero u32 value."))
     }
 }
 

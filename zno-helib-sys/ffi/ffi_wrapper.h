@@ -27,18 +27,19 @@ namespace helib {
 
     std::unique_ptr<::helib::BGVContextBuilder> new_bgv_builder();
 
+    std::unique_ptr<::helib::BGVContextBuilder> set_bits(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t bits);
+    std::unique_ptr<::helib::BGVContextBuilder> set_c(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t c);
     std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m);
-    BGVContextBuilder& set_p(BGVContextBuilder& builder, long p);
-    BGVContextBuilder& set_r(BGVContextBuilder& builder, long r);
-    // ... Other setter functions ...
-    BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens);
-    BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords);
-    BGVContextBuilder& set_bits(BGVContextBuilder& builder, long bits);
-    BGVContextBuilder& set_c(BGVContextBuilder& builder, long c);
-    BGVContextBuilder& is_bootstrappable(BGVContextBuilder& builder, bool flag);
-    BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec);
-    BGVContextBuilder& set_thickboot(BGVContextBuilder& builder);
-    void set_thinboot(BGVContextBuilder& builder);
+    std::unique_ptr<::helib::BGVContextBuilder> set_p(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t p);
+    std::unique_ptr<::helib::BGVContextBuilder> set_r(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t r);
+
+    std::unique_ptr<::helib::BGVContextBuilder> set_gens(std::unique_ptr<::helib::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<int32_t>& gens);
+    std::unique_ptr<::helib::BGVContextBuilder> set_ords(std::unique_ptr<::helib::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<int32_t>& ords);
+    std::unique_ptr<::helib::BGVContextBuilder> set_mvec(std::unique_ptr<::helib::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<uint32_t>& mvec);
+
+    std::unique_ptr<::helib::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::helib::BGVContextBuilder> builder, bool flag);
+    std::unique_ptr<::helib::BGVContextBuilder> set_thickboot(std::unique_ptr<::helib::BGVContextBuilder> builder);
+    std::unique_ptr<::helib::BGVContextBuilder> set_thinboot(std::unique_ptr<::helib::BGVContextBuilder> builder);
 
     enum class MErrorKind {
         None,

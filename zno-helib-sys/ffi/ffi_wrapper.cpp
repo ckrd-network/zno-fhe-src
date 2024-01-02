@@ -1,104 +1,175 @@
 #include "ffi_wrapper.h"
 
-// example of how you might use these functions:
-//
-// helib::BGVContextBuilder builder;
-// helib::set_m(builder, 5);
-// helib::set_p(builder, 2);
-// // ... more settings ...
-// Context* context = helib::build_ptr(builder);
-
 namespace helib {
 
-    std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec) {
-        // Create an empty std::vector inside a unique_ptr
-        auto stdVec = std::make_unique<std::vector<long int>>();
+  /**
+   * Converts a C-style array to an std::vector.
+   *
+   * @param array The C-style array to convert.
+   * @param size The size of the array.
+   * @return An std::vector containing the elements of the array.
+   * @note This function is used to convert the `gens`, `ords`, and `mvec` arrays
+   * The provided C++ function `to_std_vector` is designed to convert a Rust vector (`rust::cxxbridge1::Vec<long int>`) into a standard C++ vector (`std::vector<long int>`), wrapped in a `std::unique_ptr`. This function is likely part of a Foreign Function Interface (FFI) layer, which allows Rust and C++ to interoperate.
+   * The function takes a constant reference to a Rust vector as its argument. This means it can read the Rust vector, but it can't modify it.
+   *
+   * Inside the function, an empty `std::vector<long int>` is created and wrapped in a `std::unique_ptr`. The `std::unique_ptr` is a smart pointer that retains sole ownership of an object through a pointer and destroys that object when the `unique_ptr` goes out of scope. The `std::make_unique` function is a utility that creates a `unique_ptr` with a new object.
+   *
+   * Next, the function iterates over the Rust vector using a range-based for loop. For each item in the Rust vector, it pushes the item into the C++ vector. The `push_back` function is a standard method on `std::vector` that appends an element to the end of the vector.
+   *
+   * Finally, the function returns the `unique_ptr` to the C++ vector. This transfers ownership of the vector to the caller. This is important because it ensures that the memory for the vector will be properly deallocated when the caller is done with it. This is a key part of how C++ manages memory and prevents leaks.
+   *
+   */
+  std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec) {
+    // Create an empty std::vector inside a unique_ptr
+    auto stdVec = std::make_unique<std::vector<long int>>();
 
-        // Iterate over the rust::cxxbridge1::Vec and push elements into the std::vector
-        for (const auto& item : rustVec) {
-            stdVec->push_back(item);
-        }
-
-        return stdVec; // this transfers ownership to the caller
+    // Iterate over the rust::cxxbridge1::Vec and push elements into the std::vector
+    for (const auto& item : rustVec) {
+      stdVec->push_back(item);
     }
 
-    std::unique_ptr<::helib::BGVContextBuilder> new_bgv_builder() {
-        return std::make_unique<::helib::BGVContextBuilder>();
-    }
+    return stdVec; // this transfers ownership to the caller
+  }
 
-    std::unique_ptr<helib::Context> build_ptr(std::unique_ptr<::helib::BGVContextBuilder> builder) {
-        try {
-            if (!builder) {
-                throw std::invalid_argument("Received null for builder in build_ptr");
-            }
+  /**
+   * Sets the value of `m` in the BGVContextBuilder object.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param m The value of `m` to be set.
+   * @return A unique_ptr to the modified BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
+    builder->m(m);  // Assume `m` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
-            helib::Context* raw_ptr = builder->buildPtr();
-            return std::unique_ptr<helib::Context>(raw_ptr);
-        } catch(const std::exception& e) {
-            // Log the error message if needed: e.what()
-            return nullptr; // Indicates an error occurred.
-        }
-    }
+  /**
+   * Sets the value of `p` for the given `BGVContextBuilder` object.
+   *
+   * @param builder A unique pointer to a `BGVContextBuilder` object.
+   * @param p The value of `p` to be set.
+   * @return A unique pointer to the modified `BGVContextBuilder` object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_p(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t p) {
+    builder->p(p);  // Assume `p` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
+  /**
+   * Sets the value of r in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param r The value of r to be set.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_r(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t r) {
+    builder->r(r);  // Assume `r` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_m(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t m) {
-        builder->m(m);  // Assume `m` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Sets the value of bits in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param bits The value of bits to be set.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_bits(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t bits) {
+    builder->bits(bits);  // Assume `bits` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_p(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t p) {
-        builder->p(p);  // Assume `p` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Sets the value of c in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param c The value of c to be set.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_c(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t c) {
+    builder->c(c);  // Assume `c` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_r(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t r) {
-        builder->r(r);  // Assume `r` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Sets the value of `gens` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param gens The value of `gens` to be set.
+   * @return The modified BGVContextBuilder object.
+   */
+  BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens) {
+    auto gens_std_ptr = to_std_vector(gens); // This is now a std::unique_ptr<std::vector<long int>>
+    builder.gens(*gens_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+    return builder;
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_bits(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t bits) {
-        builder->bits(bits);  // Assume `bits` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Sets the value of `ords` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param ords The value of `ords` to be set.
+   * @return The modified BGVContextBuilder object.
+   */
+  BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords) {
+    auto ords_std_ptr = to_std_vector(ords); // This is now a std::unique_ptr<std::vector<long int>>
+    builder.ords(*ords_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+    return builder;
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_c(std::unique_ptr<::helib::BGVContextBuilder> builder, uint32_t c) {
-        builder->c(c);  // Assume `c` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Sets the value of `mvec` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param mvec The value of `mvec` to be set.
+   * @return The modified BGVContextBuilder object.
+   */
+  BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec) {
+    auto mvec_std_ptr = to_std_vector(mvec); // This is now a std::unique_ptr<std::vector<long int>>
+    builder.mvec(*mvec_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+    return builder;
+  }
 
-    BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens) {
-        auto gens_std_ptr = to_std_vector(gens); // This is now a std::unique_ptr<std::vector<long int>>
-        builder.gens(*gens_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-        return builder;
-    }
+  /**
+   * Sets the value of `bootstrappable` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param flag The value of `bootstrappable` to be set.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::helib::BGVContextBuilder> builder, bool flag) {
+    builder->bootstrappable(flag);  // Assume `bootstrappable` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
 
-    BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords) {
-        auto ords_std_ptr = to_std_vector(ords); // This is now a std::unique_ptr<std::vector<long int>>
-        builder.ords(*ords_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-        return builder;
-    }
+  /**
+   * Sets the value of `thickboot` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_thickboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+    builder->thickboot();
+    return builder;
+  }
 
-    BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec) {
-        auto mvec_std_ptr = to_std_vector(mvec); // This is now a std::unique_ptr<std::vector<long int>>
-        builder.mvec(*mvec_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-        return builder;
-    }
+  /**
+   * Sets the value of `thinboot` in the BGVContextBuilder.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @return A unique pointer to the updated BGVContextBuilder object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> set_thinboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+    builder->thinboot();
+    return builder;
+  }
 
-    std::unique_ptr<::helib::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::helib::BGVContextBuilder> builder, bool flag) {
-        builder->bootstrappable(flag);  // Assume `bootstrappable` modifies the object and is void.
-        return builder; // Return the unique_ptr.
-    }
+  /**
+   * Gets the value of `m` from the Context object.
+   *
+   * @param context The Context object.
+   * @return The value of `m`.
+   */
+  long get_m(const Context& context) { return context.getM(); }
 
-    std::unique_ptr<::helib::BGVContextBuilder> set_thickboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
-        builder->thickboot();
-        return builder;
-    }
-
-    std::unique_ptr<::helib::BGVContextBuilder> set_thinboot(std::unique_ptr<::helib::BGVContextBuilder> builder) {
-        builder->thinboot();
-        return builder;
-    }
-
-    long get_m(const Context& context) { return context.getM(); }
-
-}  // namespace helib_wrapper
+}  // namespace helib

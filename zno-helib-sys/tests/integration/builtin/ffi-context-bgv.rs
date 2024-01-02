@@ -49,7 +49,7 @@ fn test_build_bgv_valid_params() {
 
     let context = Context::new(bgv).expect("BGV context creation");
 
-    let actual_m = context.get_m().unwrap(); // this will panic if get_m() returns an Err
+    let actual_m = context.get_m().unwrap(); // panic if get_m() returns an Error
 
     assert_eq!(actual_m, expected_m);
     // assert_eq!(actual_p, expected_p);

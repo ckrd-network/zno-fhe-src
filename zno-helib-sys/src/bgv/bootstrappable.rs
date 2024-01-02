@@ -13,21 +13,20 @@ use core::str::FromStr;
 /// - `Disabled`: The context does not support bootstrapping.
 /// - `None`: No explicit setting provided, the context has not been configured.  Generally this means the logic associated with the `Bootstrap` parameter has not been invoked.
 ///
-/// ## Usage in this FFI Implementation:
+/// # Usage in this FFI Implementation:
 ///
 /// This FFI implementation uses a boolean to indicate the `bootstrappable` state.
 /// Where `true` indicates that the scheme is setup to be bootstrappable, and `false` indicates that it is not.
 ///
-/// ## Usage in HElib:
+/// # Usage in HElib:
 ///
 /// Bootstrapping in HElib is an advanced feature that requires careful configuration.
 /// Users should refer to HElib's official documentation or relevant publications for detailed guidelines on using bootstrapping.
 ///
-/// ## Errors
+/// # Errors
 ///
 /// Errors can occur when trying to create a `Bootstrappable` from a string. The operation
 /// might fail if the input string does not correctly describe a bootstrapping state.
-///
 ///
 /// # Panic
 ///
@@ -35,7 +34,7 @@ use core::str::FromStr;
 /// error will cause a panic. It's recommended to handle errors gracefully using pattern matching or methods
 /// like `is_ok()` and `is_err()` before unwrapping.
 ///
-/// ## Example
+/// # Example
 ///
 /// ```
 /// # use your_crate_name::Bootstrappable; // Replace `your_crate_name` with the name of your crate

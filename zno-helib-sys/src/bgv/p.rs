@@ -24,7 +24,7 @@ use crate::prelude::*;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::P;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::P;
 /// let p = P::new(65537).expect("Failed to create P");
 /// assert_eq!(p.to_string(), "65537");
 /// ```

@@ -22,9 +22,14 @@ pub mod ffi {
         type Context;
         type BGVContextBuilder;
 
-        fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
+        fn init() -> UniquePtr<BGVContextBuilder>;
 
-        fn new_bgv_builder() -> UniquePtr<BGVContextBuilder>;
+        fn build(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
+
+        // fn build_ptr(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
+
+
+        fn to_std_vector(rust_vec: &Vec<i64>) -> UniquePtr<CxxVector<i64>>;
 
         fn set_bits(builder: UniquePtr<BGVContextBuilder>, bits: u32) -> UniquePtr<BGVContextBuilder>;
         fn set_c(builder: UniquePtr<BGVContextBuilder>, c: u32) -> UniquePtr<BGVContextBuilder>;
@@ -36,9 +41,7 @@ pub mod ffi {
         fn set_thickboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
         fn set_thinboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
 
-        fn build_ptr(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
-
-        // fn set_gens(builder: UniquePtr<BGVContextBuilder>, gens: &CxxVector<i64>);
+       // fn set_gens(builder: UniquePtr<BGVContextBuilder>, gens: &CxxVector<i64>);
         // fn set_mvec(builder: UniquePtr<BGVContextBuilder>, mvec: &CxxVector<i64>);
         // fn set_ords(builder: UniquePtr<BGVContextBuilder>, ords: &CxxVector<i64>);
 
@@ -48,6 +51,56 @@ pub mod ffi {
     extern "Rust" {
         type M;
         type MError;
+    }
+}
+
+impl Builder {
+    // Constructs a new Builder
+    pub fn new() -> Self {
+        Self {
+            // Implement returning a UniquePtr to the C++ object
+            // UniquePtr<ffi::Context>, such that the `build()` method succeeds.
+            // In C++ `new` is as reserved keyword, so we use `init` instead.
+            inner: ffi::init(),
+        }
+    }
+
+    // Note: This consumes the Builder instance when `cb.build()` is called.
+    //       That is you won't be able to use `cb` afterward.
+    pub fn build(self) -> Result<Context, FFIError> {
+        // This call is safe because it transfers ownership of the Context
+        // This call is safe because it transfers ownership of the Context
+        let context_ptr = ffi::build(self.inner);
+        // Check if the pointer is null
+        if context_ptr.is_null() {
+            return Err(FFIError::NullPointer(NullPointerError));
+        }
+        Ok(Context { inner: context_ptr })
+        // // This call is safe because it transfers ownership of the Context
+        // // to the UniquePtr, which ensures it will be cleaned up correctly.
+        // let ctx_ptr: UniquePtr<ffi::Context> = ffi::build_ptr(self.inner);
+        // // Check if the pointer is null
+        // if ctx_ptr.is_null() {
+        //     return Err(FFIError::NullPointer(NullPointerError));
+        // }
+        // Ok(Context { inner: ctx_ptr })
+    }
+
+    fn metric_set(self, metric: Metric) -> Result<Builder, BGVError> {
+        // Delegate to the implementation for each field.
+        match metric {
+            Metric::Bits(value) => self.set_bits(value),
+            // Metric::Bootstrap(value) => self.set_bootstrap(value),
+            // Metric::Bootstrappable(value) => self.set_bootstrappable(value),
+            Metric::C(value) => self.set_c(value),
+            // Metric::Gens(value) => self.set_gens(value),
+            Metric::M(value) => self.set_m(value),
+            // Metric::Mvec(value) => self.set_mvec(value),
+            // Metric::Ords(value) => self.set_ords(value),
+            Metric::P(value) => self.set_p(value),
+            Metric::R(value) => self.set_r(value),
+            _ => todo!()
+        }
     }
 }
 
@@ -101,44 +154,6 @@ pub struct Builder {
     pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
 }
 
-impl Builder {
-    // Constructs a new Builder
-    pub fn new() -> Self {
-        Builder {
-            inner: ffi::new_bgv_builder(),
-        }
-    }
-
-    // Note: This consumes the Builder instance when `cb.build()` is called.
-    //       That is you won't be able to use `cb` afterward.
-    pub fn build(self) -> Result<Context, FFIError> {
-        // This call is safe because it transfers ownership of the Context
-        // to the UniquePtr, which ensures it will be cleaned up correctly.
-        let ctx_ptr: UniquePtr<ffi::Context> = ffi::build_ptr(self.inner);
-        // Check if the pointer is null
-        if ctx_ptr.is_null() {
-            return Err(FFIError::NullPointer(NullPointerError));
-        }
-        Ok(Context { inner: ctx_ptr })
-    }
-
-    fn metric_set(self, metric: Metric) -> Result<Builder, BGVError> {
-        // Delegate to the implementation for each field.
-        match metric {
-            Metric::Bits(value) => self.set_bits(value),
-            // Metric::Bootstrap(value) => self.set_bootstrap(value),
-            // Metric::Bootstrappable(value) => self.set_bootstrappable(value),
-            Metric::C(value) => self.set_c(value),
-            // Metric::Gens(value) => self.set_gens(value),
-            Metric::M(value) => self.set_m(value),
-            // Metric::Mvec(value) => self.set_mvec(value),
-            // Metric::Ords(value) => self.set_ords(value),
-            Metric::P(value) => self.set_p(value),
-            Metric::R(value) => self.set_r(value),
-            _ => todo!()
-        }
-    }
-}
 
 impl Setters for Builder {
     fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>

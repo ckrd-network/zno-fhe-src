@@ -2,6 +2,8 @@ use core::str::FromStr;
 use std::fmt;
 use std::num::{NonZeroU32, ParseIntError};
 
+use crate::prelude::*;
+
 /// Represents the `ords` parameter in BGV, which is a vector of integers.
 ///
 /// In the BGV encryption scheme as implemented by HElib, the `ords` parameter specifies the
@@ -21,7 +23,7 @@ use std::num::{NonZeroU32, ParseIntError};
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Ords;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::Ords;
 /// let ords = Ords::new(vec![2, -3, 5]).expect("Failed to create Ords");
 /// assert_eq!(ords.to_string(), "[2, -3, 5]");
 /// ```
@@ -47,7 +49,7 @@ use std::num::{NonZeroU32, ParseIntError};
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Ords; // Replace `your_crate_name` with the name of your crate
+/// # use crate::Ords;
 /// let ords = Ords::new(vec![2, 3, 5]).expect("Failed to create Ords");
 /// assert_eq!(ords.to_string(), "[2, 3, 5]");
 /// ```
@@ -118,6 +120,23 @@ impl FromStr for Ords {
         }
 
         Ok(Ords { values })
+    }
+}
+
+/// Converts from `Ords` to `Metric`.
+///
+/// This implementation allows an `Ords` to be converted into a `Metric`
+/// using the `into` method, which is part of the `Into` trait.
+///
+/// # Examples
+///
+/// ```
+/// let ords = Ords::new();
+/// let metric: Metric = ords.into();
+/// ```
+impl Into<Metric> for Ords {
+    fn into(self) -> Metric {
+        Metric::Ords(self)
     }
 }
 

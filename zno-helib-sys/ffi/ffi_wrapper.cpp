@@ -1,5 +1,18 @@
 #include "ffi_wrapper.h"
 
+/**
+ * This file contains the implementation of various functions related to the Foreign Function Interface (FFI) for the helib library.
+ * The FFI allows Rust and C++ to interoperate by providing functions that can be called from Rust code.
+ * The functions in this file convert data types between Rust and C++ and provide an interface for manipulating the helib library objects.
+ */
+
+/**
+ * Builds a Context object from a BGVContextBuilder object.
+ *
+ * @param builder A pointer to the BGVContextBuilder object.
+ * @return A unique pointer to the newly created Context object.
+ */
+
 namespace helib {
 
   /**
@@ -29,6 +42,19 @@ namespace helib {
     }
 
     return stdVec; // this transfers ownership to the caller
+  }
+
+  /**
+   * Creates a new BGVContextBuilder object.
+   *
+   * @return A unique pointer to the newly created ContextBuilder<BGV> object.
+   */
+  std::unique_ptr<::helib::BGVContextBuilder> init() {
+      return std::make_unique<::helib::BGVContextBuilder>();
+  }
+
+  std::unique_ptr<::helib::Context> build(std::unique_ptr<::helib::BGVContextBuilder> builder) {
+    return std::unique_ptr<helib::Context>(builder->buildPtr());
   }
 
   /**
@@ -171,5 +197,10 @@ namespace helib {
    * @return The value of `m`.
    */
   long get_m(const Context& context) { return context.getM(); }
+
+  // Define the C++ helper function for the FFI
+  void multiplyBy(std::unique_ptr<::helib::Ctxt>& ciphertext, std::unique_ptr<::helib::Ctxt>& other) {
+    ciphertext->multiplyBy(*other);
+  }
 
 }  // namespace helib

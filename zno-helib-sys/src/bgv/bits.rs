@@ -22,7 +22,7 @@ use crate::prelude::*;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Bits;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::Bits;
 /// let bits = Bits::new(32).expect("Failed to create Bits");
 /// assert_eq!(bits.to_string(), "32");
 /// ```

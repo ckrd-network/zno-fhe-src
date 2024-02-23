@@ -2,6 +2,8 @@ use std::num::{NonZeroU32, ParseIntError};
 use std::fmt;
 use std::str::FromStr;
 
+use crate::prelude::*;
+
 /// Represents the `gens` parameter in BGV, which is a vector of integers.
 ///
 /// In the BGV encryption scheme as implemented by HElib, the `gens` parameter specifies the
@@ -15,7 +17,7 @@ use std::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use zno::bgv::Gens;  // Replace `your_crate_name` with the name of your crate
+/// # use zno::bgv::Gens;
 /// let gens = Gens::new(vec![2, 3, 5]).expect("Failed to create Gens");
 /// assert_eq!(gens.to_string(), "[2, 3, 5]");
 /// ```
@@ -41,7 +43,7 @@ use std::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Gens;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::Gens;
 /// let gens = Gens::new(vec![3, 5, 7]).expect("Failed to create Gens");
 /// assert_eq!(gens.to_string(), "3,5,7");
 /// ```
@@ -103,6 +105,23 @@ impl FromStr for Gens {
         let parts = parts?;
 
         Gens::new(parts)
+    }
+}
+
+/// Converts from `Gens` to `Metric`.
+///
+/// This implementation allows a `Gens` to be converted into a `Metric`
+/// using the `into` method, which is part of the `Into` trait.
+///
+/// # Examples
+///
+/// ```
+/// let gens = Gens::new();
+/// let metric: Metric = gens.into();
+/// ```
+impl Into<Metric> for Gens {
+    fn into(self) -> Metric {
+        Metric::Gens(self)
     }
 }
 

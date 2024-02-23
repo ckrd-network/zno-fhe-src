@@ -7,8 +7,9 @@ use crate::prelude::*;
 
 /// Represents the parameter `c` in BGV.
 ///
-/// In HElib's BGV encryption scheme, the parameter `c` typically refers to [specific information about what `c` represents].
-/// [Explain the effect of `c` on the security and efficiency of the cryptographic operations, just like with `bits`].
+/// In HElib's BGV encryption scheme, the parameter `c` represents the number of levels in the modulus chain.
+/// The value of `c` affects the security and efficiency of the cryptographic operations.
+/// A larger value of `c` provides stronger security but slower performance, while a smaller value of `c` offers weaker security but faster performance.
 ///
 /// ## Range in this FFI Implementation:
 /// This FFI implementation accepts a limited range of values for `c`. Currently, the type
@@ -21,7 +22,7 @@ use crate::prelude::*;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::C;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::C;
 /// let c = C::new(32).expect("Failed to create C");
 /// assert_eq!(c.to_string(), "32");
 /// ```

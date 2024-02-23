@@ -9,7 +9,7 @@ pub trait Setters {
 
     fn set(self, value: Metric) -> Result<Self, BGVError>
     where
-        Self: Sized;// The `Into` `M` conversion doesn't fail
+        Self: Sized; // The `Into` `M` conversion doesn't fail
 
     fn try_set<T>(self, value: T) -> Result<Self, BGVError>
     where

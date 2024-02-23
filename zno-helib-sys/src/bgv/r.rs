@@ -23,7 +23,7 @@ use crate::prelude::*;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::R;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::R;
 /// let r = R::new(32).expect("Failed to create R");
 /// assert_eq!(r.to_string(), "32");
 /// ```

@@ -33,7 +33,7 @@ use crate::prelude::*;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::M;
+/// # use crate::M;
 /// let m = M::new(32).expect("Should have created M");
 /// assert_eq!(m.to_string(), "32");
 /// ```

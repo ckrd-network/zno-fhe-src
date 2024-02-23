@@ -37,7 +37,7 @@ use core::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Bootstrappable; // Replace `your_crate_name` with the name of your crate
+/// # use crate::Bootstrappable;
 /// let bootstrappable = Bootstrappable::new("enabled").expect("Invalid state");
 /// assert_eq!(bootstrappable, Bootstrappable::Enabled);
 /// ```

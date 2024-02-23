@@ -2,6 +2,8 @@ use std::num::{NonZeroU32, ParseIntError};
 use std::fmt;
 use std::str::FromStr;
 
+use crate::prelude::*;
+
 /// Represents the `mvec` parameter in BGV, which is a vector of integers.
 ///
 /// In the BGV encryption scheme as implemented by HElib, the `mvec` parameter specifies a
@@ -18,7 +20,7 @@ use std::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Mvec;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::Mvec;
 /// let mvec = Mvec::new(vec![2, 3, 5]).expect("Failed to create Mvec");
 /// assert_eq!(mvec.to_string(), "[2, 3, 5]");
 /// ```
@@ -43,7 +45,7 @@ use std::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Mvec;  // Replace `your_crate_name` with the name of your crate
+/// # use crate::Mvec;
 /// let mvec = Mvec::new(vec![2, 3, 5]).expect("Failed to create Mvec");
 /// assert_eq!(mvec.to_string(), "[2, 3, 5]");
 /// ```
@@ -65,7 +67,7 @@ pub enum MvecErrorKind {
 }
 
 impl Mvec {
-    /// Attempts to create an `Mvec` from a vector of u32.
+    /// Create an `Mvec` from a vector of u32.
     pub fn new(values: Vec<u32>) -> Result<Self, MvecError> {
         let mut non_zero_values = Vec::with_capacity(values.len());
 
@@ -132,6 +134,23 @@ impl FromStr for Mvec {
         }
 
         Mvec::new(values)
+    }
+}
+
+/// Converts from `Mvec` to `Metric`.
+///
+/// This implementation allows an `Mvec` to be converted into a `Metric`
+/// using the `into` method, which is part of the `Into` trait.
+///
+/// # Examples
+///
+/// ```
+/// let mvec = Mvec::new();
+/// let metric: Metric = mvec.into();
+/// ```
+impl Into<Metric> for Mvec {
+    fn into(self) -> Metric {
+        Metric::Mvec(self)
     }
 }
 

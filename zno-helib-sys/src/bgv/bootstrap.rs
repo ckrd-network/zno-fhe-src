@@ -2,15 +2,17 @@ use std::default::Default;
 use std::fmt;
 use std::str::FromStr;
 
+use crate::prelude::*;
+
 /// Represents the bootstrapping mode in the BGV scheme as implemented in HElib.
 ///
-/// BGV, originally a leveled homomorphic encryption scheme, allows computations up to a certain level (or depth) before
-/// noise overshadows the ciphertext. Bootstrapping rejuvenates ciphertexts by decreasing noise, thereby
-/// resetting computational depth/level and enabling further operations. This advancement shifts BGV from being
+/// BGV, a leveled homomorphic encryption scheme, allows computations up to a certain level (or depth) before
+/// noise overshadows the ciphertext. Bootstrapping rejuvenates ciphertexts by decreasing noise, this
+/// resets the computational depth/level and enables further operations. This advancement shifts BGV from being
 /// merely "leveled" to "fully" homomorphic, theoretically allowing unlimited computations, provided
 /// bootstrapping is used judiciously to control noise.
 ///
-/// The `Bootstrap` enum represents modes for this pivotal process:
+/// The `Bootstrap` enum represents modes for this process:
 /// - `None`: No bootstrapping. Limits computations to the initial 'levels' set by the encryption parameters.
 /// - `Thick`: Intensive bootstrapping with superior noise reduction, at the expense of higher computational cost.
 /// - `Thin`: Less intensive, faster bootstrapping, but with less noise reduction.
@@ -20,7 +22,7 @@ use std::str::FromStr;
 /// bootstrapping process (dictated by cryptographic parameters and available resources) and the balance
 /// between computational cost and accuracy in applications.
 ///
-/// Users should refer to HElib's official documentation or relevant publications for detailed guidelines on selecting `bootstrap`.
+/// Users should refer to HElib's official documentation or relevant publications for detailed guidelines on configuring the `bootstrap` mode.
 ///
 /// # Errors
 ///
@@ -37,7 +39,7 @@ use std::str::FromStr;
 /// # Example
 ///
 /// ```
-/// # use your_crate_name::Bootstrap; // Replace `your_crate_name` with the name of your crate
+/// # use crate::Bootstrap;
 /// let bootstrap = Bootstrap::from_str("thin").expect("Failed to create Bootstrap");
 /// assert_eq!(bootstrap.to_string(), "thin");
 /// assert!(matches!(bootstrap, Ok(Bootstrap::Thin)));
@@ -92,6 +94,23 @@ impl FromStr for Bootstrap {
             "thick" => Ok(Bootstrap::Thick),
             _ => Err(BootstrapError),
         }
+    }
+}
+
+/// Converts from `Bootstrap` to `Metric`.
+///
+/// This implementation allows a `Bootstrap` to be converted into a `Metric`
+/// using the `into` method, which is part of the `Into` trait.
+///
+/// # Examples
+///
+/// ```
+/// let bootstrap = Bootstrap::new();
+/// let metric: Metric = bootstrap.into();
+/// ```
+impl Into<Metric> for Bootstrap {
+    fn into(self) -> Metric {
+        Metric::Bootstrap(self)
     }
 }
 

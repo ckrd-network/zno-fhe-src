@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "zno-fhe",
   "zno-helib-src-test",
   "zno-helib-src",
   "zno-helib-sys-test",
@@ -80,7 +81,7 @@ categories.workspace = true
 keywords.workspace = true
 
 [features]
-default = ["static","helib"]
+default = ["static", "helib"]
 static = []
 helib = []
 openfhe = []

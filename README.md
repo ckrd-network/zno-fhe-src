@@ -44,7 +44,7 @@ Tests are front and centre. We follow advice on their setup:
 
 - [Delete Cargo Integration Tests](https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html) these tips also reduce compile time:
 
-  - > Large projects should have only one integration test crate with several modules. A nice side-effect of a single modularized integration test is that sharing the code between separate tests becomes trivial, you just pull it into a submodule. There’s no need to awkwardly repeat mod common; for each integration test.
+  - > Large projects should have only one integration test crate with several modules. A nice side-effect of a single modularized integration test is that sharing the code between separate tests becomes trivial, you just pull it into a submodule. There’s no need to awkwardly repeat `mod common;` for each integration test.
   - For a public API on crates.io, avoid unit tests. Use a single integration test,  `tests/it.rs` or `tests/it/main.rs`. Integration tests use `it` library as an external crate. Using the public API results in better API design feedback.
 
 ## FHE Libraries
@@ -69,6 +69,7 @@ target=x86_64-unknown-linux-gnu
 sys_dir="$(pwd)/zno-helib-sys"
 
 RUST_BACKTRACE=full cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-sys.txt
+
 cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
 cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
 
@@ -90,6 +91,7 @@ test_dir="$(pwd)/zno-helib-src-test"
 set -ex
 
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+
 cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-unit-test-sys-release.txt
 
 set +ex

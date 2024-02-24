@@ -61,11 +61,11 @@ fn main() -> miette::Result<()> {
     let mut cc_build = cxx_build::bridge("src/helib/bgv.rs");
     // Include the directory where cxx generates the cxxbridge sources.
     // This directory will contain the rust/cxx.h header.
-    println!("cargo:include=/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi");
+    println!("cargo:include={}", ffi_dir.display());
 
     cc_build.file(path)
             .include(cxx_include_path)
-            .include("/home/hedge/src/zno-fhe-src/zno-helib-sys/ffi")
+            .include(ffi_dir)
             .flag_if_supported("-std=c++17")
             .compile("helib-context"); // compile cxx generated bindings
 

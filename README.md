@@ -1,4 +1,4 @@
-# zno-fhe-src
+# zno-fhe
 
 Source code and FFI binding crates for the ZnO-FHE crate.
 

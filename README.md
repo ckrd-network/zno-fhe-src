@@ -161,6 +161,40 @@ cargo tree &>>cargo-tree.txt
 
 ## References
 
+[HElib](https://github.com/homenc/HElib)
+
+```latex
+@misc{helib,
+    title = {{HELib}  (release 2.3.0)},
+    howpublished = {\url{https://github.com/homenc/HElib}},
+    month = July,
+    year = 2023,
+    note = {IBM Corp.},
+    key = {HElib}
+}
+@misc{cryptoeprint:2020/1481,
+      author = {Shai Halevi and Victor Shoup},
+      title = {Design and implementation of HElib: a homomorphic encryption library},
+      howpublished = {Cryptology ePrint Archive, Paper 2020/1481},
+      year = {2020},
+      note = {\url{https://eprint.iacr.org/2020/1481}},
+      url = {https://eprint.iacr.org/2020/1481}
+}
+```
+
+[SEAL](https://github.com/Microsoft/SEAL)
+
+```latex
+@misc{sealcrypto,
+    title = {{M}icrosoft {SEAL} (release 4.1)},
+    howpublished = {\url{https://github.com/Microsoft/SEAL}},
+    month = jan,
+    year = 2023,
+    note = {Microsoft Research, Redmond, WA.},
+    key = {SEAL}
+}
+```
+
 [Parameter selection repository](https://github.com/Crypto-TII/fhegen)
 
 ```latex

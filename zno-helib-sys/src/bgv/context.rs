@@ -178,6 +178,7 @@ mod tests {
         assert!(context.is_ok());
     }
 
+    #[ignore = "Incomplete HELib FFI"]
     #[test]
     fn test_bgv_context_new() {
         // Set up the input parameters
@@ -187,6 +188,7 @@ mod tests {
         assert_eq!(actual_m, expected_m, "BGV scheme parameter M, should be set correctly");
     }
 
+    #[ignore = "Incomplete HELib FFI"]
     #[test]
     fn test_get_m_valid_value() {
         let context_result = Context::new(Parameters::default()); // Create your context

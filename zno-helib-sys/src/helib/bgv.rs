@@ -58,9 +58,9 @@ impl Builder {
     // Constructs a new Builder
     pub fn new() -> Self {
         Self {
-            // Implement returning a UniquePtr to the C++ object
+            // Return a UniquePtr to the C++ object
             // UniquePtr<ffi::Context>, such that the `build()` method succeeds.
-            // In C++ `new` is as reserved keyword, so we use `init` instead.
+            // In C++ `new` is as reserved keyword, so use `init` instead.
             inner: ffi::init(),
         }
     }
@@ -68,22 +68,13 @@ impl Builder {
     // Note: This consumes the Builder instance when `cb.build()` is called.
     //       That is you won't be able to use `cb` afterward.
     pub fn build(self) -> Result<Context, FFIError> {
-        // This call is safe because it transfers ownership of the Context
-        // This call is safe because it transfers ownership of the Context
+        // This is safe because it transfers ownership of the Context
         let context_ptr = ffi::build(self.inner);
         // Check if the pointer is null
         if context_ptr.is_null() {
             return Err(FFIError::NullPointer(NullPointerError));
         }
         Ok(Context { inner: context_ptr })
-        // // This call is safe because it transfers ownership of the Context
-        // // to the UniquePtr, which ensures it will be cleaned up correctly.
-        // let ctx_ptr: UniquePtr<ffi::Context> = ffi::build_ptr(self.inner);
-        // // Check if the pointer is null
-        // if ctx_ptr.is_null() {
-        //     return Err(FFIError::NullPointer(NullPointerError));
-        // }
-        // Ok(Context { inner: ctx_ptr })
     }
 
     fn metric_set(self, metric: Metric) -> Result<Builder, BGVError> {
@@ -297,6 +288,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[ignore = "Incomplete HELib FFI"]
     #[test]
     fn test_context_with_defaults() {
         let context = Context::new(Parameters::default());

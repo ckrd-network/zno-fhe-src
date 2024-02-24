@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/microsoft/SEAL.git
+	branch = 4.1.1
+	commit = 206648d0e4634e5c61dcf9370676630268290b59
+	parent = 216920dfbbb52f4d4df9c9bebc0e79253ab75ea4
+	method = merge
+	cmdver = 0.4.5

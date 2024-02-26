@@ -6,11 +6,13 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <string>
 
 #include <helib/helib.h>
 #include <helib/Context.h>
 #include <helib/EncryptedArray.h>  // For potential bootstrapping flags or other parameters
 #include <helib/apiAttributes.h>
+#include <helib/version.h>
 
 #include <NTL/Lazy.h>
 
@@ -21,6 +23,9 @@ namespace helib {
     // Declare the type alias in the helib namespace after including the ContextBuilder definition.
     using BGVContextBuilder = ContextBuilder<BGV>;
 
+    rust::String version();
+
+    // Declare the type alias in the helib namespace after including the Context definition.
     std::unique_ptr<BGVContextBuilder> init();
 
     std::unique_ptr<::helib::Context> build(std::unique_ptr<::helib::BGVContextBuilder> builder);

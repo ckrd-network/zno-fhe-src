@@ -22,6 +22,8 @@ pub mod ffi {
         type Context;
         type BGVContextBuilder;
 
+        fn version() -> String;
+
         fn init() -> UniquePtr<BGVContextBuilder>;
 
         fn build(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
@@ -41,7 +43,7 @@ pub mod ffi {
         fn set_thickboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
         fn set_thinboot(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<BGVContextBuilder>;
 
-       // fn set_gens(builder: UniquePtr<BGVContextBuilder>, gens: &CxxVector<i64>);
+        // fn set_gens(builder: UniquePtr<BGVContextBuilder>, gens: &CxxVector<i64>);
         // fn set_mvec(builder: UniquePtr<BGVContextBuilder>, mvec: &CxxVector<i64>);
         // fn set_ords(builder: UniquePtr<BGVContextBuilder>, ords: &CxxVector<i64>);
 

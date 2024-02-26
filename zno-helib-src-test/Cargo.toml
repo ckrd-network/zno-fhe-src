@@ -13,19 +13,15 @@ readme.workspace = true
 categories.workspace = true
 keywords.workspace = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[[bin]]
-name = "package"
-required-features = ["package"]
+# Find all key-definition pairs at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 zno-helib-src = { path = "../zno-helib-src" }
 
 [dependencies]
 libc = { workspace = true }
+zno-helib-sys = { path = "../zno-helib-sys" }
 
 [features]
-default = ["static","package"]
+default = ["static"]
 static = []
-package = []

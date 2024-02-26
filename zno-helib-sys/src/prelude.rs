@@ -1,3 +1,5 @@
+pub use crate::helib::version::*;
+
 // Re-export all public items from each submodule
 pub use crate::bgv::m::*;
 pub use crate::bgv::p::*;

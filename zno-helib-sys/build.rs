@@ -38,14 +38,14 @@ fn main() -> miette::Result<()> {
 
     // Recursively copy files from source to target directory
     if let Err(e) = copy_dir_to(&source_dir, &target_dir) {
-        panic!("Failed to copy header files: {}", e);
+        panic!("Failed to copy header files from {} to {}: {}", source_dir.display(), target_dir.display(), e);
     }
     let source_dir = Path::new(&manifest_dir).join("src/helib_pack/include/NTL");
     let target_dir = Path::new(&manifest_dir).join("ffi/NTL");
 
     // Recursively copy files from source to target directory
     if let Err(e) = copy_dir_to(&source_dir, &target_dir) {
-        panic!("Failed to copy header files: {}", e);
+        panic!("Failed to copy header files from {} to {}: {}", source_dir.display(), target_dir.display(), e);
     }
 
     // Output the linker flags for the compiled wrapper C++ source

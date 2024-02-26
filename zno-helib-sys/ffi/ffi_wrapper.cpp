@@ -16,6 +16,29 @@
 namespace helib {
 
   /**
+   * Returns the version string of the helib library.
+   *
+   * @brief The version string follows the format `major.minor.patch`.
+   *
+   * The `version` function is a simple function that returns the version string of the helib library.
+   * The version string is a sequence of `.` delimited integers that represents the version of the helib library.
+   *
+   * The HElib library uses semantic versioning, which means that the version string follows the format `major.minor.patch`.
+   * Where `major`, `minor`, and `patch` are integers.
+   *
+   *   - The `major` version is incremented for incompatible changes.
+   *   - The `minor` version is incremented for new features.
+   *   - The `patch` version is incremented for bug fixes.
+   *
+   * @return The version string.
+   */
+  rust::String version() {
+    const char* version = ::helib::version::asString;
+    std::string std_version(version);
+    return rust::String(std_version);
+  }
+
+  /**
    * Converts a C-style array to an std::vector.
    *
    * @param array The C-style array to convert.

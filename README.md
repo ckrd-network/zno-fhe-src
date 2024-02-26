@@ -54,45 +54,85 @@ Tests are front and centre. We follow advice on their setup:
 To compile the source code and move artifacts to the system crate:
 
 ```shell
+library=helib
+crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
-src_dir="$(pwd)/zno-helib-src-test"
+src_dir="$(pwd)/${crate_name}"
 
-RUST_BACKTRACE=1 cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-src-test.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-${crate_name}.txt
 ```
 
 #### FFI bindings
 
-To generate the FFI bindings in the system crate
+To generate the FFI bindings in the system crate:
 
 ```shell
+library=helib
+crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
-sys_dir="$(pwd)/zno-helib-sys"
+src_dir="$(pwd)/${crate_name}"
 
-RUST_BACKTRACE=full cargo build --lib --manifest-path "$sys_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-${crate_name}.txt
 
-cargo doc --open --document-private-items --manifest-path "$sys_dir/Cargo.toml" --target $target
-cargo expand --manifest-path "$sys_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-sys.txt
+cargo doc --open --document-private-items --manifest-path "$src_dir/Cargo.toml" --target $target
+cargo expand --manifest-path "$src_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-${crate_name}.txt
 
-RUST_BACKTRACE=full cargo test --lib bgv::m:: --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --lib bgv::m:: --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
 
-RUST_BACKTRACE=full cargo test --lib --features "static helib" --manifest-path $sys_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --lib --features "static helib" --manifest-path $src_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
 
-RUST_BACKTRACE=full cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent --lib --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent --lib --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
 
-cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$sys_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
 ```
 
-#### Source
+#### Source (HElib)
 
 ```shell
+library=helib
+crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
-test_dir="$(pwd)/zno-helib-src-test"
+src_dir="$(pwd)/${crate_name}"
 
 set -ex
 
-cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-unit-test-sys.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-test-${crate_name}.txt
 
-cargo test --manifest-path "$test_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-unit-test-sys-release.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-test-${crate_name}-release.txt
+
+set +ex
+
+```
+
+### SEAL
+
+SEAL compiled with Clang++ has much better runtime performance than one compiled with GNU G++.
+
+To compile the source code and move artifacts to the system crate:
+
+```shell
+library=seal
+crate_name="zno-${library}-src-test"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-${crate_name}.txt
+```
+
+#### Source (SEAL)
+
+```shell
+library=seal
+crate_name="zno-${library}-src-test"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
+
+
+set -ex
+
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-${crate_name}.txt
+
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-${crate_name}-release.txt
 
 set +ex
 

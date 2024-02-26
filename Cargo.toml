@@ -10,31 +10,35 @@ members = [
   # "zno-openfhe-src",
   # "zno-openfhe-sys",
   # "zno-openfhe-tool",
-  # "zno-seal-src",
-  # "zno-seal-sys",
+  "zno-seal-src-test",
+  "zno-seal-src",
+  # "zno-seal-sys-test",
+  "zno-seal-sys",
   # "zno-seal-tool",
 ]
 exclude = ['target']
 
 [workspace.package]
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Mark Van de Vyver <mark@ckrd.io>"]
 
 edition = "2021"
 rust-version = "1.72.0"
 
 description = "The package provides a FHE source of choice."
-documentation = "https://docs.rs/ckrd-network/zno-fhe-src"
-homepage = "https://github.com/ckrd-network/zno-fhe-src"
-repository = "https://github.com/ckrd-network/zno-fhe-src"
+documentation = "https://docs.rs/ckrd-network/zno-fhe"
+homepage = "https://github.com/ckrd-network/zno-fhe"
+repository = "https://github.com/ckrd-network/zno-fhe"
 license = "Apache-2.0/MIT"
 readme = "README.md"
 categories = ["cryptography"]
-keywords = ["FHE", "BFV", "BGV", "zero-knowledge"]
+keywords = ["FHE", "BGV", "zero-knowledge"]
 
 [workspace.dependencies]
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
+zno-seal-src = { path = "zno-seal-src" }
+zno-seal-src-test = { path = "zno-seal-src-test" }
 
 autocxx = "0.26.0"
 autocxx-build = "0.26.0"
@@ -43,7 +47,6 @@ cc = "1.0.83"
 cmake = "0.1"
 criterion = "0.5"
 cxx = "1.0"
-cxxbridge = "1"
 cxx-build = "1.0"
 dirs = "5.0.1"
 fake = "2.8"
@@ -64,7 +67,7 @@ tap = "1.0"
 tar = { version = "0.4", default-features = false }
 
 [package]
-name = "zno-fhe-src"
+name = "zno"
 version.workspace = true
 authors.workspace = true
 

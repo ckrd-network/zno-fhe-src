@@ -1,0 +1,2 @@
+// For a library with a public API which is published to crates.io, I avoid unit tests. Instead, I use a single integration tests, called `it` (integration test).
+// Integration tests use the library as an external crate. This forces the usage of the same public API that consumers use, resulting in a better design feedback.

@@ -16,21 +16,21 @@ keywords.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 exclude = [
-  'seal/benchmarks/*',
-  'seal/ci/*',
+  'seal/android/*',
   'seal/cmake/*',
-  'seal/docker/*',
-  'seal/boringssl/*',
-  'seal/documentation/*',
-  'seal/examples/*',
-  'seal/misc/*',
-  'seal/utils/*',
+  'seal/dotnet/*',
+  'seal/native/examples/*',
+  'seal/native/bench/*',
+  'seal/native/tests/*',
+  'seal/pipelines/*',
+  'seal/pkgconfig/*',
+  'seal/tools/*',
 ]
 
 [features]
 default = ["static","package"]
 static = []
-# This option bundles HElib and its dependencies (NTL and GMP) in one directory
+# This option bundles SEAL and its dependencies (NTL and GMP) in one directory
 # which can then be moved around freely on the system.
 package = []
 tests = []

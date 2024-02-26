@@ -1,0 +1,32 @@
+[package]
+name = "zno-seal-src-test"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "package"
+required-features = ["package"]
+
+[build-dependencies]
+zno-seal-src = { path = "../zno-seal-src" }
+
+[dependencies]
+libc = { workspace = true }
+zno-seal-sys = { path = "../zno-seal-sys" }
+
+[features]
+default = ["static","package"]
+static = []
+package = []

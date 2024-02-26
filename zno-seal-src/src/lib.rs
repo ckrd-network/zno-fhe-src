@@ -126,12 +126,12 @@ impl Build {
         let install_dir = out_dir.join("install");
 
         let libs = if target.contains("msvc") {
-            vec!["sealw".to_string(), "gmp".to_string(), "ntl".to_string()]
+            vec!["sealw".to_string()]
         } else {
-            vec!["seal".to_string(), "gmp".to_string(), "ntl".to_string()]
+            vec!["seal".to_string()]
         };
 
-        let pd = install_dir.join("seal_pack");
+        let pd = install_dir;
         Artifacts {
             package_dir: pd.clone(),
             lib_dir: pd.clone().join("lib"),
@@ -144,6 +144,13 @@ impl Build {
     }
 
     pub fn build(&mut self) -> Artifacts {
+
+        if let Ok(cxx) = std::env::var("CXX") {
+            println!("CXX: {}", cxx);
+        } else {
+            println!("CXX is not set. Default compiler will be used.");
+        }
+
         // let target = &self.target.as_ref().expect("TARGET dir not set")[..];
         // let host = &self.host.as_ref().expect("HOST dir not set")[..];
         let out_dir = self.out_dir.as_ref().expect("OUT_DIR not set");
@@ -170,7 +177,7 @@ impl Build {
         let profile = cmake::Config::new(out_dir.clone());
 
         let debug_module = match profile.get_profile() {
-            "Release" | "MinSizeRel"  => false,
+            "Release" | "Release"  => false,
             "Debug" | "RelWithDebInfo" => true,
             _ => { false }
         };
@@ -178,27 +185,27 @@ impl Build {
         let _configure = cmake::Config::new(out_dir.clone())
             .define("CMAKE_INSTALL_PREFIX", &format!("{}", install_dir.display()))
             .define("CMAKE_CXX_STANDARD", "17")
+            .define("CMAKE_EXE_LINKER_FLAGS", "-nostdlib++")
             .pipe( |c| if cfg!(feature = "static") {
-                c.define("BUILD_SHARED", "OFF")
-            } else { c.define("BUILD_SHARED", "ON") })            .pipe( |c| if cfg!(feature = "package") {
+                c.define("BUILD_SHARED_LIBS", "OFF")
+            } else { c.define("BUILD_SHARED_LIBS", "ON") })
+            .pipe( |c| if cfg!(feature = "package") {
                 c.define("PACKAGE_BUILD", "ON")
             } else { c.define("PACKAGE_BUILD", "OFF") })
             .pipe( |c| if cfg!(feature = "tests") {
-                c.define("ENABLE_TEST", "ON")
-            } else { c.define("ENABLE_TEST", "OFF") })
-            .pipe( |c| if debug_module {
-                c.define("HELIB_DEBUG", "ON")
-            } else { c.define("HELIB_DEBUG", "OFF") })
+                c.define("SEAL_BUILD_TESTS", "ON")
+            } else { c.define("SEAL_BUILD_TESTS", "OFF") })
+            .cflag("-fno-common")
             .build();
 
             let mut build = self.cmd_make();
             build.arg("-j4").current_dir(&inner_dir);
             build.env("VERBOSE", "1");
-            self.run_command(build, "building HElib (verbose)");
+            self.run_command(build, "building SEAL (verbose)");
 
             let mut install = self.cmd_make();
             install.arg("install").current_dir(&inner_dir);
-            self.run_command(install, "installing HElib");
+            self.run_command(install, "installing SEAL");
 
         //     let mut build = self.cmd_make();
         //     build.arg("build_libs").current_dir(&inner_dir);
@@ -209,7 +216,7 @@ impl Build {
         //     }
 
         // let perl_program =
-        //     env::var("HELIB_SRC_PERL").unwrap_or(env::var("PERL").unwrap_or("perl".to_string()));
+        //     env::var("SEAL_SRC_PERL").unwrap_or(env::var("PERL").unwrap_or("perl".to_string()));
         // let mut configure = Command::new(perl_program);
         // configure.arg("./Configure");
 
@@ -308,7 +315,7 @@ impl Build {
         //     if self.is_nasm_ready() {
         //         // a message to stdout, let user know asm is enabled
         //         println!(
-        //             "{}: Enable the assembly language routines in building HElib.",
+        //             "{}: Enable the assembly language routines in building SEAL.",
         //             env!("CARGO_PKG_NAME")
         //         );
         //     } else {
@@ -759,13 +766,13 @@ impl Artifacts {
         // Instead the end user is responsible for setting up their system so these libraries are available to the linker.
 
         if env::var_os("CARGO_FEATURE_STATIC").is_some() {
-            // If "static" feature is enabled, set HELIB_STATIC to control the build process accordingly.
-            println!("cargo:rustc-link-lib=static=seal");
+            // If "static" feature is enabled, set BUILD_SHARED_LIBS to control the build process accordingly.
+            println!("cargo:rustc-link-lib=static=seal-4.1");
         } else {
-            println!("cargo:rustc-link-lib=dylib=seal");
+            println!("cargo:rustc-link-lib=dylib=seal-4.1");
         }
-        println!("cargo:rustc-link-lib=dylib=gmp");
-        println!("cargo:rustc-link-lib=dylib=ntl");
+        // println!("cargo:rustc-link-lib=dylib=gmp");
+        // println!("cargo:rustc-link-lib=dylib=ntl");
 
         // Link the C++ standard library statically, if desired
         println!("cargo:rustc-link-search=native=/usr/lib/gcc/x86_64-linux-gnu/13");

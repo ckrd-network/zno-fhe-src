@@ -1,0 +1,81 @@
+[package]
+name = "zno-seal-sys"
+version.workspace = true
+authors.workspace = true
+
+# edition.workspace = true
+# rust-version.workspace = true
+edition = "2018"
+
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+links = "seal"
+build = "build.rs"
+
+# # For linking to an external library.
+# [build]
+# script = "build.rs" # If you have a build script for linking C/C++ libraries
+
+[lib]
+crate-type = ["rlib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# autocxx.workspace = true
+cxx.workspace = true
+libc.workspace = true
+num-traits.workspace = true
+
+[build-dependencies]
+# zno-seal-src = { workspace = true, optional = true, version = "0.0.1"}
+cc.workspace = true
+# autocxx-build.workspace = true
+cxx-build = { workspace = true}
+dirs.workspace = true
+fake.workspace = true
+miette.workspace = true
+pkg-config.workspace = true
+serde.workspace = true
+syn.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+quickcheck.workspace = true
+insta.workspace = true
+libloading.workspace = true
+mockall.workspace = true
+proptest.workspace = true
+
+[features]
+default = ["static","seal"]
+static = []
+helib = []
+openfhe = []
+seal = []
+autocxx = []
+vendored = []
+
+[package.metadata.cxx]
+src = "ffi/ffi_wrapper.cpp"
+include = ["src/seal_pack/include"]
+lib = ["src/seal_pack/lib"]
+
+# This is here for tooling.
+# GMP version to be used (and eventually downloaded) if `package` feature.
+#   - Can be found at FETCHED_GMP_VERSION in CMakeLists.txt.
+# NTL version to be used (and eventually downloaded) if `package` feature.
+#   - Can be found at FETCHED_NTL_VERSION in CMakeLists.txt.
+[package.metadata.pkg-config]
+seal = "4.1.1"
+
+[[test]]
+name = "ffi-context-bgv"
+path = "tests/integration/builtin/ffi-context-bgv.rs"

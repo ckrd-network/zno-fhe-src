@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <vector>
 
 #include <seal/seal.h>
@@ -14,9 +15,16 @@
 namespace seal {
 
     // Declare the type alias in the seal namespace after including the ContextBuilder definition.
-    using BGVContextBuilder = ContextBuilder<BGV>;
+    using BGVContextBuilder = EncryptionParameters;
+    using Parameters = EncryptionParameters;
+    using Context = SEALContext;
 
-    std::unique_ptr<BGVContextBuilder> init();
+    using Schema = scheme_type;
+    using SecurityLevel = sec_level_type;
+
+    std::unique_ptr<std::string> version();
+
+    std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema);
 
     std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder);
 
@@ -25,32 +33,53 @@ namespace seal {
 
     std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec);
 
-    std::unique_ptr<::seal::BGVContextBuilder> set_bits(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t bits);
-    std::unique_ptr<::seal::BGVContextBuilder> set_c(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t c);
-    std::unique_ptr<::seal::BGVContextBuilder> set_m(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t m);
-    std::unique_ptr<::seal::BGVContextBuilder> set_p(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t p);
-    std::unique_ptr<::seal::BGVContextBuilder> set_r(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t r);
+    // class SEALContext;
 
-    std::unique_ptr<::seal::BGVContextBuilder> set_gens(std::unique_ptr<::seal::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<int32_t>& gens);
-    std::unique_ptr<::seal::BGVContextBuilder> set_ords(std::unique_ptr<::seal::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<int32_t>& ords);
-    std::unique_ptr<::seal::BGVContextBuilder> set_mvec(std::unique_ptr<::seal::BGVContextBuilder> builder, const rust::cxxbridge1::Vec<uint32_t>& mvec);
+    // std::unique_ptr<seal::Schema> ckks() {
+    //   return std::make_unique<seal::scheme_type>(seal::scheme_type::ckks);
+    // }
 
-    std::unique_ptr<::seal::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::seal::BGVContextBuilder> builder, bool flag);
-    std::unique_ptr<::seal::BGVContextBuilder> set_thickboot(std::unique_ptr<::seal::BGVContextBuilder> builder);
-    std::unique_ptr<::seal::BGVContextBuilder> set_thinboot(std::unique_ptr<::seal::BGVContextBuilder> builder);
+    //     class Ciphertext {
+    //     public:
+    //         void load(const SEALContext &context, const std::string &in_str);
+    //         // ... other methods
+    //     };
 
-    // Declare the multiplyBy function
-    void multiplyBy(std::unique_ptr<::seal::Ctxt>& ciphertext, std::unique_ptr<::seal::Ctxt>& other);
+    //     class Plaintext {
+    //     public:
+    //         Plaintext load(const SEALContext &context, const std::string &in_str);
+    //         // ... other methods
+    //     };
 
+    //     class SecretKey {
+    //     public:
+    //         void load(const SEALContext &context, const std::string &in_str);
+    //         // ... other methods
+    //     };
 
-    enum class MErrorKind {
-        None,
-        OutOfRange,
-        Zero,
-        Generic,
-    };
+    //     class PublicKey {
+    //     public:
+    //         void load(const SEALContext &context, const std::string &in_str);
+    //         // ... other methods
+    //     };
 
-}  // namespace seal
+    //     class RelinKeys {
+    //     public:
+    //         void load(const SEALContext &context, const std::string &in_str);
+    //         // ... other methods
+    //     };
+
+    // class GaloisKeysWrapper : public seal::GaloisKeys {
+    // public:
+    //     GaloisKeysWrapper() : seal::GaloisKeys() {}
+
+    //     std::streamoff loader(const seal::SEALContext &context, const std::string &in_str) {
+    //         std::istringstream in_stream(in_str);
+    //         return this->load(context, in_stream);
+    //     }
+    // };
+
+};  // namespace seal
 
 #endif // FFI_WRAPPER_H
 

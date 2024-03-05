@@ -15,6 +15,12 @@
 
 namespace seal {
 
+  std::unique_ptr<std::string> version() {
+      SEALVersion version;
+      auto version_ptr = std::make_unique<std::string>(std::to_string(version.major) + "." + std::to_string(version.minor) + "." + std::to_string(version.patch));
+      return version_ptr;
+  }
+
   /**
    * Converts a C-style array to an std::vector.
    *
@@ -49,158 +55,159 @@ namespace seal {
    *
    * @return A unique pointer to the newly created ContextBuilder<BGV> object.
    */
-  std::unique_ptr<::seal::BGVContextBuilder> init() {
-      return std::make_unique<::seal::BGVContextBuilder>();
+  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema) {
+      EncryptionParameters parms(*schema);
+      return std::make_unique<BGVContextBuilder>(parms);
   }
 
-  std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder) {
-    return std::unique_ptr<seal::Context>(builder->buildPtr());
-  }
+  // std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder) {
+  //   return std::unique_ptr<seal::Context>(builder->buildPtr());
+  // }
 
-  /**
-   * Sets the value of `m` in the BGVContextBuilder object.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param m The value of `m` to be set.
-   * @return A unique_ptr to the modified BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_m(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t m) {
-    builder->m(m);  // Assume `m` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of `m` in the BGVContextBuilder object.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param m The value of `m` to be set.
+  //  * @return A unique_ptr to the modified BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_m(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t m) {
+  //   builder->m(m);  // Assume `m` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of `p` for the given `BGVContextBuilder` object.
-   *
-   * @param builder A unique pointer to a `BGVContextBuilder` object.
-   * @param p The value of `p` to be set.
-   * @return A unique pointer to the modified `BGVContextBuilder` object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_p(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t p) {
-    builder->p(p);  // Assume `p` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of `p` for the given `BGVContextBuilder` object.
+  //  *
+  //  * @param builder A unique pointer to a `BGVContextBuilder` object.
+  //  * @param p The value of `p` to be set.
+  //  * @return A unique pointer to the modified `BGVContextBuilder` object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_p(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t p) {
+  //   builder->p(p);  // Assume `p` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of r in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param r The value of r to be set.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_r(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t r) {
-    builder->r(r);  // Assume `r` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of r in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param r The value of r to be set.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_r(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t r) {
+  //   builder->r(r);  // Assume `r` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of bits in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param bits The value of bits to be set.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_bits(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t bits) {
-    builder->bits(bits);  // Assume `bits` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of bits in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param bits The value of bits to be set.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_bits(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t bits) {
+  //   builder->bits(bits);  // Assume `bits` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of c in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param c The value of c to be set.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_c(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t c) {
-    builder->c(c);  // Assume `c` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of c in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param c The value of c to be set.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_c(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t c) {
+  //   builder->c(c);  // Assume `c` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of `gens` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param gens The value of `gens` to be set.
-   * @return The modified BGVContextBuilder object.
-   */
-  BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens) {
-    auto gens_std_ptr = to_std_vector(gens); // This is now a std::unique_ptr<std::vector<long int>>
-    builder.gens(*gens_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-    return builder;
-  }
+  // /**
+  //  * Sets the value of `gens` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param gens The value of `gens` to be set.
+  //  * @return The modified BGVContextBuilder object.
+  //  */
+  // BGVContextBuilder& set_gens(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& gens) {
+  //   auto gens_std_ptr = to_std_vector(gens); // This is now a std::unique_ptr<std::vector<long int>>
+  //   builder.gens(*gens_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+  //   return builder;
+  // }
 
-  /**
-   * Sets the value of `ords` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param ords The value of `ords` to be set.
-   * @return The modified BGVContextBuilder object.
-   */
-  BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords) {
-    auto ords_std_ptr = to_std_vector(ords); // This is now a std::unique_ptr<std::vector<long int>>
-    builder.ords(*ords_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-    return builder;
-  }
+  // /**
+  //  * Sets the value of `ords` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param ords The value of `ords` to be set.
+  //  * @return The modified BGVContextBuilder object.
+  //  */
+  // BGVContextBuilder& set_ords(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& ords) {
+  //   auto ords_std_ptr = to_std_vector(ords); // This is now a std::unique_ptr<std::vector<long int>>
+  //   builder.ords(*ords_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+  //   return builder;
+  // }
 
-  /**
-   * Sets the value of `mvec` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param mvec The value of `mvec` to be set.
-   * @return The modified BGVContextBuilder object.
-   */
-  BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec) {
-    auto mvec_std_ptr = to_std_vector(mvec); // This is now a std::unique_ptr<std::vector<long int>>
-    builder.mvec(*mvec_std_ptr); // Dereference the std::unique_ptr to get the std::vector
-    return builder;
-  }
+  // /**
+  //  * Sets the value of `mvec` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param mvec The value of `mvec` to be set.
+  //  * @return The modified BGVContextBuilder object.
+  //  */
+  // BGVContextBuilder& set_mvec(BGVContextBuilder& builder, const rust::cxxbridge1::Vec<long int>& mvec) {
+  //   auto mvec_std_ptr = to_std_vector(mvec); // This is now a std::unique_ptr<std::vector<long int>>
+  //   builder.mvec(*mvec_std_ptr); // Dereference the std::unique_ptr to get the std::vector
+  //   return builder;
+  // }
 
-  /**
-   * Sets the value of `bootstrappable` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @param flag The value of `bootstrappable` to be set.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::seal::BGVContextBuilder> builder, bool flag) {
-    builder->bootstrappable(flag);  // Assume `bootstrappable` modifies the object and is void.
-    return builder; // Return the unique_ptr.
-  }
+  // /**
+  //  * Sets the value of `bootstrappable` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @param flag The value of `bootstrappable` to be set.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> is_bootstrappable(std::unique_ptr<::seal::BGVContextBuilder> builder, bool flag) {
+  //   builder->bootstrappable(flag);  // Assume `bootstrappable` modifies the object and is void.
+  //   return builder; // Return the unique_ptr.
+  // }
 
-  /**
-   * Sets the value of `thickboot` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_thickboot(std::unique_ptr<::seal::BGVContextBuilder> builder) {
-    builder->thickboot();
-    return builder;
-  }
+  // /**
+  //  * Sets the value of `thickboot` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_thickboot(std::unique_ptr<::seal::BGVContextBuilder> builder) {
+  //   builder->thickboot();
+  //   return builder;
+  // }
 
-  /**
-   * Sets the value of `thinboot` in the BGVContextBuilder.
-   *
-   * @param builder The BGVContextBuilder object.
-   * @return A unique pointer to the updated BGVContextBuilder object.
-   */
-  std::unique_ptr<::seal::BGVContextBuilder> set_thinboot(std::unique_ptr<::seal::BGVContextBuilder> builder) {
-    builder->thinboot();
-    return builder;
-  }
+  // /**
+  //  * Sets the value of `thinboot` in the BGVContextBuilder.
+  //  *
+  //  * @param builder The BGVContextBuilder object.
+  //  * @return A unique pointer to the updated BGVContextBuilder object.
+  //  */
+  // std::unique_ptr<::seal::BGVContextBuilder> set_thinboot(std::unique_ptr<::seal::BGVContextBuilder> builder) {
+  //   builder->thinboot();
+  //   return builder;
+  // }
 
-  /**
-   * Gets the value of `m` from the Context object.
-   *
-   * @param context The Context object.
-   * @return The value of `m`.
-   */
-  long get_m(const Context& context) { return context.getM(); }
+  // /**
+  //  * Gets the value of `m` from the Context object.
+  //  *
+  //  * @param context The Context object.
+  //  * @return The value of `m`.
+  //  */
+  // long get_m(const Context& context) { return context.getM(); }
 
-  // Define the C++ helper function for the FFI
-  void multiplyBy(std::unique_ptr<::seal::Ctxt>& ciphertext, std::unique_ptr<::seal::Ctxt>& other) {
-    ciphertext->multiplyBy(*other);
-  }
+  // // Define the C++ helper function for the FFI
+  // void multiplyBy(std::unique_ptr<::seal::Ctxt>& ciphertext, std::unique_ptr<::seal::Ctxt>& other) {
+  //   ciphertext->multiplyBy(*other);
+  // }
 
 }  // namespace seal

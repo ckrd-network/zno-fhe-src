@@ -40,3 +40,4 @@ zno-seal-sys/libs/libseal-4.1.a
 zno-seal-sys/libs/pkgconfig/seal.pc
 zno-seal-sys/src/seal_pack/lib/libseal-4.1.a
 zno-seal-sys/src/seal_pack/lib/pkgconfig/seal.pc
+zno-seal-sys/ffi/py_wrapper.cpp

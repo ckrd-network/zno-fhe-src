@@ -12,7 +12,7 @@ use crate::bgv::BGVError;
 use core::fmt;
 
 #[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
-compile_error!("You must enable one of the features: `helib` or `openfhe` or `seal`");
+compile_error!("You must enable one of the features: `helib` or `seal`"); // or `openfhe`
 
 /// Represents the complete set of BGV parameters as used by HElib.
 ///
@@ -139,7 +139,7 @@ compile_error!("You must enable one of the features: `helib` or `openfhe` or `se
 /// };
 /// ```
 
-use cxx::ExternType;
+// use cxx::ExternType;
 
 #[repr(C)]
 pub struct Parameters {

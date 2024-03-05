@@ -15,10 +15,6 @@ keywords.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[[bin]]
-name = "package"
-required-features = ["package"]
-
 [build-dependencies]
 zno-seal-src = { path = "../zno-seal-src" }
 
@@ -27,6 +23,5 @@ libc = { workspace = true }
 zno-seal-sys = { path = "../zno-seal-sys" }
 
 [features]
-default = ["static","package"]
+default = ["static"]
 static = []
-package = []

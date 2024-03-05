@@ -28,3 +28,15 @@ zno-helib-sys/libs/*
 !zno-helib-sys/libs/.gitkeep
 scratch/
 *.txt
+zno-helib-src-test/artifacts/includef
+zno-helib-src-test/artifacts/libf
+zno-seal-src-test/artifacts/includef
+zno-seal-src-test/artifacts/libf
+zno-seal-sys/libs/cmake/SEAL-4.1/SEALConfig.cmake
+zno-seal-sys/libs/cmake/SEAL-4.1/SEALConfigVersion.cmake
+zno-seal-sys/libs/cmake/SEAL-4.1/SEALTargets-debug.cmake
+zno-seal-sys/libs/cmake/SEAL-4.1/SEALTargets.cmake
+zno-seal-sys/libs/libseal-4.1.a
+zno-seal-sys/libs/pkgconfig/seal.pc
+zno-seal-sys/src/seal_pack/lib/libseal-4.1.a
+zno-seal-sys/src/seal_pack/lib/pkgconfig/seal.pc

@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+mod fhe;
+
 pub struct PublicKey {
     // fields for the public key
 }

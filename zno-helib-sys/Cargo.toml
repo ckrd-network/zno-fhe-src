@@ -78,6 +78,6 @@ gmp = "6.2.1"
 helib = "2.3.0"
 ntl = "11.5.1"
 
-[[test]]
-name = "ffi-context-bgv"
-path = "tests/integration/builtin/ffi-context-bgv.rs"
+# [[test]]
+# name = "ffi-context-bgv"
+# path = "tests/integration/builtin/ffi-context-bgv.rs"

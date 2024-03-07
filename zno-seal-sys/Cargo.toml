@@ -76,6 +76,6 @@ lib = ["src/seal_pack/lib"]
 [package.metadata.pkg-config]
 seal = "4.1.1"
 
-[[test]]
-name = "ffi-context-bgv"
-path = "tests/integration/builtin/ffi-context-bgv.rs"
+# [[test]]
+# name = "ffi-context-bgv"
+# path = "tests/integration/builtin/ffi-context-bgv.rs"

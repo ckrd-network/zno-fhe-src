@@ -64,6 +64,18 @@ namespace seal {
   //   return std::unique_ptr<seal::Context>(builder->buildPtr());
   // }
 
+  /**
+   * Sets the value of `m` in the BGVContextBuilder object.
+   *
+   * @param builder The BGVContextBuilder object.
+   * @param m The value of `m` to be set.
+   * @return A unique_ptr to the modified BGVContextBuilder object.
+   */
+  std::unique_ptr<::seal::BGVContextBuilder> set_m(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t m) {
+    builder->set_poly_modulus_degree(m);  // Assume `set_poly_modulus_degree` modifies the object and is void.
+    return builder; // Return the unique_ptr.
+  }
+
   // /**
   //  * Sets the value of `m` in the BGVContextBuilder object.
   //  *

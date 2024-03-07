@@ -16,13 +16,6 @@ use crate::prelude::*;
 #[cxx::bridge(namespace="seal")]
 pub mod ffi {
 
-    struct SEALVersion {
-        major: u8,
-        minor: u8,
-        patch: u8,
-        tweak: u8,
-    }
-
     unsafe extern "C++" {
         include!("zno-seal-sys/ffi/ffi_wrapper.h");
 
@@ -45,6 +38,8 @@ pub mod ffi {
         fn init(schema: UniquePtr<Schema>) -> UniquePtr<BGVContextBuilder>;
 
         fn build(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
+
+        fn set_m(builder: UniquePtr<BGVContextBuilder>, m: u32) -> UniquePtr<BGVContextBuilder>;
 
         // // Methods of SEALContext
         // fn get_context_data(self: &SEALContext);
@@ -83,24 +78,24 @@ pub enum Schema {
     Bgv = 0x3,
 }
 
-/// Implements the `Default` trait for `ffi::Schema`.
-/// Returns the default value for `ffi::Schema`, which is `ffi::Schema::bgv`.
+/// Implements the `Default` trait for `Schema`.
+/// Returns the default value for `Schema`, which is `Schema::Bgv`.
 impl Default for Schema {
-    /// Returns the default value for `ffi::Schema`, which is `ffi::Schema::bgv`.
+    /// Returns the default value for `Schema`, which is `Schema::Bgv`.
     ///
     /// # Arguments
     ///
-    /// * `self` - The `ffi::Schema` to set to the default value.
+    /// * `self` - The `Schema` to set to the default value.
     ///
     /// # Returns
     ///
-    /// The default value for `ffi::Schema`, which is `ffi::Schema::bgv`.
+    /// The default value for `Schema`, which is `Schema::Bgv`.
     fn default() -> Self {
         Schema::Bgv
     }
 }
 
-/// Converts a u8 value into a `ffi::Schema` enum variant.
+/// Converts a `u8` value into a `ffi::Schema` enum variant.
 ///
 /// # Arguments
 ///
@@ -108,7 +103,11 @@ impl Default for Schema {
 ///
 /// # Returns
 ///
-/// The corresponding `ffi::Schema` enum variant.
+/// The corresponding `ffi::Schema` enum variant. The `default()` method is used in two cases:
+/// 1. When the u8 value is 0x0. This is a direct mapping to the default variant.
+/// 2. When the u8 value does not correspond to any `ffi::Schema` variant. In this case, the `default()` method is used to return a default variant (BGV).
+///
+/// This behavior differs from the C++17 library, where an invalid value would typically result in an error or exception. In this FFI, invalid values are silently converted to the default variant for simplicity and safety.
 ///
 /// # Examples
 ///
@@ -126,7 +125,7 @@ impl From<u8> for Schema {
             0x1 => Schema::Bfv,
             0x2 => Schema::Ckks,
             0x3 => Schema::Bgv,
-            _ => Schema::default(), // default
+            _   => Schema::default(), // default
         }
     }
 }
@@ -181,7 +180,6 @@ impl From<ffi::Schema> for Schema {
 /// let ffi_schema: ffi::Schema = schema.into();
 /// assert_eq!(ffi_schema, ffi::Schema::bfv);
 /// ```
-
 impl From<Schema> for ffi::Schema {
     fn from(item: Schema) -> Self {
         match item {
@@ -196,7 +194,7 @@ impl From<Schema> for ffi::Schema {
 /// Converts a `zno_fhe::Schema` into an `crate::Schema`.
 ///
 impl From<zno_fhe::Schema> for Schema {
-    /// Converts the given `zno_fhe::Schema` into the corresponding `ffi::Schema` variant.
+    /// Converts the given `zno_fhe::Schema` into the corresponding `Schema` variant.
     ///
     /// # Arguments
     ///
@@ -204,8 +202,7 @@ impl From<zno_fhe::Schema> for Schema {
     ///
     /// # Returns
     ///
-    /// The converted `ffi::Schema` variant.
-    /// The converted `ffi::Schema` variant.
+    /// The converted `Schema` variant.
     fn from(schema: zno_fhe::Schema) -> Self {
         match schema {
             zno_fhe::Schema::None => Schema::default(),
@@ -230,10 +227,10 @@ impl From<Schema> for zno_fhe::Schema {
     /// The converted `zno_fhe::Schema`.
     fn from(schema: Schema) -> Self {
         match schema {
-            schema::None => zno_fhe::Schema::default(),
-            schema::Bfv  => zno_fhe::Schema::Bfv,
-            schema::Ckks => zno_fhe::Schema::Ckks,
-            schema::Bgv  => zno_fhe::Schema::Bgv,
+            Schema::None => zno_fhe::Schema::default(),
+            Schema::Bfv  => zno_fhe::Schema::Bfv,
+            Schema::Ckks => zno_fhe::Schema::Ckks,
+            Schema::Bgv  => zno_fhe::Schema::Bgv,
         }
     }
 }
@@ -394,7 +391,7 @@ impl Builder {
     //     galois
     // }
 }
-// impl Setters for Builder {
+impl Setters for Builder {
 //     fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
 //     where
 //         Self: Sized,
@@ -419,17 +416,17 @@ impl Builder {
 //         Ok(self)
 //     }
 
-//     fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
-//     where
-//         Self: Sized,
-//         T: ToU32<E>,
-//         E: Into<SetError>,
-//     {
-//         let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
-//         // Assuming `ffi::set_m` returns Result<(), MError>
-//         self.inner = ffi::set_m(self.inner, u32_value);
-//         Ok(self)
-//     }
+    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>,
+    {
+        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+        // Assumes `ffi::set_m` returns Result<(), MError>
+        self.inner = ffi::set_m(self.inner, u32_value);
+        Ok(self)
+    }
 
 //     fn set_p<T, E>(mut self, value: T) -> Result<Self, BGVError>
 //     where
@@ -455,25 +452,25 @@ impl Builder {
 //         Ok(self)
 //     }
 
-//     fn set(self, value: Metric) -> Result<Self, BGVError>
-//     {
+    fn set(self, value: Metric) -> Result<Self, BGVError>
+    {
 
-//         // Convert `value` into `Metric`, since `Into` is infallible
-//         let metric: Metric = value.into();
+        // Convert `value` into `Metric`, since `Into` is infallible
+        let metric: Metric = value.into();
 
-//         self.metric_set(metric)
-//     }
+        self.metric_set(metric)
+    }
 
-//     fn try_set<T: TryInto<Metric, Error=BGVError>>(self, value: T) -> Result<Self, BGVError>
-//     where
-//         Self: Sized,
-//     {
-//         // Convert `value` into `Metric`, since `TryInto` is fallible
-//         let metric = value.try_into()?;
+    fn try_set<T: TryInto<Metric, Error=BGVError>>(self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+    {
+        // Convert `value` into `Metric`, since `TryInto` is fallible
+        let metric = value.try_into()?;
 
-//         self.metric_set(metric)
-//     }
-// }
+        self.metric_set(metric)
+    }
+}
 
 // Primarily test success scenarios as the `try_from(...)` implementations
 // handle the error scenarios.
@@ -571,12 +568,12 @@ mod tests {
     //     assert!(result.is_ok());
     // }
 
-    // #[test]
-    // fn test_set_m_success() {
-    //     let builder = Builder::new();
-    //     let result = builder.set(M::try_from(42).unwrap().into());
-    //     assert!(result.is_ok());
-    // }
+    #[test]
+    fn test_set_m_success() {
+        let builder = Builder::new();
+        let result = builder.set(M::try_from(42).unwrap().into());
+        assert!(result.is_ok());
+    }
 
     // #[test]
     // fn test_set_p_success() {

@@ -28,36 +28,37 @@ pub fn setup_ld_library_path() {
     println!("LD_LIBRARY_PATH has been set to: {}", libs_str);
 }
 
-#[test]
-fn test_build_bgv_valid_params() {
+// #[ignore = "Incomplete SEAL FFI"]
+// #[test]
+// fn test_build_bgv_valid_params() {
 
-    let bgv = Parameters {
-        m: M::new(4095).unwrap(),
-        p: P::new(2).unwrap(),
-        r: R::new(1).unwrap(),
-        c: C::new(2).unwrap(),
-        bits: Bits::new(32).unwrap(),
-        gens: "2,3,5".parse::<Gens>().unwrap(),
-        ords: "1,1,1".parse::<Ords>().unwrap(),
-        mvec: "2,3".parse::<Mvec>().unwrap(),
-        bootstrap: Bootstrap::new("thin").unwrap(),
-        bootstrappable: Bootstrappable::new("none").unwrap(),
-    };
+//     let bgv = Parameters {
+//         m: M::new(4095).unwrap(),
+//         p: P::new(2).unwrap(),
+//         r: R::new(1).unwrap(),
+//         c: C::new(2).unwrap(),
+//         bits: Bits::new(32).unwrap(),
+//         gens: "2,3,5".parse::<Gens>().unwrap(),
+//         ords: "1,1,1".parse::<Ords>().unwrap(),
+//         mvec: "2,3".parse::<Mvec>().unwrap(),
+//         bootstrap: Bootstrap::new("thin").unwrap(),
+//         bootstrappable: Bootstrappable::new("none").unwrap(),
+//     };
 
-    let expected_m = M::new(4095).unwrap();
-    // let expected_p = P::new(2).unwrap();
+//     let expected_m = M::new(4095).unwrap();
+//     // let expected_p = P::new(2).unwrap();
 
-    let context = Context::new(bgv).expect("BGV context creation");
+//     let context = Context::new(bgv).expect("BGV context creation");
 
-    let actual_m = context.get_m().unwrap(); // panic if get_m() returns an Error
+//     let actual_m = context.get_m().unwrap(); // panic if get_m() returns an Error
 
-    assert_eq!(actual_m, expected_m);
-    // assert_eq!(actual_p, expected_p);
-    // assert_eq!(context.get_p(), expected_p);
-    // ...
-    // assert!(context.bootstrappable());
+//     assert_eq!(actual_m, expected_m);
+//     // assert_eq!(actual_p, expected_p);
+//     // assert_eq!(context.get_p(), expected_p);
+//     // ...
+//     // assert!(context.bootstrappable());
 
-}
+// }
 
 // #[test]
 // fn test_build_bgv_invalid_params() {

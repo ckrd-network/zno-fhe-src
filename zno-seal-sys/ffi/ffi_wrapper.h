@@ -22,62 +22,86 @@ namespace seal {
     using Schema = scheme_type;
     using SecurityLevel = sec_level_type;
 
-    std::unique_ptr<std::string> version();
+  /**
+   * Returns the version string of the SEAL library.
+   *
+   * @brief The version string follows the format `major.minor.patch`.
+   *
+   * The `version` function is a simple function that returns the version string of the SEAL library.
+   * The version string is a sequence of `.` delimited integers that represents the version of the SEAL library.
+   *
+   * The SEAL library uses semantic versioning, which means that the version string follows the format `major.minor.patch`.
+   * Where `major`, `minor`, and `patch` are integers.
+   *
+   *   - The `major` version is incremented for incompatible changes.
+   *   - The `minor` version is incremented for new features.
+   *   - The `patch` version is incremented for bug fixes.
+   *
+   * @return The version string.
+   */
+  std::unique_ptr<std::string> version();
 
-    std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema);
+  /**
+   * Creates a new BGVContextBuilder object.
+   *
+   * @return A unique pointer to the newly created ContextBuilder<BGV> object.
+   */
+  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema);
 
-    std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder);
+  std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder);
 
-    // // This function returns a new Context pointer
-    // std::unique_ptr<::seal::Context> build_ptr(std::unique_ptr<::seal::BGVContextBuilder> builder);
+  // // This function returns a new Context pointer
+  // std::unique_ptr<::seal::Context> build_ptr(std::unique_ptr<::seal::BGVContextBuilder> builder);
 
-    std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec);
+  std::unique_ptr<std::vector<long int>> to_std_vector(const rust::cxxbridge1::Vec<long int>& rustVec);
 
-    // class SEALContext;
+  // Optimal parameters for BGV produced by fhegen need only
+  //   - set_poly_modulus_degree
+  //   - set_coeff_modulus
+  //   - set_plain_modulus
+  std::unique_ptr<::seal::BGVContextBuilder> set_m(std::unique_ptr<::seal::BGVContextBuilder> builder, uint32_t m);
 
-    // std::unique_ptr<seal::Schema> ckks() {
-    //   return std::make_unique<seal::scheme_type>(seal::scheme_type::ckks);
-    // }
-
-    //     class Ciphertext {
-    //     public:
-    //         void load(const SEALContext &context, const std::string &in_str);
-    //         // ... other methods
-    //     };
-
-    //     class Plaintext {
-    //     public:
-    //         Plaintext load(const SEALContext &context, const std::string &in_str);
-    //         // ... other methods
-    //     };
-
-    //     class SecretKey {
-    //     public:
-    //         void load(const SEALContext &context, const std::string &in_str);
-    //         // ... other methods
-    //     };
-
-    //     class PublicKey {
-    //     public:
-    //         void load(const SEALContext &context, const std::string &in_str);
-    //         // ... other methods
-    //     };
-
-    //     class RelinKeys {
-    //     public:
-    //         void load(const SEALContext &context, const std::string &in_str);
-    //         // ... other methods
-    //     };
-
-    // class GaloisKeysWrapper : public seal::GaloisKeys {
-    // public:
-    //     GaloisKeysWrapper() : seal::GaloisKeys() {}
-
-    //     std::streamoff loader(const seal::SEALContext &context, const std::string &in_str) {
-    //         std::istringstream in_stream(in_str);
-    //         return this->load(context, in_stream);
-    //     }
-    // };
+  // Examples:
+  // - seal/native/examples/4_bgv_basics.cpp
+  // - seal/native/examples/1_bfv_basics.cpp
+  // Require only these functions, so start here:
+  //   - BFVDefault(poly_modulus_degree)
+  //   - KeyGenerator
+  //     - constructor
+  //     - secret_key()
+  //     - create_public_key(public_key)
+  //     - create_relin_keys(relin_keys)
+  //   - PublicKey
+  //     - constructor
+  //   - RelinKeys
+  //     - constructor
+  //   - Encryptor
+  //     - constructor
+  //     - encrypt(x_plain, x_encrypted)
+  //   - Evaluator
+  //     - constructor
+  //     - square(x_encrypted, x_squared)
+  //     - square_inplace(x_encrypted)
+  //     - relinearize_inplace(x_squared, relin_keys)
+  //     - mod_switch_to_next_inplace(x_encrypted)
+  //     - add_plain_inplace(x_encrypted, x_plain)
+  //     - add_plain(x_encrypted, x_plain, y_encrypted)
+  //     - multiply(x_encrypted, y_encrypted, x_times_y)
+  //     - multiply_plain_inplace(x_encrypted, x_plain)
+  //   - Decryptor
+  //     - constructor
+  //     - invariant_noise_budget(x_encrypted)
+  //     - decrypt(x_encrypted, x_plain)
+  //   - BatchEncoder
+  //     - constructor
+  //     - slot_count()
+  //     - encode()
+  //     - decode(x_decrypted, x_decoded)
+  //   - Plaintext
+  //     - constructor
+  //   - Cyphertext
+  //     - constructor
+  //     - size()
 
 };  // namespace seal
 

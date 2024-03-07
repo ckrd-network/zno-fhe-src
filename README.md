@@ -1,8 +1,8 @@
 # zno-fhe
 
-Source code and FFI binding crates for the ZnO-FHE crate.
+Source code and system (FFI) crates for the ZnO-FHE crate.
 
-This crate contains the logic to build HELib, (TODO: OpenFHE and SEAL).
+This crate contains the logic to build HELib and SEAL (TODO: OpenFHE).
 It is intended to be consumed by the `zno-fhe` crate.
 In theory you should not need to interact with this repository.
 
@@ -73,17 +73,56 @@ target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-${crate_name}.txt
+```
 
-cargo doc --open --document-private-items --manifest-path "$src_dir/Cargo.toml" --target $target
-cargo expand --manifest-path "$src_dir/Cargo.toml" --target $target -- --nocapture 2>&1 | tee cargo-expand-${crate_name}.txt
+Generate documentation:
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --lib bgv::m:: --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
+```shell
+library=helib
+crate_name="zno-${library}-sys"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --lib --features "static helib" --manifest-path $src_dir/Cargo.toml --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
+cargo doc --open --document-private-items --target $target \
+          --manifest-path "$src_dir/Cargo.toml"
+cargo expand --manifest-path "$src_dir/Cargo.toml" --target $target \
+             -- --nocapture 2>&1 | tee cargo-expand-${crate_name}.txt
+```
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent --lib --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
+#### Tests
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --test ffi-context-bgv --features "static helib" --manifest-path "$src_dir/Cargo.toml" --target $target --verbose -- --nocapture 2>&1 | tee cargo-unit-test-${crate_name}.txt
+List and run tests using clang ([issue #681](https://github.com/microsoft/SEAL/issues/681)):
+
+```shell
+library=helib
+crate_name="zno-${library}-sys"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
+
+cargo test --features "static helib" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" -- --list
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib bgv::m:: --features "static helib" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" --verbose -- \
+           bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | \
+           tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib --features "static helib" --target $target --verbose \
+           --manifest-path $src_dir/Cargo.toml -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent \
+           --lib --features "static helib" --target $target --verbose \
+           --manifest-path "$src_dir/Cargo.toml"  -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --test ffi-context-bgv --features "static helib" --target $target \
+           --verbose --manifest-path "$src_dir/Cargo.toml" -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
 ```
 
 #### Source (HElib)
@@ -197,6 +236,13 @@ cargo upgrade
 # Check release notes for crates dry-run said are incompatible.
 cargo upgrade --incompatible
 cargo tree &>>cargo-tree.txt
+```
+
+Checking MSRV
+
+```shell
+podman pull docker.io/foresterre/cargo-msrv
+podman run -t -v "$(pwd)/Cargo.toml":/app/Cargo.toml docker.io/foresterre/cargo-msrv
 ```
 
 ## References

@@ -1,5 +1,4 @@
 pub enum Schema {
-    None,
     Bfv,
     Ckks,
     Bgv,

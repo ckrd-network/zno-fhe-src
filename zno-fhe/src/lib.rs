@@ -15,7 +15,7 @@ pub struct SecretKey {
 trait Builder<S>: Sized {
     fn init(self, scheme: Scheme) -> Fhe<S, Self>;
 
-    fn done(self) -> Option<S>;
+    fn build(self) -> Option<S>;
 }
 
 // Binding to Sized means borrowing is not possible.
@@ -62,7 +62,7 @@ impl Builder<Bgv> for BgvBuilder {
         Fhe::Initialized(Bgv)
     }
 
-    fn done(self) -> Fhe<Bgv, Self> {
+    fn build(self) -> Fhe<Bgv, Self> {
         // complete initializing the BGV scheme...
         // ... then move to the next state
         Vault::Decryptable(scheme,Raw)
@@ -76,7 +76,7 @@ fn test() {
         cyclotomic_order=1024, /* alt to security */
         model=base, multiplications=2, key_omega=3, rotations=0,
         distribution=ternary, summations=1, plaintext_modulus=0 )]
-    let raw = zno::init(vec![0,1,2,3]);
+    let raw = vec![0,1,2,3];
     // The above two lines are equivalent to:
     //
     //      #[cfg(debug_assertions)]

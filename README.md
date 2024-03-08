@@ -23,9 +23,13 @@ utils = []
 
 ## Setting Up HElib Libraries for End-User Rust Binaries Using ZnO
 
-When you're building a Rust application that depends on the ZnO library, it's necessary to ensure that the required HElib static and shared libraries are appropriately located. The application will look for these libraries in three potential directories relative to the executable:
+When you're building a Rust application that depends on the ZnO library, it's
+necessary to ensure that the required HElib static and shared libraries are
+appropriately located. The application will look for these libraries in three
+potential directories relative to the executable:
 
-1. `$ORIGIN/../libs`: This is the directory one level above the binary and then in the `libs` folder.
+1. `$ORIGIN/../libs`: This is the directory one level above the binary and
+   then in the `libs` folder.
 2. `$ORIGIN/libs`: This is the `libs` directory at the same level as the binary.
 3. `$ORIGIN`: This is the directory where the binary is located.
 
@@ -34,18 +38,29 @@ When you're building a Rust application that depends on the ZnO library, it's ne
 For ZnO's integration test binaries, the libraries are arranged as follows:
 
 - The test binaries are located in the `target/[target-triple]/debug/deps` directory.
-- The required libraries are placed within the `libs` directory at the root of the project. This corresponds to the `$ORIGIN/libs` location mentioned above, as `$ORIGIN` refers to the directory containing the test binary, which is `target/[target-triple]/debug/deps` in this case.
+- The required libraries are placed within the `libs` directory at the root of
+  the project. This corresponds to the `$ORIGIN/libs` location mentioned
+  above, as `$ORIGIN` refers to the directory containing the test binary,
+  which is `target/[target-triple]/debug/deps` in this case.
 
-This setup ensures that the test binaries can successfully locate and link to the required libraries during execution.
+This setup ensures that the test binaries can successfully locate and link to
+the required libraries during execution.
 
 ## Tests
 
 Tests are front and centre. We follow advice on their setup:
 
-- [Delete Cargo Integration Tests](https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html) these tips also reduce compile time:
+- [Delete Cargo Integration Tests][l001] these tips also reduce compile time:
 
-  - > Large projects should have only one integration test crate with several modules. A nice side-effect of a single modularized integration test is that sharing the code between separate tests becomes trivial, you just pull it into a submodule. There’s no need to awkwardly repeat `mod common;` for each integration test.
-  - For a public API on crates.io, avoid unit tests. Use a single integration test,  `tests/it.rs` or `tests/it/main.rs`. Integration tests use `it` library as an external crate. Using the public API results in better API design feedback.
+  - > Large projects should have only one integration test crate with several
+      modules. A nice side-effect of a single modularized integration test is
+      that sharing the code between separate tests becomes trivial, you just
+      pull it into a submodule. There’s no need to awkwardly repeat
+      `mod common;` for each integration test.
+  - For a public API on crates.io, avoid unit tests. Use a single integration
+    test,  `tests/it.rs` or `tests/it/main.rs`. Integration tests use
+    `it` library as an external crate. Using the public API results in
+    better API design feedback.
 
 ## FHE Libraries
 
@@ -59,7 +74,10 @@ crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-${crate_name}.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target \
+            --features "static package" --verbose 2>&1 \
+            | tee cargo-build-${crate_name}.txt
 ```
 
 #### FFI bindings
@@ -72,7 +90,9 @@ crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-build-${crate_name}.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target \
+            --verbose 2>&1 | tee cargo-build-${crate_name}.txt
 ```
 
 Generate documentation:
@@ -100,7 +120,8 @@ target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
 cargo test --features "static helib" --target $target \
-           --manifest-path "$src_dir/Cargo.toml" -- --list
+           --manifest-path "$src_dir/Cargo.toml" -- --list \
+           | tee cargo-test-list-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
 cargo test --lib bgv::m:: --features "static helib" --target $target \
@@ -125,7 +146,7 @@ cargo test --test ffi-context-bgv --features "static helib" --target $target \
            | tee cargo-unit-test-${crate_name}.txt
 ```
 
-#### Source (HElib)
+#### Source
 
 ```shell
 library=helib
@@ -135,9 +156,13 @@ src_dir="$(pwd)/${crate_name}"
 
 set -ex
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-test-${crate_name}.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target --verbose \
+           -- --nocapture 2>&1 | tee cargo-test-${crate_name}.txt
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-test-${crate_name}-release.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target --verbose \
+           --release -- --nocapture 2>&1 | tee cargo-test-${crate_name}-release.txt
 
 set +ex
 
@@ -145,7 +170,8 @@ set +ex
 
 ### SEAL
 
-SEAL compiled with Clang++ has much better runtime performance than one compiled with GNU G++.
+SEAL compiled with Clang++ has much better runtime performance than when
+compiled with GNU G++.
 
 To compile the source code and move artifacts to the system crate:
 
@@ -155,7 +181,46 @@ crate_name="zno-${library}-src-test"
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
-CXX=/usr/bin/clang++ RUST_BACKTRACE=full cargo build --bin package --features "static package" --manifest-path "$src_dir/Cargo.toml" --target $target -vvv 2>&1 | tee cargo-${crate_name}.txt
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo build --lib --manifest-path "$src_dir/Cargo.toml" --target $target \
+            --verbose 2>&1 | tee cargo-build-${crate_name}.txt
+```
+
+#### Tests
+
+List and run tests using clang ([issue #681](https://github.com/microsoft/SEAL/issues/681)):
+
+```shell
+library=seal
+crate_name="zno-${library}-sys"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
+
+cargo test --features "static helib" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" -- --list 2>&1 \
+           | tee cargo-test-list-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib bgv::m:: --features "static helib" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" --verbose -- \
+           bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | \
+           tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib --features "static helib" --target $target --verbose \
+           --manifest-path $src_dir/Cargo.toml -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent \
+           --lib --features "static helib" --target $target --verbose \
+           --manifest-path "$src_dir/Cargo.toml"  -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --test ffi-context-bgv --features "static helib" --target $target \
+           --verbose --manifest-path "$src_dir/Cargo.toml" -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
 ```
 
 #### Source (SEAL)
@@ -330,3 +395,5 @@ podman run -t -v "$(pwd)/Cargo.toml":/app/Cargo.toml docker.io/foresterre/cargo-
   doi={10.2197/ipsjjip.31.288}
 }
 ```
+
+[l001]: https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html

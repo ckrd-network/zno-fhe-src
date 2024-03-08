@@ -23,7 +23,7 @@ version = "0.0.2"
 authors = ["Mark Van de Vyver <mark@ckrd.io>"]
 
 edition = "2021"
-rust-version = "1.72.0"
+rust-version = "1.74.0"
 
 description = "The package provides a FHE source of choice."
 documentation = "https://docs.rs/ckrd-network/zno-fhe"
@@ -35,6 +35,7 @@ categories = ["cryptography"]
 keywords = ["FHE", "BGV", "zero-knowledge"]
 
 [workspace.dependencies]
+zno-fhe = { path = "zno-fhe" }
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
 zno-seal-src = { path = "zno-seal-src" }

@@ -1,23 +1,23 @@
 use core::fmt;
 
-use super::bits::BitsError;
-use super::bootstrap::BootstrapError;
-use super::bootstrappable::BootstrappableError;
-use super::c::CError;
+// use super::bits::BitsError;
+// use super::bootstrap::BootstrapError;
+// use super::bootstrappable::BootstrappableError;
+// use super::c::CError;
 use super::context::ConstructionError;
-use super::gens::GensError;
+// use super::gens::GensError;
 use super::m::{MError, MErrorKind};
-use super::mvec::MvecError;
-use super::ords::OrdsError;
-use super::p::PError;
-use super::r::RError;
+// use super::mvec::MvecError;
+// use super::ords::OrdsError;
+// use super::p::PError;
+// use super::r::RError;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum BGVError {
-    BitsError(BitsError),
-    BootstrapError(BootstrapError),
-    BootstrappableError(BootstrappableError),
-    CError(CError),
+    // BitsError(BitsError),
+    // BootstrapError(BootstrapError),
+    // BootstrappableError(BootstrappableError),
+    // CError(CError),
     ConstructionError(ConstructionError),
     ConversionError {
         from: &'static str,
@@ -25,12 +25,12 @@ pub enum BGVError {
         reason: String,
     },
     GenericError(GenericError),
-    GensError(GensError),
+    // GensError(GensError),
     MError(MError),
-    MvecError(MvecError),
-    OrdsError(OrdsError),
-    PError(PError),
-    RError(RError),
+    // MvecError(MvecError),
+    // OrdsError(OrdsError),
+    // PError(PError),
+    // RError(RError),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -67,29 +67,29 @@ impl fmt::Display for GenericError {
 // Implement the standard Error trait for GenericError
 impl std::error::Error for GenericError {}
 
-impl From<BitsError> for BGVError {
-    fn from(error: BitsError) -> BGVError {
-        BGVError::BitsError(error)
-    }
-}
+// impl From<BitsError> for BGVError {
+//     fn from(error: BitsError) -> BGVError {
+//         BGVError::BitsError(error)
+//     }
+// }
 
-impl From<BootstrapError> for BGVError {
-    fn from(error: BootstrapError) -> BGVError {
-        BGVError::BootstrapError(error)
-    }
-}
+// impl From<BootstrapError> for BGVError {
+//     fn from(error: BootstrapError) -> BGVError {
+//         BGVError::BootstrapError(error)
+//     }
+// }
 
-impl From<BootstrappableError> for BGVError {
-    fn from(error: BootstrappableError) -> BGVError {
-        BGVError::BootstrappableError(error)
-    }
-}
+// impl From<BootstrappableError> for BGVError {
+//     fn from(error: BootstrappableError) -> BGVError {
+//         BGVError::BootstrappableError(error)
+//     }
+// }
 
-impl From<CError> for BGVError {
-    fn from(error: CError) -> BGVError {
-        BGVError::CError(error)
-    }
-}
+// impl From<CError> for BGVError {
+//     fn from(error: CError) -> BGVError {
+//         BGVError::CError(error)
+//     }
+// }
 
 impl From<ConstructionError> for BGVError {
     fn from(error: ConstructionError) -> BGVError {
@@ -103,11 +103,11 @@ impl From<GenericError> for BGVError {
     }
 }
 
-impl From<GensError> for BGVError {
-    fn from(error: GensError) -> BGVError {
-        BGVError::GensError(error)
-    }
-}
+// impl From<GensError> for BGVError {
+//     fn from(error: GensError) -> BGVError {
+//         BGVError::GensError(error)
+//     }
+// }
 
 impl From<MError> for BGVError {
     fn from(error: MError) -> BGVError {
@@ -128,26 +128,26 @@ impl From<MError> for BGVError {
     }
 }
 
-impl From<MvecError> for BGVError {
-    fn from(error: MvecError) -> BGVError {
-        BGVError::MvecError(error)
-    }
-}
+// impl From<MvecError> for BGVError {
+//     fn from(error: MvecError) -> BGVError {
+//         BGVError::MvecError(error)
+//     }
+// }
 
-impl From<OrdsError> for BGVError {
-    fn from(error: OrdsError) -> BGVError {
-        BGVError::OrdsError(error)
-    }
-}
+// impl From<OrdsError> for BGVError {
+//     fn from(error: OrdsError) -> BGVError {
+//         BGVError::OrdsError(error)
+//     }
+// }
 
-impl From<PError> for BGVError {
-    fn from(error: PError) -> BGVError {
-        BGVError::PError(error)
-    }
-}
+// impl From<PError> for BGVError {
+//     fn from(error: PError) -> BGVError {
+//         BGVError::PError(error)
+//     }
+// }
 
-impl From<RError> for BGVError {
-    fn from(error: RError) -> BGVError {
-        BGVError::RError(error)
-    }
-}
+// impl From<RError> for BGVError {
+//     fn from(error: RError) -> BGVError {
+//         BGVError::RError(error)
+//     }
+// }

@@ -1,13 +1,13 @@
 use super::m::M;
-use super::p::P;
-use super::r::R;
-use super::c::C;
-use super::bits::Bits;
-use super::gens::Gens;
-use super::ords::Ords;
-use super::mvec::Mvec;
-use super::bootstrap::Bootstrap;
-use super::bootstrappable::Bootstrappable;
+// use super::p::P;
+// use super::r::R;
+// use super::c::C;
+// use super::bits::Bits;
+// use super::gens::Gens;
+// use super::ords::Ords;
+// use super::mvec::Mvec;
+// use super::bootstrap::Bootstrap;
+// use super::bootstrappable::Bootstrappable;
 use crate::bgv::BGVError;
 use core::fmt;
 
@@ -144,15 +144,15 @@ use cxx::ExternType;
 #[repr(C)]
 pub struct Parameters {
     pub m: M,
-    pub p: P,
-    pub r: R,
-    pub c: C,
-    pub bits: Bits,
-    pub gens: Gens,
-    pub ords: Ords,
-    pub mvec: Mvec,
-    pub bootstrap: Bootstrap,
-    pub bootstrappable: Bootstrappable,
+    // pub p: P,
+    // pub r: R,
+    // pub c: C,
+    // pub bits: Bits,
+    // pub gens: Gens,
+    // pub ords: Ords,
+    // pub mvec: Mvec,
+    // pub bootstrap: Bootstrap,
+    // pub bootstrappable: Bootstrappable,
 }
 
 impl Default for Parameters {
@@ -160,15 +160,15 @@ impl Default for Parameters {
     fn default() -> Self {
         Parameters {
             m: Default::default(),
-            p: Default::default(),
-            r: Default::default(),
-            c: Default::default(),
-            bits: Default::default(),
-            gens: Default::default(),
-            ords: Default::default(),
-            mvec: Default::default(),
-            bootstrap: Default::default(),
-            bootstrappable: Default::default(),
+            // p: Default::default(),
+            // r: Default::default(),
+            // c: Default::default(),
+            // bits: Default::default(),
+            // gens: Default::default(),
+            // ords: Default::default(),
+            // mvec: Default::default(),
+            // bootstrap: Default::default(),
+            // bootstrappable: Default::default(),
         }
     }
 }

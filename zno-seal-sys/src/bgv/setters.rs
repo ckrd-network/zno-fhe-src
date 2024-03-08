@@ -45,7 +45,7 @@ pub trait Setters {
     //     Self: Sized,
     //     T: ToU32<E>,
     //     E: Into<SetError>;
-    
+
 } // trait Setters
 
 // // Example type implementing the Setter trait
@@ -114,15 +114,15 @@ pub trait Setters {
 // Shared error type
 pub enum SetError {
     M(MError),
-    P(PError),
-    Bits(BitsError),
-    Bootstrap(BootstrapError),
-    Bootstrappable(BootstrappableError),
-    C(CError),
-    Gens(GensError),
-    Mvec(MvecError),
-    Ords(OrdsError),
-    R(RError),
+    // P(PError),
+    // Bits(BitsError),
+    // Bootstrap(BootstrapError),
+    // Bootstrappable(BootstrappableError),
+    // C(CError),
+    // Gens(GensError),
+    // Mvec(MvecError),
+    // Ords(OrdsError),
+    // R(RError),
 }
 
 impl From<MError> for SetError {
@@ -131,74 +131,74 @@ impl From<MError> for SetError {
     }
 }
 
-impl From<PError> for SetError {
-    fn from(err: PError) -> SetError {
-        SetError::P(err)
-    }
-}
+// impl From<PError> for SetError {
+//     fn from(err: PError) -> SetError {
+//         SetError::P(err)
+//     }
+// }
 
-impl From<BitsError> for SetError {
-    fn from(err: BitsError) -> SetError {
-        SetError::Bits(err)
-    }
-}
+// impl From<BitsError> for SetError {
+//     fn from(err: BitsError) -> SetError {
+//         SetError::Bits(err)
+//     }
+// }
 
-impl From<BootstrapError> for SetError {
-    fn from(err: BootstrapError) -> SetError {
-        SetError::Bootstrap(err)
-    }
-}
+// impl From<BootstrapError> for SetError {
+//     fn from(err: BootstrapError) -> SetError {
+//         SetError::Bootstrap(err)
+//     }
+// }
 
-impl From<BootstrappableError> for SetError {
-    fn from(err: BootstrappableError) -> SetError {
-        SetError::Bootstrappable(err)
-    }
-}
+// impl From<BootstrappableError> for SetError {
+//     fn from(err: BootstrappableError) -> SetError {
+//         SetError::Bootstrappable(err)
+//     }
+// }
 
-impl From<CError> for SetError {
-    fn from(err: CError) -> SetError {
-        SetError::C(err)
-    }
-}
+// impl From<CError> for SetError {
+//     fn from(err: CError) -> SetError {
+//         SetError::C(err)
+//     }
+// }
 
-impl From<GensError> for SetError {
-    fn from(err: GensError) -> SetError {
-        SetError::Gens(err)
-    }
-}
+// impl From<GensError> for SetError {
+//     fn from(err: GensError) -> SetError {
+//         SetError::Gens(err)
+//     }
+// }
 
-impl From<MvecError> for SetError {
-    fn from(err: MvecError) -> SetError {
-        SetError::Mvec(err)
-    }
-}
+// impl From<MvecError> for SetError {
+//     fn from(err: MvecError) -> SetError {
+//         SetError::Mvec(err)
+//     }
+// }
 
-impl From<OrdsError> for SetError {
-    fn from(err: OrdsError) -> SetError {
-        SetError::Ords(err)
-    }
-}
+// impl From<OrdsError> for SetError {
+//     fn from(err: OrdsError) -> SetError {
+//         SetError::Ords(err)
+//     }
+// }
 
-impl From<RError> for SetError {
-    fn from(err: RError) -> SetError {
-        SetError::R(err)
-    }
-}
+// impl From<RError> for SetError {
+//     fn from(err: RError) -> SetError {
+//         SetError::R(err)
+//     }
+// }
 
 // Implement the conversion from SetError to BGVError
 impl From<SetError> for BGVError {
     fn from(error: SetError) -> BGVError {
         match error {
-            SetError::Bits(error) => BGVError::BitsError(error),
-            SetError::Bootstrap(error) => BGVError::BootstrapError(error),
-            SetError::Bootstrappable(error) => BGVError::BootstrappableError(error),
-            SetError::C(error) => BGVError::CError(error),
-            SetError::Gens(error) => BGVError::GensError(error),
+            // SetError::Bits(error) => BGVError::BitsError(error),
+            // SetError::Bootstrap(error) => BGVError::BootstrapError(error),
+            // SetError::Bootstrappable(error) => BGVError::BootstrappableError(error),
+            // SetError::C(error) => BGVError::CError(error),
+            // SetError::Gens(error) => BGVError::GensError(error),
             SetError::M(error) => BGVError::MError(error),
-            SetError::Mvec(error) => BGVError::MvecError(error),
-            SetError::Ords(error) => BGVError::OrdsError(error),
-            SetError::P(error) => BGVError::PError(error),
-            SetError::R(error) => BGVError::RError(error),
+            // SetError::Mvec(error) => BGVError::MvecError(error),
+            // SetError::Ords(error) => BGVError::OrdsError(error),
+            // SetError::P(error) => BGVError::PError(error),
+            // SetError::R(error) => BGVError::RError(error),
         }
     }
 }

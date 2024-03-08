@@ -1,14 +1,14 @@
 // Include the modules
 pub mod m;
-pub mod p;
-pub mod r;
-pub mod c;
-pub mod bits;
-pub mod gens;
-pub mod ords;
-pub mod mvec;
-pub mod bootstrap;
-pub mod bootstrappable;
+// pub mod p;
+// pub mod r;
+// pub mod c;
+// pub mod bits;
+// pub mod gens;
+// pub mod ords;
+// pub mod mvec;
+// pub mod bootstrap;
+// pub mod bootstrappable;
 pub mod parameters;
 pub mod context;
 pub mod error;
@@ -18,15 +18,15 @@ pub mod metric;
 
 // Re-export the types for external use as `crate::bgv::<type>`
 pub use self::m::*;
-pub use self::p::*;
-pub use self::r::*;
-pub use self::c::*;
-pub use self::bits::*;
-pub use self::gens::*;
-pub use self::ords::*;
-pub use self::mvec::*;
-pub use self::bootstrap::*;
-pub use self::bootstrappable::*;
+// pub use self::p::*;
+// pub use self::r::*;
+// pub use self::c::*;
+// pub use self::bits::*;
+// pub use self::gens::*;
+// pub use self::ords::*;
+// pub use self::mvec::*;
+// pub use self::bootstrap::*;
+// pub use self::bootstrappable::*;
 pub use self::parameters::*;
 pub use self::context::*;
 pub use self::error::*;
@@ -68,7 +68,7 @@ pub trait He {
     /// # Examples
     ///
     /// ```
-    /// # use your_crate::{He, Schema};
+    /// # use crate::{He, Schema};
     /// struct Bgv;
     ///
     /// impl He for Bgv {
@@ -91,14 +91,13 @@ pub trait He {
 /// # Examples
 ///
 /// ```
-/// # use your_crate::Schema;
+/// # use crate::Schema;
 /// let schema = Schema::Bgv;
 /// ```
 pub enum Schema {
-    /// The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
-    Bgv,
-    // Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
-    // Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
+    Bgv, // The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
+    Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
+    Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
 }
 
 /// A trait for types that represent a homomorphic encryption scheme

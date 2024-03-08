@@ -332,15 +332,7 @@ impl Display for FFIError {
     }
 }
 
-// Logic specific to the SEAL implementation belongs here.
-// #[derive(Debug)]
-pub struct Builder {
-    // Holds a pointer to the C++ object
-    pub inner: cxx::UniquePtr<ffi::SEALContext>,
-}
-
-
-impl Builder {
+// impl Builder {
     // ... other methods
 
     // pub fn from_cipher_str(&self, str: &str) -> Ciphertext {
@@ -390,7 +382,7 @@ impl Builder {
     //     // ffi::load(&mut galois, &self.inner, &in_stream);
     //     galois
     // }
-}
+// }
 impl Setters for Builder {
 //     fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
 //     where

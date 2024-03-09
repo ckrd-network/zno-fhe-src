@@ -32,18 +32,23 @@ repository = "https://github.com/ckrd-network/zno-fhe"
 license = "Apache-2.0/MIT"
 readme = "README.md"
 categories = ["cryptography"]
-keywords = ["FHE", "BGV", "zero-knowledge"]
+keywords = ["FHE", "BGV", "SEAL", "ZKP"]
 
 [workspace.dependencies]
 zno-fhe = { path = "zno-fhe" }
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
+zno-macro = { path = "zno-macro" }
 zno-seal-src = { path = "zno-seal-src" }
 zno-seal-src-test = { path = "zno-seal-src-test" }
+zno-test = { path = "zno-test" }
 
+test-utilities = { path = "../test-utilities" }
+
+async-std = { version = "1.12", features = ["attributes"], optional = true }
 autocxx = "0.26.0"
 autocxx-build = "0.26.0"
-bssl-sys = { version = "0.1.0"}
+bssl-sys = "0.1.0"
 cc = "1.0.83"
 clap = "2.33"
 cmake = "0.1"
@@ -53,9 +58,13 @@ cxx-build = "1.0"
 dirs = "5.0.1"
 fake = "2.8"
 flate2 = { version = "1.0" }
+futures = "0.3"
+futures-timer = "3.0"
 insta = "1.34"
+inventory = "0.3"
 libc = { version = "0.2"  }
 libloading = "0.6"
+macrotest = "1"
 miette = { version = "5", features = ["fancy"] } # optional but gives nicer error messages!
 mockall = "0.11"
 num-traits = "0.2"
@@ -67,6 +76,8 @@ serde = "1.0"
 syn = "2.0"
 tap = "1.0"
 tar = { version = "0.4", default-features = false }
+tokio = { version = "1.36", features = ["full"], optional = true }
+trybuild = "1"
 
 [package]
 name = "zno"
@@ -86,7 +97,8 @@ categories.workspace = true
 keywords.workspace = true
 
 [features]
-default = ["static", "helib"]
+default = ["attributes", "static", "seal"]
+attributes = ["zno-macro"]
 static = []
 helib = []
 openfhe = []

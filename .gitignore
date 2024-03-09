@@ -17,23 +17,28 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+# redo files
+**/.redo/
 
 # Added by cargo
 
 /target
 
-# Ignore binary files built locally.
-zno-helib-sys/src/helib_pack/lib
-zno-helib-sys/libs/*
-!zno-helib-sys/libs/.gitkeep
 scratch/
 *.txt
+
+# Ignore binary files built locally.
+
+!zno-helib-sys/libs/.gitkeep
 zno-helib-src-test/artifacts/*
+zno-helib-sys/libs/*
+zno-helib-sys/src/helib_pack/lib
+
+!zno-seal-sys/libs/.gitkeep
 zno-seal-src-test/artifacts/*
 zno-seal-sys/libs/cmake/SEAL-4.1/*
 zno-seal-sys/libs/libseal-4.1.a
 zno-seal-sys/libs/pkgconfig/seal.pc
 zno-seal-sys/src/seal_pack/lib/libseal-4.1.a
 zno-seal-sys/src/seal_pack/lib/pkgconfig/seal.pc
-
 zno-seal-sys/ffi/py_wrapper.cpp

@@ -234,9 +234,11 @@ src_dir="$(pwd)/${crate_name}"
 
 set -ex
 
-cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv -- --nocapture 2>&1 | tee cargo-${crate_name}.txt
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target --verbose \
+           -- --nocapture 2>&1 | tee cargo-${crate_name}.txt
 
-cargo test --manifest-path "$src_dir/Cargo.toml" --target $target -vvv --release -- --nocapture 2>&1 | tee cargo-${crate_name}-release.txt
+cargo test --manifest-path "$src_dir/Cargo.toml" --target $target --verbose \
+           --release -- --nocapture 2>&1 | tee cargo-${crate_name}-release.txt
 
 set +ex
 
@@ -244,7 +246,8 @@ set +ex
 
 ## Versioning
 
-This crate follows the minor and patch versions for each maintained major version, according to:
+This crate follows the minor and patch versions for each maintained major
+version, according to:
 
 - The HELib release strategy.
 - The OpenFHE release strategy.
@@ -254,8 +257,10 @@ The crate versions follow the X.Y.Z+B pattern:
 
 - The major version X is the upstream API/ABI compatibility version:
         3YZ for 3.Y.Z
-- The minor Y and patch Z versions are incremented when making changes to the crate, either upstream update or internal changes.
-- `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this field is actually ignored in comparisons and only there for documentation.
+- The minor Y and patch Z versions are incremented when making changes to the
+  crate, either upstream update or internal changes.
+- `B` contains the full upstream version, like 1.1.1k or 3.0.7. Note that this
+  field is actually ignored in comparisons and only there for documentation.
 
 ## Upstream Sources
 
@@ -270,7 +275,8 @@ apt search libstdc++ | grep dev
 ### HELib
 
 ```shell
-git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --branch=v2.3.0 --method=rebase
+git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib \
+                  --branch=v2.3.0 --method=rebase
 ```
 
 ## Parameter Selection
@@ -278,7 +284,9 @@ git subrepo clone https://github.com/homenc/HElib.git zno-helib-src/helib --bran
 Install SageMath. Run script.
 
 ```shell
+    <!-- markdownlint-disable MD013 -->
 curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh
+    <!-- markdownlint-enable MD013 -->
 sh Mambaforge-$(uname)-$(uname -m).sh
 mamba create -n sage sage python=3.11
 pushd ~/src
@@ -291,6 +299,12 @@ popd
 
 - [Fast Rust Builds](https://matklad.github.io/2021/09/04/fast-rust-builds.html)
 - [Optimize Rust Compile Time](https://rustmagazine.org/issue-2/optimize-rust-comptime/)
+
+## Development
+
+The build tool is [`redo`](https://github.com/apenwarr/redo).
+
+
 
 ## Maintenance
 
@@ -350,7 +364,13 @@ podman run -t -v "$(pwd)/Cargo.toml":/app/Cargo.toml docker.io/foresterre/cargo-
 
 ```latex
 @misc{cryptoeprint:2022/706,
-      author = {Johannes Mono and Chiara Marcolla and Georg Land and Tim Güneysu and Najwa Aaraj},
+      author = {
+        <!-- cSpell:disable -->
+          <!-- markdownlint-disable MD013 -->
+                Johannes Mono and Chiara Marcolla and Georg Land and Tim Güneysu and Najwa Aaraj
+          <!-- markdownlint-enable MD013 -->
+        <!-- cSpell:enable -->
+      },
       title = {Finding and Evaluating Parameters for {BGV}},
       howpublished = {Cryptology ePrint Archive, Paper 2022/706},
       year = {2022},
@@ -361,8 +381,10 @@ podman run -t -v "$(pwd)/Cargo.toml":/app/Cargo.toml docker.io/foresterre/cargo-
 
 ```latex
 @misc{cryptoeprint:2023/600,
+      <!-- markdownlint-disable MD013 -->
       author = {Beatrice Biasioli and Chiara Marcolla and Marco Calderini and Johannes Mono},
       title = {Improving and Automating BFV Parameters Selection: An Average-Case Approach},
+      <!-- markdownlint-enable MD013 -->
       howpublished = {Cryptology ePrint Archive, Paper 2023/600},
       year = {2023},
       note = {\url{https://eprint.iacr.org/2023/600}},

@@ -1,0 +1,74 @@
+[package]
+name = "zno-test"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+documentation.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+[features]
+default = []
+ci = []
+as = []
+
+[lib]
+
+# Avoid adding crates, this is widely used in tests. It should compile fast!
+[dependencies]
+zno-fhe.workspace = true
+
+test-utilities.workspace = true
+
+async-std.workspace = true
+futures.workspace = true
+futures-timer.workspace = true
+macrotest.workspace = true
+tokio.workspace = true
+trybuild.workspace = true
+
+[dev-dependencies]
+async-std.workspace = true
+criterion.workspace = true
+insta.workspace = true
+inventory.workspace = true
+libloading.workspace = true
+mockall.workspace = true
+proptest.workspace = true
+quickcheck.workspace = true
+tokio.workspace = true
+
+[build-dependencies]
+cc.workspace = true
+cxx-build = { workspace = true}
+dirs.workspace = true
+fake.workspace = true
+miette.workspace = true
+pkg-config.workspace = true
+serde.workspace = true
+syn.workspace = true
+
+# NOTE:
+# Features are only recognized via the command line in the following tests.
+#
+# cargo test --features "zno-test/default zno-test/tokio" \
+#            --manifest-path zno-test/Cargo.toml \
+#            indev-tokio -- --nocapture
+#
+# [[test]]
+# name = "indev-tokio"
+# path = "integration/indev.rs"
+# harness = false
+# required-features = ["default", "tokio"]
+
+# [[test]]
+# name = "dev-tokio"
+# path = "integration/main.rs"
+# harness = false
+# required-features = ["tokio"]

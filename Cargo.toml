@@ -37,15 +37,17 @@ keywords = ["FHE", "BGV", "SEAL", "ZKP"]
 [workspace.dependencies]
 zno-fhe = { path = "zno-fhe" }
 zno-helib-src = { path = "zno-helib-src" }
+zno-helib-sys = { path = "zno-helib-sys" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
 zno-macro = { path = "zno-macro" }
 zno-seal-src = { path = "zno-seal-src" }
+zno-seal-sys = { path = "zno-seal-sys" }
 zno-seal-src-test = { path = "zno-seal-src-test" }
 zno-test = { path = "zno-test" }
 
 test-utilities = { path = "../test-utilities" }
 
-async-std = { version = "1.12", features = ["attributes"], optional = true }
+async-std = { version = "1.12", features = ["attributes"] }
 autocxx = "0.26.0"
 autocxx-build = "0.26.0"
 bssl-sys = "0.1.0"
@@ -65,7 +67,7 @@ inventory = "0.3"
 libc = { version = "0.2"  }
 libloading = "0.6"
 macrotest = "1"
-miette = { version = "5", features = ["fancy"] } # optional but gives nicer error messages!
+miette = { version = "7", features = ["fancy"] } # gives nicer error messages!
 mockall = "0.11"
 num-traits = "0.2"
 pkg-config = "0.3.27"
@@ -76,7 +78,7 @@ serde = "1.0"
 syn = "2.0"
 tap = "1.0"
 tar = { version = "0.4", default-features = false }
-tokio = { version = "1.36", features = ["full"], optional = true }
+tokio = { version = "1.36", features = ["full"] }
 trybuild = "1"
 
 [package]
@@ -98,7 +100,7 @@ keywords.workspace = true
 
 [features]
 default = ["attributes", "static", "seal"]
-attributes = ["zno-macro"]
+attributes = []
 static = []
 helib = []
 openfhe = []

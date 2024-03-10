@@ -19,6 +19,11 @@ Cargo.lock
 
 # redo files
 **/.redo/
+all
+audit
+build
+release
+test
 
 # Added by cargo
 
@@ -26,6 +31,7 @@ Cargo.lock
 
 scratch/
 *.txt
+*.json
 
 # Ignore binary files built locally.
 

@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
+#
+# $1 is the target name, eg. pie.init
+# $2 is the same as $1.
+# $3 is the temporary output file to create.
+#    If this script succeeds, redo replaces $1 with $3.
+#    If this script fails, redo leaves $1 alone.
+
+# shellcheck shell=bash
+exec >&2
 # Exit as soon as there is an error.
 set -e
 
-# FILEPATH: /home/hedge/src/zno-fhe-src/all.do
+REPO_DIR=$(git rev-parse --show-toplevel)
+
+# FILEPATH: ./all.do
 #
 # This script finds all files with the extension '.do' within a maximum depth of 2 directories.
 # It then removes the '.do' extension from the file names and excludes the current script file.

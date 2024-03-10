@@ -304,8 +304,6 @@ popd
 
 The build tool is [`redo`](https://github.com/apenwarr/redo).
 
-
-
 ## Maintenance
 
 ```shell

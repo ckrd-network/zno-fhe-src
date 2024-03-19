@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   "zno-fhe",
+  "zno-dev",
   "zno-helib-src-test",
   "zno-helib-src",
   "zno-helib-sys-test",
@@ -15,6 +16,7 @@ members = [
   # "zno-seal-sys-test",
   "zno-seal-sys",
   # "zno-seal-tool",
+  "zno-test",
 ]
 exclude = ['target']
 
@@ -36,6 +38,7 @@ keywords = ["FHE", "BGV", "SEAL", "ZKP"]
 
 [workspace.dependencies]
 zno-fhe = { path = "zno-fhe" }
+zno-dev = { path = "zno-dev" }
 zno-helib-src = { path = "zno-helib-src" }
 zno-helib-sys = { path = "zno-helib-sys" }
 zno-helib-src-test = { path = "zno-helib-src-test" }
@@ -71,8 +74,10 @@ miette = { version = "7", features = ["fancy"] } # gives nicer error messages!
 mockall = "0.11"
 num-traits = "0.2"
 pkg-config = "0.3.27"
+proc-macro2 = "1.0"
 proptest = "1.3"
 quickcheck = "1.0"
+quote = "1"
 regex = { version = "1.10.0", default-features = false, features = ["std"] }
 serde = "1.0"
 syn = "2.0"

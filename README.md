@@ -306,6 +306,8 @@ The build tool is [`redo`](https://github.com/apenwarr/redo).
 
 ## Maintenance
 
+https://blog.logrocket.com/comparing-rust-supply-chain-safety-tools/
+
 ```shell
 cargo install cargo-edit
 cargo upgrade --dry-run --verbose &>>cargo-upgrade.txt

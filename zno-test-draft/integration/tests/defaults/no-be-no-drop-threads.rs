@@ -8,18 +8,18 @@ use test_utilities::*;
 // Reference:
 // - https://github.com/tikv/minitrace-rust/issues/125
 // - https://github.com/tikv/minitrace-rust/issues/126
-#[trace]
+#[zno]
 async fn test_async(a: u32) -> u32 {
     a
 }
 
-#[trace]
+#[zno]
 fn test_sync(a: u32) -> u32 {
     a
 }
 
 #[tokio::main]
-//#[trace( name = "start", root=true, reporter=None)]
+//#[zno( name = "start", root=true, reporter=None)]
 // reporter: Datadog, Jaeger, None (default)
 fn main() {
     //let minitrace = minitrace::Trace::new("name", Local )

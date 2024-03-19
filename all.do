@@ -9,7 +9,7 @@
 # shellcheck shell=bash
 exec >&2
 # Exit as soon as there is an error.
-set -e
+set -ex
 
 REPO_DIR=$(git rev-parse --show-toplevel)
 
@@ -22,7 +22,9 @@ REPO_DIR=$(git rev-parse --show-toplevel)
 SELF=$(basename "${0##*/}" .do)
 find . -maxdepth 2 -type f -name '*.do' -print0 | \
   xargs -0 echo | \
-  sed -e 's/\.do//g' -e "s/\.\/$SELF//g" | \
+  sed -e 's/\.do//g' -e "s/\/$SELF//g" | \
+  sed -e 's/\.do//g' -e "s/\/default//g" | \
+  sed -e 's/\.do//g' -e "s/\/clean//g" | \
   xargs redo-ifchange
 
 # Find conflicts between here and the remote.

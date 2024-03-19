@@ -1,26 +1,21 @@
 use minitrace::trace;
 use test_utilities::*;
 
-// With no block expression the span "test-span" is silently omitted.
+// With no block expression the span "a-span" is silently omitted.
 // Reference:
 // - https://github.com/tikv/minitrace-rust/issues/125
 // - https://github.com/tikv/minitrace-rust/issues/126
-#[trace( name = "a-span")]
-async fn test_async(a: u32) -> u32 {
-    a
-}
-
-#[trace( name = "s-span")]
-fn test_sync(a: u32) -> u32 {
+#[zno(name = "a-span")]
+fn f(a: u32) -> u32 {
     a
 }
 
 fn main() {
     let (root, collector) = minitrace::Span::root("root");
-
-    let child_span = minitrace::Span::enter_with_parent("test-span", &root);
+    //{
+    let child_span = root.set_local_parent();
     f(1);
-
+    //}
     drop(child_span);
     drop(root);
     let records: Vec<minitrace::collector::SpanRecord> =

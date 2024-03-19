@@ -1,9 +1,9 @@
 use minitrace::trace;
 
-#[trace]
+#[zno]
 async fn test_async() {}
 
-#[trace]
+#[zno]
 fn test_sync() {}
 
 #[cfg_attr(feature = "tk", tokio::main)]

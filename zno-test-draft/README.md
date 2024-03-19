@@ -1,6 +1,6 @@
 # zno-test
 
-ZnO attribute `#[trace]` integration tests for developers and
+ZnO attribute `#[zno]` integration tests for developers and
 CI environments.
 
 NOTE:

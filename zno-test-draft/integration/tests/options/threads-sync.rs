@@ -1,28 +1,30 @@
 use minitrace::trace;
 use test_utilities::*;
-// With `enter_on_poll = true`, `async` functions construct `LocalSpan`.
-// Hence this async test produces the same spans as the sync test.
-//
-// With no block expression the span "a-span" is silently omitted.
+
+// With no block expression the span "test-span" is silently omitted.
 // Reference:
 // - https://github.com/tikv/minitrace-rust/issues/125
 // - https://github.com/tikv/minitrace-rust/issues/126
-#[trace( name = "a-span", enter_on_poll=true)]
-async fn f(a: u32) -> u32 {
+#[zno( name = "a-span")]
+async fn test_async(a: u32) -> u32 {
     a
 }
 
-#[tokio::main]
-async fn main() {
+#[zno( name = "s-span")]
+fn test_sync(a: u32) -> u32 {
+    a
+}
+
+fn main() {
     let (root, collector) = minitrace::Span::root("root");
-    //{
-    let child_span = root.set_local_parent();
-    f(1).await;
-    //}
+
+    let child_span = minitrace::Span::enter_with_parent("test-span", &root);
+    f(1);
+
     drop(child_span);
     drop(root);
-    let records: Vec<minitrace::collector::SpanRecord> = futures::executor::block_on(collector.collect());
-
+    let records: Vec<minitrace::collector::SpanRecord> =
+        futures::executor::block_on(collector.collect());
     let expected = r#"[
     SpanRecord {
         id: 1,

@@ -14,7 +14,7 @@
 // 'virtual' to 'real' - which requires moving sources around....
 use minitrace::trace;
 
-#[trace]
+#[zno]
 fn f() {}
 
 fn main() {

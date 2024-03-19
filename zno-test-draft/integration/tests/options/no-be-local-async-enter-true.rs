@@ -1,13 +1,13 @@
 use minitrace::trace;
 use test_utilities::*;
-// With `enter_on_poll = false`, `async` functions construct `Span` that is
-// thread safe.
+// With `enter_on_poll = true`, `async` functions construct `LocalSpan`.
+// Hence this async test produces the same spans as the sync test.
 //
 // With no block expression the span "a-span" is silently omitted.
 // Reference:
 // - https://github.com/tikv/minitrace-rust/issues/125
 // - https://github.com/tikv/minitrace-rust/issues/126
-#[trace( name = "a-span", enter_on_poll=false)]
+#[zno( name = "a-span", enter_on_poll=true)]
 async fn f(a: u32) -> u32 {
     a
 }
@@ -30,14 +30,6 @@ async fn main() {
         begin_unix_time_ns: \d+,
         duration_ns: \d+,
         event: "root",
-        properties: [],
-    },
-    SpanRecord {
-        id: 2,
-        parent_id: 1,
-        begin_unix_time_ns: \d+,
-        duration_ns: \d+,
-        event: "a-span",
         properties: [],
     },
 ]"#;

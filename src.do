@@ -9,7 +9,7 @@
 # shellcheck shell=bash
 exec >&2
 # Exit as soon as there is an error.
-set -e
+set -ex
 
 readonly SELF=$(basename "${0##*/}" .do)
 readonly DIR=$(pwd)

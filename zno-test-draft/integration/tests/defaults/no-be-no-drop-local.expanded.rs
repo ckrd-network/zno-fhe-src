@@ -2,11 +2,11 @@ extern crate alloc;
 use minitrace::trace;
 use minitrace::prelude::*;
 use test_utilities::*;
-#[trace]
+#[zno]
 async fn test_async(a: u32) -> u32 {
     a
 }
-#[trace]
+#[zno]
 fn test_sync(a: u32) -> u32 {
     a
 }

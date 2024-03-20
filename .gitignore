@@ -39,6 +39,7 @@ scratch/
 zno-helib-src-test/artifacts/*
 zno-helib-sys/libs/*
 zno-helib-sys/src/helib_pack/lib
+zno-helib-sys/**/ConfigLog.h
 
 !zno-seal-sys/libs/.gitkeep
 zno-seal-src-test/artifacts/*
@@ -48,3 +49,4 @@ zno-seal-sys/libs/pkgconfig/seal.pc
 zno-seal-sys/src/seal_pack/lib/libseal-4.1.a
 zno-seal-sys/src/seal_pack/lib/pkgconfig/seal.pc
 zno-seal-sys/ffi/py_wrapper.cpp
+

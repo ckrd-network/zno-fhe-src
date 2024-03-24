@@ -1,3 +1,5 @@
+use crate::seal::bgv;
+
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
@@ -188,7 +190,7 @@ impl M {
 /// Returns an `MError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// meaning the number was zero or never there.
 /// The error details where the problem happened: from "u32" to "M".
-impl crate::bgv::ToU32<MError> for M {
+impl bgv::ToU32<MError> for M {
     fn to_u32(&self) -> Result<u32, MError> {
         match self {
             M::Some(non_zero_u32) => Ok(non_zero_u32.get()),

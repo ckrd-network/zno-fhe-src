@@ -8,7 +8,7 @@ use super::bgv::m::M;
 // use super::bgv::mvec::Mvec;
 // use super::bgv::bootstrap::Bootstrap;
 // use super::bgv::bootstrappable::Bootstrappable;
-use crate::BGVError;
+use crate::error::BGVError;
 use core::fmt;
 
 #[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
@@ -191,7 +191,7 @@ impl Parameters {
         crate::openfhe::Context::new(self)
     }
     #[cfg(feature = "seal")]
-    pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
+    pub fn context(self) -> Result<crate::seal::Context, BGVError> {
         todo!();
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::seal::Context>
         crate::seal::Context::new(self)

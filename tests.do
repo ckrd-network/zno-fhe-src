@@ -14,3 +14,5 @@ set -e
 # FILEPATH: ./test.do
 #
 SELF=$(basename "${0##*/}" .do)
+
+cargo nextest run

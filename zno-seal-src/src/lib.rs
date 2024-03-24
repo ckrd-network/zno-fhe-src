@@ -189,9 +189,6 @@ impl Build {
             .pipe( |c| if cfg!(feature = "static") {
                 c.define("BUILD_SHARED_LIBS", "OFF")
             } else { c.define("BUILD_SHARED_LIBS", "ON") })
-            .pipe( |c| if cfg!(feature = "package") {
-                c.define("PACKAGE_BUILD", "ON")
-            } else { c.define("PACKAGE_BUILD", "OFF") })
             .pipe( |c| if cfg!(feature = "tests") {
                 c.define("SEAL_BUILD_TESTS", "ON")
             } else { c.define("SEAL_BUILD_TESTS", "OFF") })

@@ -29,7 +29,8 @@ crate-type = ["rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# autocxx.workspace = true
+zno-fhe.workspace = true
+
 cxx.workspace = true
 libc.workspace = true
 num-traits.workspace = true
@@ -55,12 +56,9 @@ mockall.workspace = true
 proptest.workspace = true
 
 [features]
-default = ["static","seal"]
+default = ["static", "seal"]
 static = []
-helib = []
-openfhe = []
 seal = []
-autocxx = []
 vendored = []
 
 [package.metadata.cxx]
@@ -69,9 +67,5 @@ include = ["src/seal_pack/include"]
 lib = ["src/seal_pack/lib"]
 
 # This is here for tooling.
-# GMP version to be used (and eventually downloaded) if `package` feature.
-#   - Can be found at FETCHED_GMP_VERSION in CMakeLists.txt.
-# NTL version to be used (and eventually downloaded) if `package` feature.
-#   - Can be found at FETCHED_NTL_VERSION in CMakeLists.txt.
 [package.metadata.pkg-config]
 seal = "4.1.1"

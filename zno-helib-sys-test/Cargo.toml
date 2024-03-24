@@ -20,9 +20,8 @@ zno-helib-sys = { path = "../zno-helib-sys" }
 ctest2 = "0.4"
 
 [dependencies]
-# zno-helib-sys = { path = "../zno-helib-sys" }
+# zno-helib-sys = { workspace = true }
 # libc = { workspace = true }
 
 [features]
-autocxx = ['zno-helib-sys/autocxx']
 vendored = ['zno-helib-sys/vendored']

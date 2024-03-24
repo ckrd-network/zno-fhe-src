@@ -147,7 +147,6 @@ pub struct Builder {
     pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
 }
 
-
 impl Setters for Builder {
     fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
     where

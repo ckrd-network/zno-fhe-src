@@ -15,6 +15,15 @@ set -e
 #
 SELF=$(basename "${0##*/}" .do)
 
+cargo machete
+cargo vet
+cargo crev
+cargo auditable
+cargo manifest
+cargo sem-ver-checks
+
+RUSTC_BOOTSTRAP=1 cargo udeps --all-targets --backend depinfo
+
 # # Scan the binary for vulnerabilities
 # cargo audit bin target/release/zno_fhe
 # # Build your container image with the binary
@@ -24,4 +33,4 @@ SELF=$(basename "${0##*/}" .do)
 # EOF
 # # Scan the image
 # trivy image --security-checks vuln test-rust
-# 
+#

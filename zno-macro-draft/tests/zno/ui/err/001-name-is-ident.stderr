@@ -1,0 +1,5 @@
+error: expected literal
+ --> tests/zno/ui/err/001-name-is-ident.rs:3:16
+  |
+3 | #[zno(name = b)]
+  |                ^

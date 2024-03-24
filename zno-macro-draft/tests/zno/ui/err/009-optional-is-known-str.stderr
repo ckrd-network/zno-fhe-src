@@ -1,0 +1,5 @@
+error: expected path
+ --> tests/zno/ui/err/009-optional-is-known-str.rs:3:21
+  |
+3 | #[zno(name = "a", "enter_on_poll" = true)]
+  |                     ^^^^^^^^^^^^^^^

@@ -1,0 +1,5 @@
+error: unknown option
+ --> tests/zno/ui/err/013-optional-is-not-ident.rs:3:21
+  |
+3 | #[zno(name = "a", some::unknown=true)]
+  |                     ^^^^

@@ -1,0 +1,5 @@
+error: `name` provided twice
+ --> tests/zno/ui/err/018-has-duplicate-name.rs:3:51
+  |
+3 | #[zno(name = "test_span", enter_on_poll = true, name = "not_this")]
+  |                                                   ^^^^

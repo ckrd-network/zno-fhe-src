@@ -1,7 +1,61 @@
+#[cfg(feature = "helib")]
+mod helib;
+
+#[cfg(feature = "seal")]
+mod seal;
+
+pub mod error;
+pub mod getters;
+pub mod setters;
+pub mod metric;
+
+// Re-export the types for external use as `crate::bgv::<type>`
+pub use self::m::*;
+// pub use self::p::*;
+// pub use self::r::*;
+// pub use self::c::*;
+// pub use self::bits::*;
+// pub use self::gens::*;
+// pub use self::ords::*;
+// pub use self::mvec::*;
+// pub use self::bootstrap::*;
+// pub use self::bootstrappable::*;
+#[cfg(feature = "helib")]
+pub use self::helib::context::*;
+#[cfg(feature = "helib")]
+pub use self::helib::parameters::*;
+#[cfg(feature = "helib")]
+pub use self::helib::schema::*;
+
+#[cfg(feature = "seal")]
+pub use self::seal::context::*;
+#[cfg(feature = "seal")]
+pub use self::seal::parameters::*;
+#[cfg(feature = "seal")]
+pub use self::seal::schema::*;
+
+pub use self::error::*;
+pub use self::getters::*;
+pub use self::setters::*;
+pub use self::metric::*;
+
 use std::sync::{Arc, Mutex};
 
-mod fhe;
+// pub enum Fhe {
+//     Builder(Builder),
+//     Initialized(Initialized),
+//     Raw(Raw),
+//     Encrypted(Encrypted),
+//     Decrypted(Decrypted),
+// }
 
+enum Fhe<S, B: Builder<S>> {
+    Builder(B),
+    Initialized(S),
+    Raw(S),
+    Encrypted(Encrypted),
+    Decrypted(Decrypted),
+}
 pub struct PublicKey {
     // fields for the public key
 }
@@ -12,6 +66,7 @@ pub struct SecretKey {
 
 // Binding to Sized means borrowing is not possible.
 // But that's OK because the point is to prevent borrowing in the first place.
+
 trait Builder<S>: Sized {
     fn init(self, scheme: Scheme) -> Fhe<S, Self>;
 
@@ -20,6 +75,7 @@ trait Builder<S>: Sized {
 
 // Binding to Sized means borrowing is not possible.
 // But that's OK because the point is to prevent borrowing.
+// A trait that zno-macro-derive module will automatically implement.
 trait Encryptable<S, D: Decrypted<S, Self>>: Sized {
 
     fn encrypt(self, scheme: S) -> Vault<S, D, Self>;
@@ -27,16 +83,12 @@ trait Encryptable<S, D: Decrypted<S, Self>>: Sized {
 
 // Binding to Sized means borrowing is not possible.
 // But that's OK because the point is to prevent borrowing.
+// A trait that zno-macro-derive module will automatically implement.
 trait Decryptable<S, E: Encrypted<S, Self>>: Sized {
 
     fn decrypt(self, scheme: S) -> Vault<S, Self, E>;
 }
 
-enum Fhe<T, B: Builder<T>> {
-    Builder(B),
-    Initialized(T),
-    Raw(T),
-}
 enum Vault<S, D: Decryptable<S, E>, E: Encryptable<S, D>> {
     Encryptable(S,D),
     Decryptable(S,E),
@@ -65,7 +117,7 @@ impl Builder<Bgv> for BgvBuilder {
     fn build(self) -> Fhe<Bgv, Self> {
         // complete initializing the BGV scheme...
         // ... then move to the next state
-        Vault::Decryptable(scheme,Raw)
+        Vault::Decryptable(scheme, Raw)
         // Some(Bgv)
     }
 }
@@ -118,6 +170,8 @@ fn build<S, B: Builder<S>>(target: Fhe<S, B>) -> Result<S, Error> {
         }
         Fhe::Initialized(scheme) => Ok(scheme),
         Fhe::Raw(_) => todo!(),
+        Fhe::Decrypted(_) => todo!(),
+        Fhe::Encrypted(_) => todo!(),
     }
 }
 

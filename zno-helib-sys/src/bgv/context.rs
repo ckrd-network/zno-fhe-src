@@ -4,83 +4,6 @@ use std::convert::TryInto;
 use crate::prelude::*;
 use super::*;
 
-// Bring `Context` to `bgv` module level, avoiding the need to include `ffi` in the path
-#[cfg(feature = "helib")]
-pub use crate::helib::bgv::*;
-#[cfg(feature = "openfhe")]
-pub use crate::openfhe::bgv::*;
-#[cfg(feature = "seal")]
-pub use crate::seal::bgv::*;
-
-#[derive(Debug, Clone)]
-pub enum ConversionError {
-    NegativeValue,
-    NoValue,                   // The Context doesn't contain a value.
-    ZeroValue,                 // The value is 0, which isn't allowed in NonZeroU32.
-    OutOfRange(std::num::TryFromIntError), // The value is out of the range that can be represented by a u32.
-}
-
-impl core::fmt::Display for ConversionError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match self {
-            ConversionError::NegativeValue => write!(f, "Negative value is not allowed in NonZeroU32."),
-            ConversionError::NoValue => write!(f, "No value present in Context."),
-            ConversionError::ZeroValue => write!(f, "Zero value is not allowed in NonZeroU32."),
-            ConversionError::OutOfRange(e) => write!(f, "Value out of range for u32: {}", e),
-        }
-    }
-}
-
-impl std::error::Error for ConversionError {}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ConstructionError {
-    kind: ConstructionErrorKind,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ConstructionErrorKind {
-    NullPointer,
-    InvalidParameter,
-    Generic(String),
-}
-
-impl ConstructionError {
-    /// Creates a new `ConstructionError` with the specified kind.
-    pub fn new(kind: ConstructionErrorKind) -> Self {
-        ConstructionError { kind }
-    }
-}
-
-impl std::error::Error for ConstructionError {}
-
-// Implement From for each error type to convert into ConstructionError
-impl From<std::io::Error> for ConstructionError {
-    fn from(e: std::io::Error) -> ConstructionError {
-        ConstructionError {
-            kind: ConstructionErrorKind::Generic(e.to_string()),
-        }
-    }
-}
-
-impl From<NullPointerError> for ConstructionError {
-    fn from(_: NullPointerError) -> Self {
-        ConstructionError {
-            kind: ConstructionErrorKind::NullPointer,
-        }
-    }
-}
-
-impl core::fmt::Display for ConstructionError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match &self.kind {
-            ConstructionErrorKind::InvalidParameter => write!(f, "invalid parameter"),
-            ConstructionErrorKind::NullPointer => write!(f, "Received null pointer when constructing context"),
-            ConstructionErrorKind::Generic(g) => g.fmt(f),
-        }
-    }
-}
-
 /// Define the Rust struct to represent the C++ Context class
 pub struct Context {
     // This holds a pointer to the C++ object.
@@ -133,12 +56,6 @@ impl Context {
                 Err(BGVError::ConstructionError(e))
             }
         }
-    }
-
-    pub fn convert_to_vec(s: &str) -> Vec<i64> {
-        s.split(',')
-            .filter_map(|s| s.parse::<i64>().ok())
-            .collect()
     }
 
 }

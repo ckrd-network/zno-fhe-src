@@ -23,6 +23,7 @@ syn.workspace = true
 # zno-test dependencies become dev-dependencies
 [dev-dependencies]
 zno-dev.workspace = true
-# zno-test.workspace = true
-
 macrotest.workspace = true
+
+[features]
+default = []

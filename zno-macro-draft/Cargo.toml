@@ -1,0 +1,46 @@
+[package]
+name = "minitrace-macro"
+version = "0.5.1"
+authors = ["The TiKV Project Authors"]
+license = "Apache-2.0"
+rust-version = "1.56.0"
+edition = "2021"
+description = "Attribute procedural macro for minitrace-rust"
+homepage = "https://github.com/tikv/minitrace-rust"
+repository = "https://github.com/tikv/minitrace-rust"
+documentation = "https://docs.rs/minitrace-macro"
+readme = "README.md"
+categories = ["development-tools::debugging"]
+keywords = ["tracing", "span", "datadog", "jaeger", "opentelemetry"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+darling = "0.20"
+proc-macro2 = "1.0"
+quote = "1.0"
+# The macro `quote_spanned!` is added to syn in 1.0.84
+syn = { version = "2.0", features = ["full", "parsing", "extra-traits", "proc-macro", "visit", "visit-mut"] }
+thiserror = "1.0"
+tree-flat = "0.1"
+
+[dev-dependencies]
+aquamarine = "0.1"
+futures = "0.3"
+futures-timer = "3.0"
+logcall = "0.1"
+macrotest = "1"
+minitrace = { path = "../" }
+minitrace-jaeger  = { path = "../minitrace-jaeger" }
+rand = "0.8"
+test-utilities = { path = "../test-utilities" }
+tokio = { version = "1.36", features = ["full"] }
+trybuild = "1.0"
+# The procedural macro `zno` only supports async-trait higher than 0.1.52
+async-trait = "0.1"
+log = "0.4"
+
+[features]
+default = []
+ci = []

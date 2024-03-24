@@ -1,0 +1,7 @@
+error: invalid argument
+ --> tests/ui/err/zno-interleaved.rs:4:1
+  |
+4 | #[zno(struct)]
+  | ^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the attribute macro `zno` (in Nightly builds, run with -Z macro-backtrace for more info)

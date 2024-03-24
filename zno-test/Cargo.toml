@@ -1,14 +1,14 @@
 [package]
 name = "zno-test"
 edition = "2021"
-
+version = "0.1.0"
 publish = false
 
 [features]
 default = []
 
 [dependencies]
-zno-macro = { path = "../zno-macro" }
+zno-fhe = { path = "../zno-fhe" }
 
 [dev-dependencies]
 

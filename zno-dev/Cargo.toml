@@ -13,5 +13,4 @@ readme.workspace = true
 publish = false
 
 [dependencies]
-zno-macro.workspace = true
 macrotest.workspace = true

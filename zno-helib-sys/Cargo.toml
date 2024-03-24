@@ -29,7 +29,8 @@ crate-type = ["rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# autocxx.workspace = true
+zno-fhe.workspace = true
+
 cxx.workspace = true
 libc.workspace = true
 num-traits.workspace = true
@@ -55,12 +56,9 @@ mockall.workspace = true
 proptest.workspace = true
 
 [features]
-default = ["static","helib"]
+default = ["static", "helib"]
 static = []
 helib = []
-openfhe = []
-seal = []
-autocxx = []
 vendored = []
 
 [package.metadata.cxx]

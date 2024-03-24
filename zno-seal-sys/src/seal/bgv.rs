@@ -63,10 +63,6 @@ pub mod ffi {
         // fn loader(self: Pin<&mut GaloisKeysWrapper>, context: &SEALContext, in_str: &str) -> i64;
     }
 
-    extern "Rust" {
-        type M;
-        type MError;
-    }
 }
 
 #[repr(u8)]
@@ -191,61 +187,17 @@ impl From<Schema> for ffi::Schema {
     }
 }
 
-/// Converts a `zno_fhe::Schema` into an `crate::Schema`.
-///
-impl From<zno_fhe::Schema> for Schema {
-    /// Converts the given `zno_fhe::Schema` into the corresponding `Schema` variant.
-    ///
-    /// # Arguments
-    ///
-    /// * `schema` - The `zno_fhe::Schema` to convert.
-    ///
-    /// # Returns
-    ///
-    /// The converted `Schema` variant.
-    fn from(schema: zno_fhe::Schema) -> Self {
-        match schema {
-            zno_fhe::Schema::None => Schema::default(),
-            zno_fhe::Schema::Bfv => Schema::Bfv,
-            zno_fhe::Schema::Ckks => Schema::Ckks,
-            zno_fhe::Schema::Bgv => Schema::Bgv,
-        }
-    }
-}
-
-/// Converts a `Schema` into an `zno_fhe::Schema`.
-///
-impl From<Schema> for zno_fhe::Schema {
-    /// Converts the given `ffi::Schema` into the corresponding `zno_fhe::Schema`.
-    ///
-    /// # Arguments
-    ///
-    /// * `schema` - The `ffi::Schema` to convert.
-    ///
-    /// # Returns
-    ///
-    /// The converted `zno_fhe::Schema`.
-    fn from(schema: Schema) -> Self {
-        match schema {
-            Schema::None => zno_fhe::Schema::default(),
-            Schema::Bfv  => zno_fhe::Schema::Bfv,
-            Schema::Ckks => zno_fhe::Schema::Ckks,
-            Schema::Bgv  => zno_fhe::Schema::Bgv,
-        }
-    }
-}
-
 /// This module contains the definition of the `Builder` struct and its associated methods.
-/// The `Builder` struct is responsible for constructing a `SEALContext` object used in the SEAL implementation.
+/// The `Builder` struct is responsible for constructing a `BGVContextBuilder` object used in the SEAL implementation.
 /// It provides methods for setting various parameters and loading data from strings.
 /// The `Builder` struct also defines error types for handling null pointer exceptions and other FFI-related errors.
-/// The methods of the `Builder` struct are used to configure the parameters of the `SEALContext` object.
-/// The `Builder` struct is used in the process of building a `SEALContext` object with the desired parameters.
-/// Once the `Builder` is configured, the `build()` method can be called to create a `SEALContext` object.
+/// The methods of the `Builder` struct are used to configure the parameters of the `BGVContextBuilder` object.
+/// The `Builder` struct is used in the process of building a `BGVContextBuilder` object with the desired parameters.
+/// Once the `Builder` is configured, the `build()` method can be called to create a `BGVContextBuilder` object.
 /// The `Builder` struct is specific to the BGV scheme in the SEAL library.
 pub struct Builder {
     // Holds a pointer to the C++ object
-    pub inner: cxx::UniquePtr<ffi::SEALContext>,
+    pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
 }
 
 impl Builder {
@@ -271,7 +223,7 @@ impl Builder {
     //     Ok(Context { inner: context_ptr })
     // }
 
-    // fn metric_set(self, metric: Metric) -> Result<Builder, BGVError> {
+    // fn metric_set(self, metric: Metric) -> Result<Builder, zno_fhe::BGVError> {
     //     // Delegate to the implementation for each field.
     //     match metric {
     //         Metric::Bits(value) => self.set_bits(value),
@@ -383,68 +335,68 @@ impl Display for FFIError {
     //     galois
     // }
 // }
-impl Setters for Builder {
-//     fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
+impl zno_fhe::Setters for Builder {
+//     fn set_bits<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
 //     where
 //         Self: Sized,
 //         T: ToU32<E>,
-//         E: Into<SetError>,
+//         E: Into<zno_fhe::SetError>,
 //     {
-//         let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+//         let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
 //         // Assuming `ffi::set_bits` returns Result<(), BitsError>
 //         self.inner = ffi::set_bits(self.inner, u32_value);
 //         Ok(self)
 //     }
 
-//     fn set_c<T, E>(mut self, value: T) -> Result<Self, BGVError>
+//     fn set_c<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
 //     where
 //         Self: Sized,
 //         T: ToU32<E>,
-//         E: Into<SetError>,
+//         E: Into<zno_fhe::SetError>,
 //     {
-//         let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+//         let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
 //         // Assuming `ffi::set_c` returns Result<(), CError>
 //         self.inner = ffi::set_c(self.inner, u32_value);
 //         Ok(self)
 //     }
 
-    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
+    fn set_m<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
     where
         Self: Sized,
         T: ToU32<E>,
-        E: Into<SetError>,
+        E: Into<zno_fhe::SetError>,
     {
-        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+        let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
         // Assumes `ffi::set_m` returns Result<(), MError>
         self.inner = ffi::set_m(self.inner, u32_value);
         Ok(self)
     }
 
-//     fn set_p<T, E>(mut self, value: T) -> Result<Self, BGVError>
+//     fn set_p<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
 //     where
 //         Self: Sized,
 //         T: ToU32<E>,
-//         E: Into<SetError>,
+//         E: Into<zno_fhe::SetError>,
 //     {
-//         let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+//         let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
 //         // Assuming `ffi::set_p` returns Result<(), PError>
 //         self.inner = ffi::set_p(self.inner, u32_value);
 //         Ok(self)
 //     }
 
-//     fn set_r<T, E>(mut self, value: T) -> Result<Self, BGVError>
+//     fn set_r<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
 //     where
 //         Self: Sized,
 //         T: ToU32<E>,
-//         E: Into<SetError>,
+//         E: Into<zno_fhe::SetError>,
 //     {
-//         let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+//         let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
 //         // Assuming `ffi::set_r` returns Result<(), RError>
 //         self.inner = ffi::set_r(self.inner, u32_value);
 //         Ok(self)
 //     }
 
-    fn set(self, value: Metric) -> Result<Self, BGVError>
+    fn set(self, value: Metric) -> Result<Self, zno_fhe::BGVError>
     {
 
         // Convert `value` into `Metric`, since `Into` is infallible
@@ -453,7 +405,7 @@ impl Setters for Builder {
         self.metric_set(metric)
     }
 
-    fn try_set<T: TryInto<Metric, Error=BGVError>>(self, value: T) -> Result<Self, BGVError>
+    fn try_set<T: TryInto<Metric, Error=zno_fhe::BGVError>>(self, value: T) -> Result<Self, zno_fhe::BGVError>
     where
         Self: Sized,
     {
@@ -480,11 +432,11 @@ mod tests {
     #[derive(Debug, PartialEq)]
     struct TestError(String);
 
-    // Assuming BGVError can encapsulate or be constructed from TestError
-    impl From<TestError> for BGVError {
+    // Assuming zno_fhe::BGVError can encapsulate or be constructed from TestError
+    impl From<TestError> for zno_fhe::BGVError {
         fn from(e: TestError) -> Self {
             match e {
-                TestError(s) => BGVError::GenericError(GenericError { kind: GenericErrorKind::Unexpected(s) })
+                TestError(s) => zno_fhe::BGVError::GenericError(GenericError { kind: GenericErrorKind::Unexpected(s) })
             }
         }
     }

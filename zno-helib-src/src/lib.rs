@@ -180,7 +180,7 @@ impl Build {
             .define("CMAKE_CXX_STANDARD", "17")
             .pipe( |c| if cfg!(feature = "static") {
                 c.define("BUILD_SHARED", "OFF")
-            } else { c.define("BUILD_SHARED", "ON") })            .pipe( |c| if cfg!(feature = "package") {
+            } else { c.define("BUILD_SHARED", "ON") }).pipe( |c| if cfg!(feature = "package") {
                 c.define("PACKAGE_BUILD", "ON")
             } else { c.define("PACKAGE_BUILD", "OFF") })
             .pipe( |c| if cfg!(feature = "tests") {

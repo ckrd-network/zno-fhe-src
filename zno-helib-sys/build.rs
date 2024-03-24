@@ -51,8 +51,10 @@ fn main() -> miette::Result<()> {
     // Output the linker flags for the compiled wrapper C++ source
     println!("cargo:rustc-link-search=native={}", ffi_dir.display());
     // println!("cargo:rustc-link-lib=dylib=ffi_wrapper");
-    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
-    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
+
+    // Consider moving these triggers to an rebuild script.
+    // println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
+    // println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
 
     // Compile cxx generated bindings.  This is the name of the Rust FFI library
     // that includes the generated Rust bindings for C++ code.
@@ -69,9 +71,10 @@ fn main() -> miette::Result<()> {
             .flag_if_supported("-std=c++17")
             .compile("helib-context"); // compile cxx generated bindings
 
-    println!("cargo:rerun-if-changed=src/lib.rs");
-    println!("cargo:rerun-if-changed=ffi/helib/helib.h");
-
+    // Consider moving these triggers to an rebuild script.
+    // println!("cargo:rerun-if-changed=src/lib.rs");
+    // println!("cargo:rerun-if-changed=ffi/helib/helib.h");
+    
     // Add instructions to link to any C++ libraries you need.
 
     let rtfcts = Build::new().artifacts();

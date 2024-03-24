@@ -28,11 +28,8 @@ exclude = [
 ]
 
 [features]
-default = ["static","package"]
+default = ["static"]
 static = []
-# This option bundles SEAL and its dependencies (NTL and GMP) in one directory
-# which can then be moved around freely on the system.
-package = []
 tests = []
 
 [dependencies]

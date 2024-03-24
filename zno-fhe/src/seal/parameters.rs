@@ -1,14 +1,14 @@
-use super::m::M;
-// use super::p::P;
-// use super::r::R;
-// use super::c::C;
-// use super::bits::Bits;
-// use super::gens::Gens;
-// use super::ords::Ords;
-// use super::mvec::Mvec;
-// use super::bootstrap::Bootstrap;
-// use super::bootstrappable::Bootstrappable;
-use crate::bgv::BGVError;
+use super::bgv::m::M;
+// use super::bgv::p::P;
+// use super::bgv::r::R;
+// use super::bgv::c::C;
+// use super::bgv::bits::Bits;
+// use super::bgv::gens::Gens;
+// use super::bgv::ords::Ords;
+// use super::bgv::mvec::Mvec;
+// use super::bgv::bootstrap::Bootstrap;
+// use super::bgv::bootstrappable::Bootstrappable;
+use crate::BGVError;
 use core::fmt;
 
 #[cfg(not(any(feature = "helib", feature = "openfhe", feature = "seal")))]
@@ -138,8 +138,6 @@ compile_error!("You must enable one of the features: `default` or`seal`");
 ///     bootstrappable: Bootstrappable::new(true),
 /// };
 /// ```
-
-use cxx::ExternType;
 
 #[repr(C)]
 pub struct Parameters {

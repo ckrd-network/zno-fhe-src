@@ -1,16 +1,10 @@
 use core::fmt;
 
-use super::bits::BitsError;
-use super::bootstrap::BootstrapError;
-use super::bootstrappable::BootstrappableError;
-use super::c::CError;
-use super::context::ConstructionError;
-use super::gens::GensError;
-use super::m::{MError, MErrorKind};
-use super::mvec::MvecError;
-use super::ords::OrdsError;
-use super::p::PError;
-use super::r::RError;
+#[cfg(feature = "helib")]
+use crate::helib::error;
+
+#[cfg(feature = "seal")]
+use crate::seal::error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum BGVError {

@@ -11,18 +11,30 @@ use std::sync::{Arc, Mutex};
 
 mod fhe;
 
-enum Fhe<S, B: Builder<S>> {
+// Marker trait for types implementing:
+// Decryptable
+// Encryptable
+trait Fhe {}
+
+enum FheState<S, B: Builder<S>> {
     Builder(B),
     Initialized(S),
     Raw(S),
-}
-pub enum Fhe {
-    Builder(Builder),
-    Initialized(Initialized),
-    Raw(Raw),
     Encrypted(Encrypted),
     Decrypted(Decrypted),
 }
+// enum FheState<S, B: Builder<S>> {
+//     Builder(B),
+//     Initialized(S),
+//     Raw(S),
+// }
+// pub enum FheState {
+//     Builder(Builder),
+//     Initialized(Initialized),
+//     Raw(Raw),
+//     Encrypted(Encrypted),
+//     Decrypted(Decrypted),
+// }
 pub trait Fhe {
     type Parameters;
     type Context;
@@ -44,7 +56,7 @@ pub struct SecretKey {
 // But that's OK because the point is to prevent borrowing in the first place.
 
 trait Builder<S>: Sized {
-    fn init(self, scheme: Scheme) -> Fhe<S, Self>;
+    fn init(self, scheme: Scheme) -> FheState<S, Self>;
 
     fn build(self) -> Option<S>;
 }
@@ -85,13 +97,13 @@ struct BgvBuilder;
 
 impl Builder<Bgv> for BgvBuilder {
 
-    fn init(self, scheme: Scheme) -> Fhe<Bgv, Self> {
+    fn init(self, scheme: Scheme) -> FheState<Bgv, Self> {
         // commence initializing the BGV scheme...
         // ... then move to the next state
-        Fhe::Initialized(Bgv)
+        FheState::Initialized(Bgv)
     }
 
-    fn build(self) -> Fhe<Bgv, Self> {
+    fn build(self) -> FheState<Bgv, Self> {
         // complete initializing the BGV scheme...
         // ... then move to the next state
         Vault::Decryptable(scheme, Raw)
@@ -133,26 +145,24 @@ fn test() {
     assert_eq!(vec![0,1,2,3], raw);
 }
 
-fn build<S, B: Builder<S>>(target: Fhe<S, B>) -> Result<S, Error> {
+fn build<S, B: Builder<S>>(target: FheState<S, B>) -> Result<S, Error> {
     // in production, `scheme` comes from an environment variable, proc-macro, configuration file, etc.
     let scheme = Some(Bgv);
 
     match target {
-        Fhe::Builder(builder) => {
+        FheState::Builder(builder) => {
             if let Some(s) = scheme {
                 build(builder.init(s))
             } else {
                 Ok(builder.done().ok_or(Error::NotDone)?)
             }
         }
-        Fhe::Initialized(scheme) => Ok(scheme),
-        Fhe::Raw(_) => todo!(),
+        FheState::Initialized(scheme) => Ok(scheme),
+        FheState::Raw(_) => todo!(),
+        FheState::Decrypted(_) => todo!(),
+        FheState::Encrypted(_) => todo!(),
     }
 }
-
-// Marker trait for the generic constraint on the Fhe types:
-//
-trait Fhe {}
 
 pub struct Rawtext {
     // fields for the rawtext

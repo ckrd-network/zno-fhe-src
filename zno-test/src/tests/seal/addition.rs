@@ -3,6 +3,8 @@
 pub struct FheU64(u64);
 
 // Take two encrypted values, return their encrypted sum as a decryptable number.
+// fn myapp<A: Fhe, B: Fhe>(a: A, b: B) {}
+#[zno()]
 pub fn myapp(a: Fhe, b: Fhe) -> Fhe {
     // proc macro will impl an into() for FheU64:
     //
@@ -13,6 +15,8 @@ pub fn myapp(a: Fhe, b: Fhe) -> Fhe {
 pub struct MyFhe(u64);
 
 // Take two encrypted values, return their encrypted sum as a decryptable number.
+// fn myapp2<A: Fhe, B: Fhe>(a: A, b: B) => Result<> {}
+#[zno()]
 pub fn myapp2(a: Fhe, b: Fhe) -> Fhe {
     a + b
 }

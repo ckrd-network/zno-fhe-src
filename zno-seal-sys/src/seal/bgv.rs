@@ -336,17 +336,19 @@ impl Display for FFIError {
     // }
 // }
 impl zno_fhe::Setters for Builder {
-//     fn set_bits<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
-//     where
-//         Self: Sized,
-//         T: ToU32<E>,
-//         E: Into<zno_fhe::SetError>,
-//     {
-//         let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
-//         // Assuming `ffi::set_bits` returns Result<(), BitsError>
-//         self.inner = ffi::set_bits(self.inner, u32_value);
-//         Ok(self)
-//     }
+
+    // fn set_bits<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
+    // where
+    //     Self: Sized,
+    //     T: ToU32<E>,
+    //     E: Into<zno_fhe::SetError>,
+    // {
+    //     todo!()
+    //     // let u32_value = value.to_u32().map_err(Into::<zno_fhe::SetError>::into).map_err(Into::<zno_fhe::BGVError>::into)?;
+    //     // // Assuming `ffi::set_bits` returns Result<(), BitsError>
+    //     // self.inner = ffi::set_bits(self.inner, u32_value);
+    //     // Ok(self)
+    // }
 
 //     fn set_c<T, E>(mut self, value: T) -> Result<Self, zno_fhe::BGVError>
 //     where

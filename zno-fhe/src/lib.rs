@@ -7,11 +7,15 @@ mod helib;
 #[cfg(feature = "seal")]
 mod seal;
 
+pub mod context;
 pub mod error;
 pub mod metric;
+pub mod schema;
 
+pub use self::context::*;
 pub use self::error::*;
 pub use self::metric::*;
+pub use self::schema::*;
 
 // Re-export the types for external use as `crate::bgv::<type>`
 // pub use self::m::*;
@@ -102,6 +106,10 @@ use std::sync::{Arc, Mutex};
 
 //     fn decrypt(self, scheme: S) -> Vault<S, Self, E>;
 // }
+
+pub trait ToU32<E> {
+    fn to_u32(&self) -> Result<u32, E>;
+}
 
 enum Vault<S, D: Decryptable<S, E>, E: Encryptable<S, D>> {
     Encryptable(S,D),

@@ -180,21 +180,21 @@ impl core::fmt::Display for Parameters {
 
 impl Parameters {
     #[cfg(feature = "helib")]
-    pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
+    pub fn context(self) -> Result<super::Context, BGVError> {
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::seal::bgv::ffi::Context>
-        crate::bgv::Context::new(self)
+        super::Context::new(self)
     }
     #[cfg(feature = "openfhe")]
     pub fn context(self) -> Result<crate::bgv::Context, BGVError> {
         todo!();
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::openfhe::Context>
-        crate::openfhe::Context::new(self)
+        super::Context::new(self)
     }
     #[cfg(feature = "seal")]
-    pub fn context(self) -> Result<crate::seal::Context, BGVError> {
+    pub fn context(self) -> Result<super::Context, BGVError> {
         todo!();
         // Note: the `inner` attribute contains cxx::UniquePtr<crate::seal::Context>
-        crate::seal::Context::new(self)
+        super::Context::new(self)
     }
 }
 

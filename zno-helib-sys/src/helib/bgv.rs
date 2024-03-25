@@ -49,11 +49,6 @@ pub mod ffi {
 
         fn getM(self: &Context) -> i64;
     }
-
-    extern "Rust" {
-        type M;
-        type MError;
-    }
 }
 
 impl Builder {

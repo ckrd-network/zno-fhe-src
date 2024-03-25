@@ -5,56 +5,6 @@ pub mod context;
 // Re-export the types for external use as `crate::bgv::<type>`
 pub use self::context::*;
 
-
-pub trait ToU32<E> {
-    fn to_u32(&self) -> Result<u32, E>;
-}
-
-/// A marker trait for homomorphic encryption schemes.
-///
-/// Homomorphic encryption allows computations on encrypted data without
-/// needing to decrypt it first. Implementors of this trait indicate
-/// that they provide such functionality.
-///
-/// # Examples
-///
-/// ```
-/// # use your_crate::{He, Schema};
-/// struct Bgv; // Your implementation for BGV schema.
-///
-/// impl He for Bgv {
-///     fn schema(&self) -> Schema {
-///         Schema::Bgv
-///     }
-/// }
-///
-/// let scheme = Bgv;
-/// assert_eq!(scheme.schema(), Schema::Bgv);
-/// ```
-pub trait He {
-    /// Returns the homomorphic encryption schema being used.
-    ///
-    /// This method allows users to query the underlying schema of a homomorphic
-    /// encryption implementation, such as BGV, BFV, CKKS, etc.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use your_crate::{He, Schema};
-    /// struct Bgv;
-    ///
-    /// impl He for Bgv {
-    ///     fn schema(&self) -> Schema {
-    ///         Schema::Bgv
-    ///     }
-    /// }
-    ///
-    /// let scheme = Bgv;
-    /// assert_eq!(scheme.schema(), Schema::Bgv);
-    /// ```
-    fn schema(&self) -> Schema;
-}
-
 /// Enumerates the various homomorphic encryption schemas available.
 ///
 /// Each variant represents a different scheme with its own set of features
@@ -67,8 +17,7 @@ pub trait He {
 /// let schema = Schema::Bgv;
 /// ```
 pub enum Schema {
-    /// The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
-    Bgv,
+    Bgv, // The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
     // Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
     // Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
 }
@@ -114,7 +63,7 @@ pub enum Schema {
 /// `Into<Metric>` does not fail. If a failure is possible, it is advised
 /// to implement `TryInto` trait and provide details in the implementation's
 /// documentation.
-pub trait Scheme: He + Into<Metric> {}
+pub trait Scheme: He + Into<zno_fhe::Metric> {}
 
 // Implement the Scheme marker trait for required types
 // This enforces implementation of required traits: He, Into<Metric>
@@ -123,7 +72,7 @@ pub trait Scheme: He + Into<Metric> {}
 // impl Scheme for Bootstrappable {}
 // impl Scheme for C {}
 // impl Scheme for Gens {}
-impl Scheme for M {}
+impl Scheme for zno_fhe::M {}
 // impl Scheme for Mvec {}
 // impl Scheme for Ords {}
 // impl Scheme for P {}

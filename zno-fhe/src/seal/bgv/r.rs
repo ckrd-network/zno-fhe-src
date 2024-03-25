@@ -1,3 +1,6 @@
+use crate::seal::bgv::*;
+
+
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
@@ -155,7 +158,7 @@ impl R {
 /// Returns an `RError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// indicating the number was zero or never present.
 /// The error specifies the conversion attempt from "R" to "u32".
-impl crate::bgv::ToU32<RError> for R {
+impl ToU32<RError> for R {
     fn to_u32(&self) -> Result<u32, RError> {
         match self {
             R::Some(non_zero_u32) => Ok(non_zero_u32.get()),

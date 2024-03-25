@@ -53,8 +53,7 @@ pub struct SecretKey {
 }
 
 // Binding to Sized means borrowing is not possible.
-// But that's OK because the point is to prevent borrowing in the first place.
-
+// But that's OK because the point of the builder is to prevent borrowing in the first place - until `.build()` returns.
 trait Builder<S>: Sized {
     fn init(self, scheme: Scheme) -> FheState<S, Self>;
 

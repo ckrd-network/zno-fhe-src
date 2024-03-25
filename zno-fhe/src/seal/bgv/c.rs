@@ -1,3 +1,6 @@
+use crate::seal::bgv::*;
+
+
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
@@ -175,7 +178,7 @@ impl C {
 /// Returns a `CError` with the kind `OutOfRange` if `self` is not `Some`,
 /// indicating the absence of a valid value. The error details the conversion attempt
 /// from "u32" to "C".
-impl crate::bgv::ToU32<CError> for C {
+impl ToU32<CError> for C {
     fn to_u32(&self) -> Result<u32, CError> {
         match self {
             C::Some(non_zero_u32) => Ok(non_zero_u32.get()),

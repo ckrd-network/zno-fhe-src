@@ -1,3 +1,5 @@
+use crate::helib::bgv::*;
+
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
@@ -134,7 +136,7 @@ impl P {
 /// Returns a `PError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// meaning the number was zero or never there.
 /// The error details where the problem happened: from "u32" to "P".
-impl crate::bgv::ToU32<PError> for P {
+impl ToU32<PError> for P {
     fn to_u32(&self) -> Result<u32, PError> {
         match self {
             P::Some(non_zero_u32) => Ok(non_zero_u32.get()),

@@ -3,12 +3,15 @@
 
 // Define methods for the Rust struct helib::Context.
 // Logic specific to the HElib implementation belongs here.
-impl Context for Context {
+impl FheContext for Context {
+    type P = crate::helib::bgv::Parameters;
+    type E = BGVError;
+
 
     // Create a new instance of the C++ object Context.
     // This is safe because we're not exposing the inner pointer directly.
     // Logic specific to the HElib implementation belongs here.
-    fn new(params: crate::bgv::Parameters) -> Result<Self, BGVError> {
+    fn new(params: Self::P) -> Result<Self, Self::E> {
         let mut params = params; // Make params mutable
         let cb: Builder = Builder::new()
                      .set(params.m.into())?

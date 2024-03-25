@@ -73,7 +73,7 @@ impl core::fmt::Display for ConstructionError {
     }
 }
 
-pub trait Context {
+pub trait FheContext {
     type P: Parameters;
     type E: FheError;
 
@@ -83,13 +83,13 @@ pub trait Context {
 }
 
 /// Define the Rust struct to represent the C++ Context class
-pub struct Context<C: Context> {
+pub struct Context<C: FheContext> {
     inner: C,
 }
 
 // Define methods for the Rust struct Context.
 // Logic common across implementations belongs here.
-impl<C: Context> Context<C> {
+impl<C: FheContext> Context<C> {
 
     pub fn new<P: Parameters, E: FheError>(params: P) -> Result<Self, E> {
         let inner = C::new(params)?;

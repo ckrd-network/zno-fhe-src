@@ -1,11 +1,16 @@
+use crate::seal::parameters::Parameters;
+use crate::prelude::*;
+
 // Define methods for the Rust struct seal::Context.
 // Logic specific to the SEAL implementation belongs here.
-impl Context for Context {
+impl FheContext for Context {
+    type P = Parameters;
+    type E = BGVError;
 
     // Create a new instance of the C++ object Context.
     // This is safe because we're not exposing the inner pointer directly.
     // Logic specific to the SEAL implementation belongs here.
-    fn new(params: crate::bgv::Parameters) -> Result<Self, BGVError> {
+    fn new(params: Self::P) -> Result<Self, Self::E> {
         let mut params = params; // Make params mutable
         let cb: Builder = Builder::new()
                      .set(params.m.into())?

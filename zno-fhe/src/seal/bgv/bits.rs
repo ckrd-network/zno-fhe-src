@@ -1,3 +1,6 @@
+use crate::seal::bgv::*;
+
+
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
@@ -175,7 +178,7 @@ impl Bits {
 /// Returns an `BitsError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// meaning the number was zero or never there.
 /// The error details where the problem happened: from "u32" to "Bits".
-impl crate::bgv::ToU32<BitsError> for Bits {
+impl ToU32<BitsError> for Bits {
     fn to_u32(&self) -> Result<u32, BitsError> {
         match self {
             Bits::Some(non_zero_u32) => Ok(non_zero_u32.get()),

@@ -1,36 +1,32 @@
-use crate::seal::bgv;
+use crate::seal::bgv::*;
+
+use crate::prelude::*;
 
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
 use std::convert::{Infallible, TryInto};
 
-use crate::prelude::*;
-
 /// Represents the cyclotomic order parameter `m` in BGV.
 ///
 /// In SEAL's BGV encryption scheme, the parameter `m` determines the cyclotomic order, which is crucial for defining the polynomial ring over which computations are performed.
 /// The choice of `m` affects the security and efficiency of the cryptographic operations.
 ///
-/// The BGV scheme operates on polynomials in a ring R = Z[x]/(ϕ_m(x)), where Z represents the integers, x is an indeterminate, and ϕ_m(x) is the m-th cyclotomic polynomial. The cyclotomic polynomial is defined as the minimal polynomial over the integers for the primitive m-th roots of unity.
+/// The value of `m` is a trade-off between security and performance, and it is chosen according to the specific requirements of the application and the computational resources available.
 ///
-/// The order $m$ is typically chosen as a product of distinct prime numbers, where each prime is of the form $k*2^n + 1$ for integers $k$ and $n$. This choice ensures that the m-th roots of unity exist in the field of complex numbers and that $ϕ_m(x)$ splits into linear factors over the field $Z_p$ for a suitable prime $p$.
-///
-/// The value of $m$ is a trade-off between security and performance, and it is chosen according to the specific requirements of the application and the computational resources available.
-///
-/// - **Security:** The security of the scheme is based on the hardness of lattice problems, and the parameter m influences the complexity of these problems. Specifically, it affects the dimension of the lattice, which is a key factor in its security.
-/// - **Efficiency:** The value of $m$ also determines the efficiency of the scheme. Larger m can provide better security but at the cost of increased computational overhead. It affects the size of the polynomials and thus the computational complexity of the scheme's operations.
-/// - **Slots for Packing:** In homomorphic encryption, one often uses "packing" techniques to encode multiple plaintext values into a single ciphertext. The parameter $m$ affects how many such values can be packed into a single ciphertext, which is crucial for the performance of homomorphic computations on vectors of data.
+/// - **Security:** The security of the scheme is based on the hardness of lattice problems, and the parameter `m` influences the complexity of these problems. Specifically, it affects the dimension of the lattice, which is a key factor in its security.
+/// - **Efficiency:** The value of m also determines the efficiency of the scheme. Larger m can provide better security but at the cost of increased computational overhead. It affects the size of the polynomials and thus the computational complexity of the scheme's operations.
+/// - **Slots for Packing:** In homomorphic encryption, one often uses "packing" techniques to encode multiple plaintext values into a single ciphertext. The parameter `m` affects how many such values can be packed into a single ciphertext, which is crucial for the performance of homomorphic computations on vectors of data.
 ///
 /// ## Range in this FFI Implementation:
 ///
 /// This FFI implementation accepts a limited range of values for `m`. Currently, the type
-/// uses `NonZeroU32`. This provides a range between 1 and 4,294,967,295 (both inclusive), excluding the value zero.
+/// uses `NonZeroU32`. This provides a range of 1 to 4,294,967,295 (both inclusive).
 ///
 /// ## Range in SEAL:
 ///
 /// In SEAL, the choice of `m` is significant as it influences the security level and the efficiency of operations. Larger values of `m` provide better security but increase computational requirements.
-/// Users should refer to SEAL's official documentation or relevant cryptographic literature for detailed guidelines on selecting `m`.
+/// Users should refer to SEAL's official documentation or relevant cryptographic literature for detailed guidelines on manually selecting `m`.
 ///
 /// # Example
 ///
@@ -40,8 +36,6 @@ use crate::prelude::*;
 /// assert_eq!(m.to_string(), "32");
 /// ```
 ///
-
-
 /// A non-zero unsigned 32-bit integer.
 ///
 /// # Examples
@@ -190,7 +184,7 @@ impl M {
 /// Returns an `MError` with the kind `OutOfRange` if `self` is not a `Some`,
 /// meaning the number was zero or never there.
 /// The error details where the problem happened: from "u32" to "M".
-impl bgv::ToU32<MError> for M {
+impl ToU32<MError> for M {
     fn to_u32(&self) -> Result<u32, MError> {
         match self {
             M::Some(non_zero_u32) => Ok(non_zero_u32.get()),

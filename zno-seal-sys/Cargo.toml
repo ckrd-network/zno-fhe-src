@@ -29,8 +29,6 @@ crate-type = ["rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-zno-fhe.workspace = true
-
 cxx.workspace = true
 libc.workspace = true
 num-traits.workspace = true

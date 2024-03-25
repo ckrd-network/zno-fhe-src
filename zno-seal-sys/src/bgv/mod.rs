@@ -5,55 +5,6 @@ pub mod context;
 // Re-export the types for external use as `crate::bgv::<type>`
 pub use self::context::*;
 
-pub trait ToU32<E> {
-    fn to_u32(&self) -> Result<u32, E>;
-}
-
-/// A marker trait for homomorphic encryption schemes.
-///
-/// Homomorphic encryption allows computations on encrypted data without
-/// needing to decrypt it first. Implementors of this trait indicate
-/// that they provide such functionality.
-///
-/// # Examples
-///
-/// ```
-/// # use your_crate::{He, Schema};
-/// struct Bgv; // Your implementation for BGV schema.
-///
-/// impl He for Bgv {
-///     fn schema(&self) -> Schema {
-///         Schema::Bgv
-///     }
-/// }
-///
-/// let scheme = Bgv;
-/// assert_eq!(scheme.schema(), Schema::Bgv);
-/// ```
-pub trait He {
-    /// Returns the homomorphic encryption schema being used.
-    ///
-    /// This method allows users to query the underlying schema of a homomorphic
-    /// encryption implementation, such as BGV, BFV, CKKS, etc.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use crate::{He, Schema};
-    /// struct Bgv;
-    ///
-    /// impl He for Bgv {
-    ///     fn schema(&self) -> Schema {
-    ///         Schema::Bgv
-    ///     }
-    /// }
-    ///
-    /// let scheme = Bgv;
-    /// assert_eq!(scheme.schema(), Schema::Bgv);
-    /// ```
-    fn schema(&self) -> Schema;
-}
-
 /// Enumerates the various homomorphic encryption schemas available.
 ///
 /// Each variant represents a different scheme with its own set of features
@@ -67,8 +18,8 @@ pub trait He {
 /// ```
 pub enum Schema {
     Bgv, // The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
-    Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
-    Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
+    // Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
+    // Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
 }
 
 /// A trait for types that represent a homomorphic encryption scheme

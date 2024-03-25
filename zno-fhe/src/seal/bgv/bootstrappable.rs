@@ -1,6 +1,8 @@
 use std::fmt;
 use core::str::FromStr;
 
+use crate::prelude::*;
+
 /// Represents the bootstrapping capability status in the BGV scheme.
 ///
 /// In the BGV encryption scheme as implemented by SEAL, the `bootstrappable` parameter indicates

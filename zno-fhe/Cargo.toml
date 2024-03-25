@@ -19,8 +19,10 @@ keywords.workspace = true
 path = "src/lib.rs"
 
 [dependencies]
+zno-seal-sys = { workspace = true, optional = true}
+# zno-helib-sys = { workspace = true, optional = true}
 
 [features]
 default = ["seal"]
 seal = []
-helib = []
+# helib = []

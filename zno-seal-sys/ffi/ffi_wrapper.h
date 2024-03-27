@@ -19,7 +19,6 @@ namespace seal {
     using Parameters = EncryptionParameters;
     using Context = SEALContext;
 
-    using Schema = scheme_type;
     using SecurityLevel = sec_level_type;
 
   /**
@@ -42,11 +41,37 @@ namespace seal {
   std::unique_ptr<std::string> version();
 
   /**
+   * @brief Creates a new EncryptionParameters object with the given scheme.
+   *
+   * @param scheme The encryption scheme to be used. This should be a value from the seal::scheme_type enum.
+   * @return std::unique_ptr<seal::EncryptionParameters> A unique pointer to the created EncryptionParameters object.
+   */
+  std::unique_ptr<seal::EncryptionParameters> new_encryption_parameters(uint8_t scheme);
+
+  /**
+   * @brief Retrieves the encryption scheme used in the given EncryptionParameters object.
+   *
+   * @note This function does not modify the unique_ptr or the EncryptionParameters object it points to. It only reads from the EncryptionParameters object. Therefore, we pass the `std::unique_ptr` by const reference. This means that the function will not change the state of the `std::unique_ptr` itself (i.e., it won't make it point to a different `EncryptionParameters` object) and it will not change the state of the `EncryptionParameters` object that the `std::unique_ptr` is pointing to (i.e., it won't change any of the properties or call any non-const methods on the `EncryptionParameters` object).  In other words, this function is a "read-only" operation on the `std::unique_ptr` and the `EncryptionParameters` object it points to. It won't change anything about them; it will only retrieve information from them.
+   *
+   * @param enc_params A const reference to a unique pointer to the EncryptionParameters object.
+   * @return uint8_t The encryption scheme used in the EncryptionParameters object. This is a value from the seal::scheme_type enum.
+   */
+  uint8_t get_scheme(const std::unique_ptr<seal::EncryptionParameters>& enc_params);
+  /**
+   * @brief Sets the encryption scheme in the given EncryptionParameters object.
+   *
+   * @note This function will replace the existing EncryptionParameters object with a new one that uses the given scheme.
+   *
+   * @param enc_params A unique pointer to the EncryptionParameters object. This object will be replaced.
+   * @param scheme The new encryption scheme to be used. This should be a value from the seal::scheme_type enum.
+   */
+  void set_scheme(std::unique_ptr<seal::EncryptionParameters>& enc_params, uint8_t scheme);
+  /**
    * Creates a new BGVContextBuilder object.
    *
    * @return A unique pointer to the newly created ContextBuilder<BGV> object.
    */
-  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema);
+  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<u_int8_t> schema);
 
   std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder);
 

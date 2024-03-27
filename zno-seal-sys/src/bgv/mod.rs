@@ -1,79 +1,71 @@
-// Include the modules
-pub mod context;
+pub mod version;
 
+use core::pin::Pin;
+use core::fmt;
+use core::convert::TryFrom;
+use core::convert::TryInto;
+use std::ptr;
+use std::{fmt::{Display, Formatter}, error::Error};
 
-// Re-export the types for external use as `crate::bgv::<type>`
-pub use self::context::*;
+use cxx::CxxString;
+use cxx::CxxVector;
+use cxx::UniquePtr;
 
-/// Enumerates the various homomorphic encryption schemas available.
-///
-/// Each variant represents a different scheme with its own set of features
-/// and trade-offs.
-///
-/// # Examples
-///
-/// ```
-/// # use crate::Schema;
-/// let schema = Schema::Bgv;
-/// ```
-pub enum Schema {
-    Bgv, // The Brakerski-Gentry-Vaikuntanathan (BGV) scheme.
-    // Bfv, // The Brakerski/Fan-Vercauteren (BFV) scheme.
-    // Ckks, // The Cheon-Kim-Kim-Song (CKKS) scheme.
+// Import the BGV struct and its fields
+use crate::bgv::*;
+use crate::prelude::*;
+
+#[cxx::bridge(namespace="seal")]
+pub mod ffi {
+
+    unsafe extern "C++" {
+        include!("zno-seal-sys/ffi/ffi_wrapper.h");
+
+        type EncryptionParameters;
+
+        fn get_scheme(params: UniquePtr<EncryptionParameters>) -> u8;
+        fn set_scheme(params: UniquePtr<EncryptionParameters>, scheme: u8);
+
+        type BGVContextBuilder;
+        type Context;
+        type Ciphertext;
+        type Plaintext;
+        type SecretKey;
+        type PublicKey;
+        type RelinKeys;
+        type GaloisKeys;
+
+        type Parameters;
+        type SecurityLevel;
+
+        fn version() -> UniquePtr<CxxString>;
+
+        fn init(schema: UniquePtr<CxxU8>) -> UniquePtr<BGVContextBuilder>;
+
+        fn build(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
+
+        fn set_m(builder: UniquePtr<BGVContextBuilder>, m: u32) -> UniquePtr<BGVContextBuilder>;
+
+        // // Methods of SEALContext
+        // fn get_context_data(self: &SEALContext);
+        // fn key_context_data(self: &SEALContext);
+        // fn first_context_data(self: &SEALContext);
+        // fn parameters_set(self: &SEALContext);
+        // fn first_parms_id(self: &SEALContext);
+        // fn last_parms_id(self: &SEALContext);
+        // fn using_keyswitching(self: &SEALContext);
+
+        // Pending implementation...
+        //
+        // // ... from_*_str function load helper methods for SEALContext.
+        // // The `load` functions are member functions of the `Ciphertext`, `Plaintext`, `SecretKey`, `PublicKey`, `RelinKeys`, and `GaloisKeys` classes.
+        // fn load(self: Pin<&mut Ciphertext>, context: &SEALContext, in_stream: &String);
+        // fn load(self: Pin<&mut Plaintext>, context: &SEALContext, in_stream: &String);
+        // fn load(self: Pin<&mut SecretKey>, context: &SEALContext, in_stream: &String);
+        // fn load(self: Pin<&mut PublicKey>, context: &SEALContext, in_stream: &String);
+        // fn load(self: Pin<&mut RelinKeys>, context: &SEALContext, in_stream: &String);
+        // // fn loader(self: Pin<&mut GaloisKeys>, context: &SEALContext, in_stream: &String);
+        // fn loader(self: Pin<&mut GaloisKeysWrapper>, context: &SEALContext, in_str: &str) -> i64;
+    }
+
 }
-
-/// A trait for types that represent a homomorphic encryption scheme
-/// and can be converted into a `Metric`.
-///
-/// Types implementing `Scheme` can be used with structures or functions
-/// expecting a homomorphic encryption context, and they can also be
-/// converted into a `Metric` to provide a standardized interface for
-/// metrics or statistics collection.
-///
-/// # Examples
-///
-/// Assuming `Bgv` is a struct representing the BGV scheme and `Metric` is
-/// an enum that can represent various aspects of schemes:
-///
-/// ```
-/// # use crate::{He, Scheme, Schema, Metric};
-/// struct Bgv;
-///
-/// impl He for Bgv {
-///     fn schema(&self) -> Schema {
-///         Schema::Bgv
-///     }
-/// }
-///
-/// // Assume Metric has a variant for BGV
-/// impl From<Bgv> for Metric {
-///     fn from(_: Bgv) -> Self {
-///         Metric::BgvMetrics { /* ... */ }
-///     }
-/// }
-///
-/// impl Scheme for Bgv {}
-///
-/// // Now Bgv can be used wherever Scheme is required
-/// ```
-///
-/// # Errors
-///
-/// Implementations should ensure that the conversion to `Metric` via
-/// `Into<Metric>` does not fail. If a failure is possible, it is advised
-/// to implement `TryInto` trait and provide details in the implementation's
-/// documentation.
-pub trait Scheme: He + Into<zno_fhe::Metric> {}
-
-// Implement the Scheme marker trait for required types
-// This enforces implementation of required traits: He, Into<Metric>
-// impl Scheme for Bits {}
-// impl Scheme for Bootstrap {}
-// impl Scheme for Bootstrappable {}
-// impl Scheme for C {}
-// impl Scheme for Gens {}
-impl Scheme for zno_fhe::M {}
-// impl Scheme for Mvec {}
-// impl Scheme for Ords {}
-// impl Scheme for P {}
-// impl Scheme for R {}

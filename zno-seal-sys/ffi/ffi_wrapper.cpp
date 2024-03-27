@@ -50,6 +50,22 @@ namespace seal {
     return stdVec; // this transfers ownership to the caller
   }
 
+  std::unique_ptr<seal::EncryptionParameters> new_encryption_parameters(uint8_t scheme) {
+    auto enc_params = std::make_unique<seal::EncryptionParameters>(scheme);
+    return enc_params;
+  }
+
+  uint8_t get_scheme(const std::unique_ptr<seal::EncryptionParameters>& enc_params) {
+    // Assuming scheme() returns a scheme_type
+    return static_cast<uint8_t>(enc_params->scheme());
+  }
+
+  void set_scheme(std::unique_ptr<seal::EncryptionParameters>& enc_params, uint8_t scheme) {
+    // There's no set_scheme method, so we can't change the scheme of an existing EncryptionParameters object.
+    // We need to create a new object with the desired scheme.
+    enc_params = std::make_unique<seal::EncryptionParameters>(scheme);
+  }
+
   /**
    * Creates a new BGVContextBuilder object.
    *

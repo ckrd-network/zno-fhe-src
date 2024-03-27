@@ -139,7 +139,7 @@ impl Display for FFIError {
 // #[derive(Debug)]
 pub struct Builder {
     // Holds a pointer to the C++ object
-    pub inner: cxx::UniquePtr<ffi::BGVContextBuilder>,
+    pub inner: cxx::UniquePtr<super::ffi::BGVContextBuilder>,
 }
 
 impl Setters for Builder {

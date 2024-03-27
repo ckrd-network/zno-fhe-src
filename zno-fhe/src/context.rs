@@ -84,7 +84,7 @@ pub trait FheContext {
 
 /// Define the Rust struct to represent the C++ Context class
 pub struct Context<C: FheContext> {
-    inner: C,
+    inner: cxx::UniquePtr<C>,
 }
 
 // Define methods for the Rust struct Context.

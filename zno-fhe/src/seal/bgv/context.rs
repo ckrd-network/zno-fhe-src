@@ -3,13 +3,13 @@ use crate::prelude::*;
 
 // Define methods for the Rust struct seal::Context.
 // Logic specific to the SEAL implementation belongs here.
-impl FheContext for Context {
+impl FheContext for zno_seal_sys::bgv::ffi::Context {
     type P = Parameters;
     type E = BGVError;
 
     // Create a new instance of the C++ object Context.
     // This is safe because we're not exposing the inner pointer directly.
-    // Logic specific to the SEAL implementation belongs here.
+    // Logic specific to the SEAL BGV implementation belongs here.
     fn new(params: Self::P) -> Result<Self, Self::E> {
         let mut params = params; // Make params mutable
         let cb: Builder = Builder::new()
@@ -48,12 +48,5 @@ impl FheContext for Context {
                 Err(BGVError::ConstructionError(e))
             }
         }
-    }
-}
-
-// Implement Display for printing, debugging, etc.
-impl core::fmt::Display for Context {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "Context") // How this type name should appear
     }
 }

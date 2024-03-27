@@ -120,6 +120,49 @@ enum Error {
     NotDone
 }
 
+/// A trait for types that represent a homomorphic encryption scheme
+/// and can be converted into a `Metric`.
+///
+/// Types implementing `Scheme` can be used with structures or functions
+/// expecting a homomorphic encryption context, and they can also be
+/// converted into a `Metric` to provide a standardized interface for
+/// metrics or statistics collection.
+///
+/// # Examples
+///
+/// Assuming `Bgv` is a struct representing the BGV scheme and `Metric` is
+/// an enum that can represent various aspects of schemes:
+///
+/// ```
+/// # use crate::{He, Scheme, Schema, Metric};
+/// struct Bgv;
+///
+/// impl He for Bgv {
+///     fn schema(&self) -> Schema {
+///         Schema::Bgv
+///     }
+/// }
+///
+/// // Assume Metric has a variant for BGV
+/// impl From<Bgv> for Metric {
+///     fn from(_: Bgv) -> Self {
+///         Metric::BgvMetrics { /* ... */ }
+///     }
+/// }
+///
+/// impl Scheme for Bgv {}
+///
+/// // Now Bgv can be used wherever Scheme is required
+/// ```
+///
+/// # Errors
+///
+/// Implementations should ensure that the conversion to `Metric` via
+/// `Into<Metric>` does not fail. If a failure is possible, implement
+/// `TryInto` trait and provide details in the implementation
+/// documentation.
+pub trait Scheme: He + Into<Metric> {}
+
 // // FHE scheme trait
 // trait Scheme {}
 // // BGV scheme type

@@ -10,7 +10,7 @@ pub mod mvec;
 pub mod bootstrap;
 pub mod bootstrappable;
 // pub mod parameters;
-// pub mod context;
+pub mod context;
 // pub mod error;
 // pub mod getters;
 // pub mod setters;

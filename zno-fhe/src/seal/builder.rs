@@ -8,9 +8,9 @@ use zno_seal_sys::ffi;
 /// The `Builder` struct is used in the process of building a `BGVContextBuilder` object with the desired parameters.
 /// Once the `Builder` is configured, the `build()` method can be called to create a `BGVContextBuilder` object.
 /// The `Builder` struct is specific to the BGV scheme in the SEAL library.
-pub struct Builder {
-    // Holds a pointer to the C++ object
-    pub inner: cxx::UniquePtr<self::ffi::BGVContextBuilder>,
+/// Define the Rust struct to represent the C++ Builder class
+pub struct Builder<C: FheBuilder> {
+    inner: cxx::UniquePtr<C>,
 }
 
 pub trait FheBuilder {
@@ -22,14 +22,10 @@ pub trait FheBuilder {
         Self: Sized;
 }
 
-/// Define the Rust struct to represent the C++ Context class
-pub struct Builder<C: FheBuilder> {
-    inner: cxx::UniquePtr<C>,
-}
 
-// Define methods for the Rust struct Context.
+// Define methods for the Rust struct Builder.
 // Logic common across implementations belongs here.
-impl<C: FheBuilder> Context<C> {
+impl<C: FheBuilder> Builder<C> {
 
     pub fn new<P: Parameters, E: FheError>(params: P) -> Result<Self, E> {
         let inner = C::new(params)?;
@@ -44,7 +40,19 @@ impl<C: FheBuilder> Context<C> {
 
 }
 
-impl Setters for Builder {
+impl<C: FheBuilder> Setters for Builder<C> {
+
+    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
+    where
+        Self: Sized,
+        T: ToU32<E>,
+        E: Into<SetError>,
+    {
+        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+        // Assumes `ffi::set_m` returns Result<(), MError>
+        self.inner = ffi::set_m(self.inner, u32_value);
+        Ok(self)
+    }
 
     // fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
     // where
@@ -70,18 +78,6 @@ impl Setters for Builder {
 //         self.inner = ffi::set_c(self.inner, u32_value);
 //         Ok(self)
 //     }
-
-    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
-    where
-        Self: Sized,
-        T: ToU32<E>,
-        E: Into<SetError>,
-    {
-        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
-        // Assumes `ffi::set_m` returns Result<(), MError>
-        self.inner = ffi::set_m(self.inner, u32_value);
-        Ok(self)
-    }
 
 //     fn set_p<T, E>(mut self, value: T) -> Result<Self, BGVError>
 //     where
@@ -134,11 +130,11 @@ mod tests {
 
     #[test]
     fn test_build_with_valid_builder() {
-        let builder = Builder::new();
+        let params = Parameters::default();
+        let builder = Builder::new(params).unwrap(); 
         let context = builder.build();
         assert!(context.is_ok());
     }
-
     // #[ignore = "Incomplete HELib FFI"]
     // #[test]
     // fn test_bgv_context_new() {

@@ -1,5 +1,3 @@
-pub mod version;
-
 use core::pin::Pin;
 use core::fmt;
 use core::convert::TryFrom;
@@ -12,7 +10,6 @@ use cxx::CxxVector;
 use cxx::UniquePtr;
 
 // Import the BGV struct and its fields
-use crate::bgv::*;
 use crate::prelude::*;
 
 #[cxx::bridge(namespace="seal")]
@@ -38,9 +35,9 @@ pub mod ffi {
         type Parameters;
         type SecurityLevel;
 
-        fn version() -> UniquePtr<CxxString>;
+        pub fn version() -> UniquePtr<CxxString>;
 
-        fn init(schema: UniquePtr<CxxU8>) -> UniquePtr<BGVContextBuilder>;
+        fn init(schema: u8) -> UniquePtr<BGVContextBuilder>;
 
         fn build(builder: UniquePtr<BGVContextBuilder>) -> UniquePtr<Context>;
 

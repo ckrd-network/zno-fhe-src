@@ -76,7 +76,6 @@ trait Decryptable<S, E: Encrypted<S, Self>>: Sized {
     fn decrypt(self, scheme: S) -> Vault<S, Self, E>;
 }
 
-
 enum Vault<S, D: Decryptable<S, E>, E: Encryptable<S, D>> {
     Encryptable(S,D),
     Decryptable(S,E),

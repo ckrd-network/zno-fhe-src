@@ -15,14 +15,15 @@ keywords.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-path = "src/lib.rs"
 
 [dependencies]
-zno-seal-sys = { workspace = true, optional = true}
+zno-seal-sys = { workspace = true, optional = true }
+cxx.workspace = true
+num-traits.workspace = true
 # zno-helib-sys = { workspace = true, optional = true}
 
 [features]
-default = ["seal"]
+default = ["static-seal"]
+static-seal =["zno-seal-sys/static", "seal"]
 seal = ["zno-seal-sys"]
-# helib = []
+# helib = ["zno-helib-sys"]

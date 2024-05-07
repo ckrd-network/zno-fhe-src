@@ -62,6 +62,44 @@ Tests are front and centre. We follow advice on their setup:
     `it` library as an external crate. Using the public API results in
     better API design feedback.
 
+### Suites
+
+List and run tests using clang ([issue #681](https://github.com/microsoft/SEAL/issues/681)):
+
+```shell
+library=seal
+crate_name="zno-fhe"
+target=x86_64-unknown-linux-gnu
+src_dir="$(pwd)/${crate_name}"
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --features "static-${library}" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" -- --list 2>&1 \
+           | tee cargo-test-list-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib bgv::m:: --features "static-${library}" --target $target \
+           --manifest-path "$src_dir/Cargo.toml" --verbose -- \
+           bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | \
+           tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --lib --features "static-${library}" --target $target --verbose \
+           --manifest-path $src_dir/Cargo.toml -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent \
+           --lib --features "static-${library}" --target $target --verbose \
+           --manifest-path "$src_dir/Cargo.toml"  -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --test ffi-context-bgv --features "static-${library}" --target $target \
+           --verbose --manifest-path "$src_dir/Cargo.toml" -- --nocapture 2>&1 \
+           | tee cargo-unit-test-${crate_name}.txt
+```
+
 ## FHE Libraries
 
 ### HElib
@@ -119,24 +157,25 @@ crate_name="zno-${library}-sys"
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
-cargo test --features "static helib" --target $target \
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --features "static ${library}" --target $target \
            --manifest-path "$src_dir/Cargo.toml" -- --list \
            | tee cargo-test-list-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
-cargo test --lib bgv::m:: --features "static helib" --target $target \
+cargo test --lib bgv::m:: --features "static ${library}" --target $target \
            --manifest-path "$src_dir/Cargo.toml" --verbose -- \
            bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | \
            tee cargo-unit-test-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
-cargo test --lib --features "static helib" --target $target --verbose \
+cargo test --lib --features "static ${library}" --target $target --verbose \
            --manifest-path $src_dir/Cargo.toml -- --nocapture 2>&1 \
            | tee cargo-unit-test-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
 cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent \
-           --lib --features "static helib" --target $target --verbose \
+           --lib --features "static ${library}" --target $target --verbose \
            --manifest-path "$src_dir/Cargo.toml"  -- --nocapture 2>&1 \
            | tee cargo-unit-test-${crate_name}.txt
 
@@ -196,29 +235,30 @@ crate_name="zno-${library}-sys"
 target=x86_64-unknown-linux-gnu
 src_dir="$(pwd)/${crate_name}"
 
-cargo test --features "static helib" --target $target \
+CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
+cargo test --features "static ${library}" --target $target \
            --manifest-path "$src_dir/Cargo.toml" -- --list 2>&1 \
            | tee cargo-test-list-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
-cargo test --lib bgv::m:: --features "static helib" --target $target \
+cargo test --lib bgv::m:: --features "static ${library}" --target $target \
            --manifest-path "$src_dir/Cargo.toml" --verbose -- \
            bgv::context::tests::test_get_m_zero --exact --nocapture 2>&1 | \
            tee cargo-unit-test-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
-cargo test --lib --features "static helib" --target $target --verbose \
+cargo test --lib --features "static ${library}" --target $target --verbose \
            --manifest-path $src_dir/Cargo.toml -- --nocapture 2>&1 \
            | tee cargo-unit-test-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
 cargo test bgv::bits::tests::test_new_usize_isize_arch_dependent \
-           --lib --features "static helib" --target $target --verbose \
+           --lib --features "static ${library}" --target $target --verbose \
            --manifest-path "$src_dir/Cargo.toml"  -- --nocapture 2>&1 \
            | tee cargo-unit-test-${crate_name}.txt
 
 CXX=/usr/bin/clang++ RUST_BACKTRACE=full \
-cargo test --test ffi-context-bgv --features "static helib" --target $target \
+cargo test --test ffi-context-bgv --features "static ${library}" --target $target \
            --verbose --manifest-path "$src_dir/Cargo.toml" -- --nocapture 2>&1 \
            | tee cargo-unit-test-${crate_name}.txt
 ```

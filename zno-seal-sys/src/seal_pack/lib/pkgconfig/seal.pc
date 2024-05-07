@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
 
-prefix=/home/hedge/src/zno-fhe-src/target/debug/build/zno-seal-src-test-f8a329f42917f596/out/install
+prefix=/home/hedge/src/zno-fhe-src/target/debug/build/zno-seal-src-test-dcda5672a5cad9c2/out/install
 libdir=${prefix}/lib
 includedir=${prefix}/include/SEAL-4.1
 

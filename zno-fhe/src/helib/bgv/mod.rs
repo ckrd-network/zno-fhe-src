@@ -69,7 +69,7 @@ pub enum Schema {
 /// # use crate::{He, Scheme, Schema, Metric};
 /// struct Bgv;
 ///
-/// impl He for Bgv {
+/// impl Fhe for Bgv {
 ///     fn schema(&self) -> Schema {
 ///         Schema::Bgv
 ///     }

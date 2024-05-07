@@ -1,17 +1,25 @@
+use std::error::Error;
 use core::fmt;
+use core::fmt::Display;
+use core::fmt::Formatter;
+
 
 #[cfg(feature = "helib")]
 use crate::helib::error;
 
 #[cfg(feature = "seal")]
 use crate::seal::error;
+#[cfg(feature = "seal")]
+use crate::seal::bgv::MError;
+#[cfg(feature = "seal")]
+use crate::seal::bgv::MErrorKind;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum BGVError {
-    BitsError(BitsError),
-    BootstrapError(BootstrapError),
-    BootstrappableError(BootstrappableError),
-    CError(CError),
+    // BitsError(BitsError),
+    // BootstrapError(BootstrapError),
+    // BootstrappableError(BootstrappableError),
+    // CError(CError),
     ConstructionError(ConstructionError),
     ConversionError {
         from: &'static str,
@@ -19,12 +27,12 @@ pub enum BGVError {
         reason: String,
     },
     GenericError(GenericError),
-    GensError(GensError),
+    // GensError(GensError),
     MError(MError),
-    MvecError(MvecError),
-    OrdsError(OrdsError),
-    PError(PError),
-    RError(RError),
+    // MvecError(MvecError),
+    // OrdsError(OrdsError),
+    // PError(PError),
+    // RError(RError),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -61,29 +69,82 @@ impl fmt::Display for GenericError {
 // Implement the standard Error trait for GenericError
 impl std::error::Error for GenericError {}
 
-impl From<BitsError> for BGVError {
-    fn from(error: BitsError) -> BGVError {
-        BGVError::BitsError(error)
+/// - Rust-side Null Pointer Check: On receipt of a raw pointer from C++,
+///   immediately check if it's null before converting it to a safe Rust type.
+///   If it's null, return an error.
+/// - C++-side Error Handling: C++ functions called from Rust should signal
+///   when an error has occurred. This could be returning a null pointer,
+///   or some other error signaling mechanism.
+/// - Error Type: The `NullPointerError` type represents an error in the
+///   case of a null pointer.
+///
+/// A more general FFIError type represents other kinds of errors that can occur in the FFI context.
+
+// `NullPointerError`: An error type for null pointer exceptions
+#[derive(Debug, Clone)]
+pub struct NullPointerError;
+
+impl std::error::Error for NullPointerError {}
+
+impl Display for NullPointerError {
+    fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
+        write!(f, "Received null pointer from C++ library")
     }
 }
 
-impl From<BootstrapError> for BGVError {
-    fn from(error: BootstrapError) -> BGVError {
-        BGVError::BootstrapError(error)
+#[derive(Debug, Clone)]
+pub enum FFIError {
+    NullPointer(NullPointerError),
+    // Other FFI-related errors can be added here
+    CppException(String), // This can represent an exception thrown by C++
+    // ...
+}
+
+impl Error for FFIError {}
+
+impl Display for FFIError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            FFIError::NullPointer(err) => write!(f, "Null pointer error: {}", err),
+            FFIError::CppException(err) => write!(f, "C++ exception: {}", err),
+            // other cases as needed
+        }
     }
 }
 
-impl From<BootstrappableError> for BGVError {
-    fn from(error: BootstrappableError) -> BGVError {
-        BGVError::BootstrappableError(error)
+// impl From<BitsError> for BGVError {
+//     fn from(error: BitsError) -> BGVError {
+//         BGVError::BitsError(error)
+//     }
+// }
+
+// impl From<BootstrapError> for BGVError {
+//     fn from(error: BootstrapError) -> BGVError {
+//         BGVError::BootstrapError(error)
+//     }
+// }
+
+// impl From<BootstrappableError> for BGVError {
+//     fn from(error: BootstrappableError) -> BGVError {
+//         BGVError::BootstrappableError(error)
+//     }
+// }
+
+// impl From<CError> for BGVError {
+//     fn from(error: CError) -> BGVError {
+//         BGVError::CError(error)
+//     }
+// }
+
+impl std::fmt::Display for BGVError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BGVError occurred")
     }
 }
 
-impl From<CError> for BGVError {
-    fn from(error: CError) -> BGVError {
-        BGVError::CError(error)
-    }
-}
+impl std::error::Error for BGVError {}
+
+impl crate::fhe::FheError for BGVError {}
 
 impl From<ConstructionError> for BGVError {
     fn from(error: ConstructionError) -> BGVError {
@@ -97,11 +158,11 @@ impl From<GenericError> for BGVError {
     }
 }
 
-impl From<GensError> for BGVError {
-    fn from(error: GensError) -> BGVError {
-        BGVError::GensError(error)
-    }
-}
+// impl From<GensError> for BGVError {
+//     fn from(error: GensError) -> BGVError {
+//         BGVError::GensError(error)
+//     }
+// }
 
 impl From<MError> for BGVError {
     fn from(error: MError) -> BGVError {
@@ -122,29 +183,29 @@ impl From<MError> for BGVError {
     }
 }
 
-impl From<MvecError> for BGVError {
-    fn from(error: MvecError) -> BGVError {
-        BGVError::MvecError(error)
-    }
-}
+// impl From<MvecError> for BGVError {
+//     fn from(error: MvecError) -> BGVError {
+//         BGVError::MvecError(error)
+//     }
+// }
 
-impl From<OrdsError> for BGVError {
-    fn from(error: OrdsError) -> BGVError {
-        BGVError::OrdsError(error)
-    }
-}
+// impl From<OrdsError> for BGVError {
+//     fn from(error: OrdsError) -> BGVError {
+//         BGVError::OrdsError(error)
+//     }
+// }
 
-impl From<PError> for BGVError {
-    fn from(error: PError) -> BGVError {
-        BGVError::PError(error)
-    }
-}
+// impl From<PError> for BGVError {
+//     fn from(error: PError) -> BGVError {
+//         BGVError::PError(error)
+//     }
+// }
 
-impl From<RError> for BGVError {
-    fn from(error: RError) -> BGVError {
-        BGVError::RError(error)
-    }
-}
+// impl From<RError> for BGVError {
+//     fn from(error: RError) -> BGVError {
+//         BGVError::RError(error)
+//     }
+// }
 
 
 #[derive(Debug, Clone)]

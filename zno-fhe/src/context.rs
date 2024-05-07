@@ -1,8 +1,14 @@
+pub use self::fhe::Schema;
+
+use super::*;
+
+use crate::error::*;
+use crate::prelude::*;
+
 use std::convert::TryFrom;
 use std::convert::TryInto;
 
-use crate::prelude::*;
-use super::*;
+use cxx;
 
 #[derive(Debug, Clone)]
 pub enum ConversionError {
@@ -73,25 +79,15 @@ impl core::fmt::Display for ConstructionError {
     }
 }
 
-pub trait FheContext {
-    type P: Parameters;
-    type E: FheError;
-
-    fn new(params: Self::P) -> Result<Self, Self::E>
-    where
-        Self: Sized;
-}
-
 /// Define the Rust struct to represent the C++ Context class
-pub struct Context<C: FheContext> {
+pub struct Context<C: FheContext+ cxx::memory::UniquePtrTarget> {
     inner: cxx::UniquePtr<C>,
 }
 
 // Define methods for the Rust struct Context.
 // Logic common across implementations belongs here.
-impl<C: FheContext> Context<C> {
-
-    pub fn new<P: Parameters, E: FheError>(params: P) -> Result<Self, E> {
+impl<C: FheContext + cxx::memory::UniquePtrTarget> Context<C> {
+    pub fn new<P: FheParameters, E: FheError>(params: P) -> Result<Self, E> {
         let inner = C::new(params)?;
         Ok(Self { inner })
     }
@@ -101,11 +97,19 @@ impl<C: FheContext> Context<C> {
             .filter_map(|s| s.parse::<i64>().ok())
             .collect()
     }
-
 }
 
+// impl<P: FheParameters> FheContext for Context<P> {
+//     type P = P;
+//     type E = P::E;
+
+//     fn new(params: Self::P) -> Result<Self, Self::E> {
+//         // Implement the logic for creating a new Context here
+//     }
+// }
+
 // Implement Display for printing, debugging, etc.
-impl core::fmt::Display for Context {
+impl<C: FheContext + cxx::memory::UniquePtrTarget> core::fmt::Display for Context<C> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "Context") // How this type name should appear
     }
@@ -131,10 +135,15 @@ impl core::fmt::Display for Context {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::builder::Builder;
+    #[cfg(feature = "seal")]
+    use crate::seal::bgv::parameters::Parameters;
 
+    #[cfg(feature = "seal")]
     #[test]
     fn test_build_with_valid_builder() {
-        let builder = Builder::new();
+        let params = Parameters::default();
+        let builder = Builder::new(params);
         let context = builder.build();
         assert!(context.is_ok());
     }
@@ -142,7 +151,7 @@ mod tests {
     #[cfg(feature = "helib")]
     #[test]
     fn test_context_new_helib_bgv() {
-        let params = Bgv::default(); // Replace with actual parameters
+        let params = Parameters::default(); // Replace with actual parameters
         let context: Context<Bgv> = Context::new(params).unwrap();
         // Use context
     }
@@ -150,8 +159,8 @@ mod tests {
     #[cfg(feature = "seal")]
     #[test]
     fn test_context_new_seal_bgv() {
-        let params = Bgv::default(); ; // Replace with actual parameters
-        let context: Context<Bgv> = Context::new(params).unwrap();
+        let params = Parameters::default(); ; // Replace with actual parameters
+        let context: Context<Schema> = Context::new(params).unwrap();
         // Use context
     }
 

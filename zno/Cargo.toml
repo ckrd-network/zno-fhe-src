@@ -16,12 +16,12 @@ keywords.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-path = "src/lib.rs"
+# path = "src/lib.rs"
 
 [dependencies]
 zno-macro = { workspace = true, optional = false}
 
 [features]
 default = ["seal"]
-seal = ["zno-seal-sys"]
-# helib = ["zno-helib-sys"]
+seal = ["zno-macro/seal"]
+# helib = ["zno-fhe/helib"]

@@ -295,7 +295,7 @@ impl From<Infallible> for CError {
 /// let c = C::default();
 /// assert_eq!(c.schema(), Schema::Bgv);
 /// ```
-impl He for C {
+impl Fhe for C {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

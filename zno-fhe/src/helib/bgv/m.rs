@@ -313,7 +313,7 @@ impl From<Infallible> for MError {
 /// let m = M::default();
 /// assert_eq!(m.schema(), Schema::Bgv);
 /// ```
-impl He for M {
+impl Fhe for M {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

@@ -1,4 +1,5 @@
 // Make the prelude module available at the top level of the crate.
+pub mod fhe;
 pub mod prelude;
 
 #[cfg(feature = "helib")]
@@ -9,13 +10,13 @@ mod seal;
 
 pub mod context;
 pub mod error;
-pub mod metric;
+// pub mod metric;
 pub mod schema;
 
 pub use self::context::*;
 pub use self::error::*;
-pub use self::metric::*;
-pub use self::schema::*;
+pub use self::fhe::*;
+// pub use self::metric::*;
 
 // Re-export the types for external use as `crate::bgv::<type>`
 // pub use self::m::*;
@@ -39,8 +40,8 @@ pub use self::helib::parameters::*;
 #[cfg(feature = "helib")]
 pub use self::helib::schema::*;
 
-#[cfg(feature = "seal")]
-pub use self::seal::context::*;
+// #[cfg(feature = "seal")]
+// pub use self::seal::context::*;
 #[cfg(feature = "seal")]
 pub use self::seal::getters::*;
 #[cfg(feature = "seal")]
@@ -107,61 +108,10 @@ use std::sync::{Arc, Mutex};
 //     fn decrypt(self, scheme: S) -> Vault<S, Self, E>;
 // }
 
-pub trait ToU32<E> {
-    fn to_u32(&self) -> Result<u32, E>;
-}
+// pub trait ToU32<E> {
+//     fn to_u32(&self) -> Result<u32, E>;
+// }
 
-enum Vault<S, D: Decryptable<S, E>, E: Encryptable<S, D>> {
-    Encryptable(S,D),
-    Decryptable(S,E),
-}
-
-enum Error {
-    NotDone
-}
-
-/// A trait for types that represent a homomorphic encryption scheme
-/// and can be converted into a `Metric`.
-///
-/// Types implementing `Scheme` can be used with structures or functions
-/// expecting a homomorphic encryption context, and they can also be
-/// converted into a `Metric` to provide a standardized interface for
-/// metrics or statistics collection.
-///
-/// # Examples
-///
-/// Assuming `Bgv` is a struct representing the BGV scheme and `Metric` is
-/// an enum that can represent various aspects of schemes:
-///
-/// ```
-/// # use crate::{He, Scheme, Schema, Metric};
-/// struct Bgv;
-///
-/// impl He for Bgv {
-///     fn schema(&self) -> Schema {
-///         Schema::Bgv
-///     }
-/// }
-///
-/// // Assume Metric has a variant for BGV
-/// impl From<Bgv> for Metric {
-///     fn from(_: Bgv) -> Self {
-///         Metric::BgvMetrics { /* ... */ }
-///     }
-/// }
-///
-/// impl Scheme for Bgv {}
-///
-/// // Now Bgv can be used wherever Scheme is required
-/// ```
-///
-/// # Errors
-///
-/// Implementations should ensure that the conversion to `Metric` via
-/// `Into<Metric>` does not fail. If a failure is possible, implement
-/// `TryInto` trait and provide details in the implementation
-/// documentation.
-pub trait Scheme: He + Into<Metric> {}
 
 // // FHE scheme trait
 // trait Scheme {}

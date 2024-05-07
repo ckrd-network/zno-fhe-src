@@ -1,4 +1,6 @@
 use crate::seal::bgv::*;
+// use crate::seal::bgv::Schema;
+use crate::fhe::Schema;
 
 use crate::prelude::*;
 
@@ -50,6 +52,25 @@ use std::convert::{Infallible, TryInto};
 pub enum M {
     Some(core::num::NonZeroU32),
 }
+
+impl FheMetric<crate::seal::bgv::Schema> for M {
+    fn get_schema(&self) -> crate::seal::bgv::Schema {
+        crate::seal::bgv::Schema::Bgv
+    }
+}
+
+// Possible alternative implementation.
+// pub enum M<S> {
+//     Some { schema: S, value: core::num::NonZeroU32 },
+// }
+//
+// impl<S> M<S> {
+//     fn get_schema(&self) -> &S {
+//         match self {
+//             M::Some { schema, .. } => schema,
+//         }
+//     }
+// }
 
 /// An error related to `M` operations.
 ///
@@ -307,11 +328,28 @@ impl From<Infallible> for MError {
 /// let m = M::default();
 /// assert_eq!(m.schema(), Schema::Bgv);
 /// ```
-impl He for M {
-    fn schema(&self) -> Schema {
-        Schema::Bgv
-    }
-}
+// impl Fhe<crate::seal::bgv::Schema> for M {
+//     fn schema(&self) -> Schema {
+//         match self.get_schema() {
+//             crate::seal::bgv::Schema::Bgv => Schema::Bgv,
+//             // Add other cases if seal::bgv::Schema has other variants
+//             _ => panic!("Unhandled schema variant"), // or return a Result and use an Err here
+//         }
+//     }
+
+//     fn get_schema(&self) -> crate::seal::bgv::Schema {
+//         crate::seal::bgv::Schema::Bgv
+//     }
+// }
+
+// Given a generic `M` enum and its `get_schema` method, you can implement the `Fhe` trait for `M` like this.
+// In this implementation, `S` is required to implement the `Into<schema::Schema>` trait. This means that `S` can be converted into `schema::Schema`. The `schema` method in the `Fhe` trait implementation for `M` calls `get_schema`, clones the result, and converts it into `schema::Schema` using the `into` method.
+// This implementation assumes that `S` implements `Clone`. If `S` doesn't implement `Clone`, you'll need to adjust the implementation accordingly. For example, you might need to change the `Into<schema::Schema>` bound to `&S: Into<schema::Schema>`, and adjust the `schema` method to convert a reference to `S` into `schema::Schema`.
+// impl<S: Into<schema::Schema>> Fhe for M<S> {
+//     fn schema(&self) -> schema::Schema {
+//         self.get_schema().clone().into()
+//     }
+// }
 
 /// Converts `M` into a `Metric`.
 ///

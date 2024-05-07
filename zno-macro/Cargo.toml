@@ -28,4 +28,7 @@ zno-dev.workspace = true
 macrotest.workspace = true
 
 [features]
-default = []
+default = ["static-seal"]
+static-seal = ["zno-fhe/static-seal"]
+seal = ["zno-fhe/seal"]
+# helib = ["zno-fhe/helib"]

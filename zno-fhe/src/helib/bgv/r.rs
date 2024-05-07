@@ -278,7 +278,7 @@ impl From<Infallible> for RError {
 /// let r = R::default();
 /// assert_eq!(r.schema(), Schema::Bgv);
 /// ```
-impl He for R {
+impl Fhe for R {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

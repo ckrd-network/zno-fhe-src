@@ -53,14 +53,14 @@ fn main() -> miette::Result<()> {
     // println!("cargo:rustc-link-lib=dylib=ffi_wrapper");
 
     // Consider moving these triggers to an rebuild script.
-    // println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
-    // println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
+    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.h").display());
+    println!("cargo:rerun-if-changed={}",ffi_dir.join("ffi_wrapper.cpp").display());
 
     // Compile cxx generated bindings.  This is the name of the Rust FFI library
     // that includes the generated Rust bindings for C++ code.
     // Used to link Rust code with the upstream C++ code.
     let path: PathBuf = cpp_source.to_string_lossy().into_owned().into();
-    let mut cc_build = cxx_build::bridge("src/seal/bgv.rs");
+    let mut cc_build = cxx_build::bridge("src/bgv/mod.rs");
     // Include the directory where cxx generates the cxxbridge sources.
     // This directory will contain the rust/cxx.h header.
     println!("cargo:include={}", ffi_dir.display());
@@ -72,8 +72,8 @@ fn main() -> miette::Result<()> {
             .compile("seal-context"); // compile cxx generated bindings
 
     // Consider moving these triggers to an rebuild script.
-    // println!("cargo:rerun-if-changed=src/lib.rs");
-    // println!("cargo:rerun-if-changed=ffi/seal/seal.h");
+    println!("cargo:rerun-if-changed=src/lib.rs");
+    println!("cargo:rerun-if-changed=ffi/seal/seal.h");
 
     // Add instructions to link to any C++ libraries you need.
 
@@ -332,9 +332,9 @@ impl Artifacts {
 
         if env::var_os("CARGO_FEATURE_STATIC").is_some() {
             // If "static" feature is enabled, set rustc-link-lib=... to control the build process accordingly.
-            println!("cargo:rustc-link-lib=static=seal");
+            println!("cargo:rustc-link-lib=static=seal-4.1");
         } else {
-            println!("cargo:rustc-link-lib=dylib=seal");
+            println!("cargo:rustc-link-lib=dylib=seal-4.1");
         }
         println!("cargo:rustc-link-lib=dylib=gmp");
         println!("cargo:rustc-link-lib=dylib=ntl");

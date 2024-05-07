@@ -8,9 +8,9 @@ pub enum Schema {
     Bgv = 0x3,
 }
 
-/// Converts a `zno_fhe::Schema` into an `crate::Schema`.
+/// Converts a `zno_fhe::Schema` into an `crate::seal::schema::Schema`.
 ///
-impl From<super::Schema> for Schema {
+impl From<crate::fhe::Schema> for Schema {
     /// Converts the given `zno_fhe::Schema` into the corresponding `Schema` variant.
     ///
     /// # Arguments
@@ -20,19 +20,19 @@ impl From<super::Schema> for Schema {
     /// # Returns
     ///
     /// The converted `Schema` variant.
-    fn from(schema: super::Schema) -> Self {
+    fn from(schema: crate::fhe::Schema) -> Self {
         match schema {
-            super::Schema::Bfv => super::Schema::Bfv,
-            super::Schema::Bgv => super::Schema::Bgv,
-            super::Schema::Ckks => super::Schema::Ckks,
-            _ => super::Schema::default(),
+            crate::fhe::Schema::Bfv => Self::Bfv,
+            crate::fhe::Schema::Bgv => Self::Bgv,
+            crate::fhe::Schema::Ckks => Self::Ckks,
+            _ => crate::fhe::Schema::default(),
         }
     }
 }
 
 /// Converts a `Schema` into an `zno_fhe::Schema`.
 ///
-impl From<Schema> for super::Schema {
+impl From<Schema> for crate::fhe::Schema {
     /// Converts the given `ffi::Schema` into the corresponding `zno_fhe::Schema`.
     ///
     /// # Arguments
@@ -42,12 +42,12 @@ impl From<Schema> for super::Schema {
     /// # Returns
     ///
     /// The converted `zno_fhe::Schema`.
-    fn from(schema: zno_seal_sys::Schema) -> Self {
+    fn from(schema: Schema) -> Self {
         match schema {
-            Schema::Bfv  => super::Schema::Bfv,
-            Schema::Ckks => super::Schema::Ckks,
-            Schema::Bgv  => super::Schema::Bgv,
-            _ => super::Schema::default(),
+            Self::Bfv  => crate::fhe::Schema::Bfv,
+            Self::Ckks => crate::fhe::Schema::Ckks,
+            Self::Bgv  => crate::fhe::Schema::Bgv,
+            _ => crate::fhe::Schema::default(),
         }
     }
 }
@@ -65,7 +65,7 @@ impl Default for Schema {
     ///
     /// The default value for `Schema`, which is `Schema::Bgv`.
     fn default() -> Self {
-        super::Schema::Bgv
+        crate::fhe::Schema::Bgv
     }
 }
 
@@ -92,14 +92,14 @@ impl Default for Schema {
 /// let schema = super::Schema::from(value);
 /// assert_eq!(schema, super::Schema::Bfv);
 /// ```
-impl From<u8> for Schema {
+impl From<u8> for crate::fhe::Schema {
     fn from(item: u8) -> Self {
         match item {
-            0x0 => super::Schema::default(),
-            0x1 => super::Schema::Bfv,
-            0x2 => super::Schema::Ckks,
-            0x3 => super::Schema::Bgv,
-            _   => super::Schema::default(), // default
+            0x0 => crate::fhe::Schema::default(),
+            0x1 => crate::fhe::Schema::Bfv,
+            0x2 => crate::fhe::Schema::Ckks,
+            0x3 => crate::fhe::Schema::Bgv,
+            _   => crate::fhe::Schema::default(), // default
         }
     }
 }

@@ -259,7 +259,7 @@ impl From<Infallible> for PError {
 /// let p = P::default();
 /// assert_eq!(p.schema(), Schema::Bgv);
 /// ```
-impl He for P {
+impl Fhe for P {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

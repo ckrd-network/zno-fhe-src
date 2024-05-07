@@ -1,4 +1,36 @@
-use zno_seal_sys::ffi;
+// Import the necessary types
+#[cfg(feature = "seal")]
+use zno_seal_sys::bgv::ffi::BGVContextBuilder as FFIBGVBuilder;
+use zno_seal_sys::bgv::ffi;
+
+use crate::seal::parameters::*;
+use crate::seal::bgv::*;
+use crate::seal::bgv::parameters::Parameters;
+use crate::seal::setters::*;
+use crate::error::*;
+use crate::fhe::*;
+use crate::FheError;
+
+use crate::prelude::*;
+
+use cxx;
+
+impl crate::seal::builder::FheBuilder for FFIBGVBuilder{
+    type P = Parameters;
+    type E = BGVError;
+
+    fn new(params: Self::P) -> Result<Self, Self::E> {
+        // Call the ffi function to initialize the BGVContextBuilder
+        let builder = ffi::init(params.scheme); // Replace `params.scheme` with the actual field or method to get the scheme from `params`
+
+        // Check if the builder is initialized correctly
+        if builder.is_null() {
+            return Err(Self::E::new("Failed to initialize BGVContextBuilder")); // Replace with the actual method to create a new FheError
+        }
+
+        Ok(builder)
+    }
+}
 
 /// This module contains the definition of the `Builder` struct and its associated methods.
 /// The `Builder` struct is responsible for constructing a `BGVContextBuilder` object used in the SEAL implementation.
@@ -9,12 +41,26 @@ use zno_seal_sys::ffi;
 /// Once the `Builder` is configured, the `build()` method can be called to create a `BGVContextBuilder` object.
 /// The `Builder` struct is specific to the BGV scheme in the SEAL library.
 /// Define the Rust struct to represent the C++ Builder class
-pub struct Builder<C: FheBuilder> {
-    inner: cxx::UniquePtr<C>,
+pub struct Builder<B: FheBuilder + cxx::memory::UniquePtrTarget> {
+    inner: cxx::UniquePtr<B>,
 }
 
+// Define the specialized BGVContextBuilder struct
+pub struct BGVBuilder {
+    builder: Builder<FFIBGVBuilder>,
+}
+
+impl BGVBuilder {
+    // Add methods to initialize and configure the builder
+    pub fn new<P: FheParameters, E: FheError>(params: P) -> Result<Self, E> {
+        let builder = Builder::<FFIBGVBuilder>::new(params)?;
+        Ok(Self { builder })
+    }
+
+    // Add other methods to configure the builder and build the final object
+}
 pub trait FheBuilder {
-    type P: Parameters;
+    type P: FheParameters;
     type E: FheError;
 
     fn new(params: Self::P) -> Result<Self, Self::E>
@@ -25,10 +71,10 @@ pub trait FheBuilder {
 
 // Define methods for the Rust struct Builder.
 // Logic common across implementations belongs here.
-impl<C: FheBuilder> Builder<C> {
+impl<B: FheBuilder + cxx::memory::UniquePtrTarget> Builder<B> {
 
-    pub fn new<P: Parameters, E: FheError>(params: P) -> Result<Self, E> {
-        let inner = C::new(params)?;
+    pub fn new<P: FheParameters, E: FheError>(params: P) -> Result<Self, E> {
+        let inner = B::new(params)?;
         Ok(Self { inner })
     }
 
@@ -40,19 +86,19 @@ impl<C: FheBuilder> Builder<C> {
 
 }
 
-impl<C: FheBuilder> Setters for Builder<C> {
+impl<B: FheBuilder + cxx::memory::UniquePtrTarget> Setters for Builder<B> {
 
-    fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
-    where
-        Self: Sized,
-        T: ToU32<E>,
-        E: Into<SetError>,
-    {
-        let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
-        // Assumes `ffi::set_m` returns Result<(), MError>
-        self.inner = ffi::set_m(self.inner, u32_value);
-        Ok(self)
-    }
+    // fn set_m<T, E>(mut self, value: T) -> Result<Self, BGVError>
+    // where
+    //     Self: Sized,
+    //     T: ToU32<E>,
+    //     E: Into<SetError>,
+    // {
+    //     let u32_value = value.to_u32().map_err(Into::<SetError>::into).map_err(Into::<BGVError>::into)?;
+    //     // Assumes `ffi::set_m` returns Result<(), MError>
+    //     self.inner = ffi::set_m(self.inner, u32_value);
+    //     Ok(self)
+    // }
 
     // fn set_bits<T, E>(mut self, value: T) -> Result<Self, BGVError>
     // where
@@ -103,20 +149,24 @@ impl<C: FheBuilder> Setters for Builder<C> {
 //         Ok(self)
 //     }
 
-    fn set(self, value: Metric) -> Result<Self, BGVError>
+    fn set<S, M>(self, value: M) -> Result<Self, BGVError>
+    where
+        M: FheMetric<S> + Into<M>,
+        S: FheScheme,
     {
-
         // Convert `value` into `Metric`, since `Into` is infallible
-        let metric: Metric = value.into();
+        let metric = value.into();
 
         self.metric_set(metric)
     }
 
-    fn try_set<T: TryInto<Metric, Error=BGVError>>(self, value: T) -> Result<Self, BGVError>
+    fn try_set<S, M>(self, value: M) -> Result<Self, BGVError>
     where
+        M: FheMetric<S> + TryInto<M, Error=BGVError>,
+        S: FheScheme,
         Self: Sized,
     {
-        // Convert `value` into `Metric`, since `TryInto` is fallible
+        // Convert `value` into `M`, since `TryInto` is fallible
         let metric = value.try_into()?;
 
         self.metric_set(metric)
@@ -127,11 +177,11 @@ impl<C: FheBuilder> Setters for Builder<C> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    use crate::seal::bgv::parameters::Parameters;
     #[test]
     fn test_build_with_valid_builder() {
         let params = Parameters::default();
-        let builder = Builder::new(params).unwrap(); 
+        let builder = Builder::new(params).unwrap();
         let context = builder.build();
         assert!(context.is_ok());
     }

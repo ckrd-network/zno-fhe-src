@@ -304,7 +304,7 @@ impl From<Infallible> for BitsError {
 /// let bits = Bits::default();
 /// assert_eq!(bits.schema(), Schema::Bgv);
 /// ```
-impl He for Bits {
+impl Fhe for Bits {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

@@ -71,7 +71,7 @@ namespace seal {
    *
    * @return A unique pointer to the newly created ContextBuilder<BGV> object.
    */
-  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<Schema> schema) {
+  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<u_int8_t> schema) {
       EncryptionParameters parms(*schema);
       return std::make_unique<BGVContextBuilder>(parms);
   }

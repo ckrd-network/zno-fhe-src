@@ -56,7 +56,7 @@ namespace seal {
    * @param enc_params A const reference to a unique pointer to the EncryptionParameters object.
    * @return uint8_t The encryption scheme used in the EncryptionParameters object. This is a value from the seal::scheme_type enum.
    */
-  uint8_t get_scheme(const std::unique_ptr<seal::EncryptionParameters>& enc_params);
+  uint8_t get_scheme(const std::unique_ptr<seal::EncryptionParameters> enc_params);
   /**
    * @brief Sets the encryption scheme in the given EncryptionParameters object.
    *
@@ -65,13 +65,13 @@ namespace seal {
    * @param enc_params A unique pointer to the EncryptionParameters object. This object will be replaced.
    * @param scheme The new encryption scheme to be used. This should be a value from the seal::scheme_type enum.
    */
-  void set_scheme(std::unique_ptr<seal::EncryptionParameters>& enc_params, uint8_t scheme);
+  void set_scheme(std::unique_ptr<seal::EncryptionParameters> enc_params, uint8_t scheme);
   /**
    * Creates a new BGVContextBuilder object.
    *
    * @return A unique pointer to the newly created ContextBuilder<BGV> object.
    */
-  std::unique_ptr<BGVContextBuilder> init(std::unique_ptr<u_int8_t> schema);
+  std::unique_ptr<BGVContextBuilder> init(u_int8_t schema);
 
   std::unique_ptr<::seal::Context> build(std::unique_ptr<::seal::BGVContextBuilder> builder);
 

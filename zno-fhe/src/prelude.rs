@@ -18,15 +18,24 @@ pub use crate::seal::*;
 
 // pub use crate::bgv::parameters::*;
 // pub use crate::bgv::context::*;
-// pub use crate::bgv::error::*;
+
 // pub use crate::bgv::metric::*;
 // pub use crate::bgv::Schema;
 // pub use crate::bgv::Scheme;
+
+pub use crate::error::*;
 
 // // This brings `Context` to the module level where `prelude` is included,
 // // avoiding the need to specify the complete path
 // pub use crate::bgv::Context;
 // pub use crate::helib::bgv::*;
 
+pub trait ToU32<E> {
+    fn to_u32(&self) -> Result<u32, E>;
+}
+
 pub use crate::context::ConstructionError;
-pub use crate::*;
+
+pub use crate::fhe::*;
+
+// pub use crate::Metric;

@@ -122,6 +122,8 @@ pub enum BitsErrorKind {
     Generic(String),
 }
 
+impl FheError for BitsError {}
+
 /// Constructs a new `Bits` from a given value.
 ///
 /// This function attempts to create an `Bits` from `value`. It relies on
@@ -305,7 +307,7 @@ impl From<Infallible> for BitsError {
 /// let bits = Bits::default();
 /// assert_eq!(bits.schema(), Schema::Bgv);
 /// ```
-impl He for Bits {
+impl Fhe for Bits {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

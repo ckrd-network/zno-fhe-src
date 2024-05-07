@@ -1,12 +1,11 @@
 use crate::seal::bgv::*;
 
+use crate::prelude::*;
 
 use core::convert::TryFrom;
 use std::num::ParseIntError;
 use std::fmt;
 use std::convert::{Infallible, TryInto};
-
-use crate::prelude::*;
 
 /// Represents the plaintext modulus parameter `p` in BGV.
 ///
@@ -260,7 +259,7 @@ impl From<Infallible> for PError {
 /// let p = P::default();
 /// assert_eq!(p.schema(), Schema::Bgv);
 /// ```
-impl He for P {
+impl Fhe for P {
     fn schema(&self) -> Schema {
         Schema::Bgv
     }

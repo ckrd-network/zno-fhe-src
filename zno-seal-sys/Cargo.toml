@@ -34,9 +34,7 @@ libc.workspace = true
 num-traits.workspace = true
 
 [build-dependencies]
-# zno-seal-src = { workspace = true, optional = true, version = "0.0.1"}
 cc.workspace = true
-# autocxx-build.workspace = true
 cxx-build = { workspace = true}
 dirs.workspace = true
 fake.workspace = true

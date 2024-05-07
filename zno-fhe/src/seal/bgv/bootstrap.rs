@@ -1,8 +1,10 @@
+use crate::seal::bgv::*;
+
+use crate::prelude::*;
+
 use std::default::Default;
 use std::fmt;
 use std::str::FromStr;
-
-use crate::prelude::*;
 
 /// Represents the bootstrapping mode in the BGV scheme as implemented in SEAL.
 ///

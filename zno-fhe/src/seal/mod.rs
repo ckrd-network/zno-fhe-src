@@ -1,7 +1,8 @@
 pub mod bgv;
-mod builder;
-mod error;
-mod getters;
-mod parameters;
-mod schema;
-mod setters;
+pub mod builder;
+pub mod error;
+pub mod getters;
+pub mod parameters;
+pub mod schema;
+pub mod setters;
+pub mod version;

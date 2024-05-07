@@ -14,15 +14,17 @@ pub use crate::prelude::*;
 
 pub trait Setters {
 
-    fn set<S, M>(self, value: M) -> Result<Self, BGVError>
-    where
-        Self: Sized,
-        M: FheMetric<S>; // The `Into` `M` conversion doesn't fail
+        fn set<S, M>(self, value: M) -> Result<Self, BGVError>
+        where
+            Self: Sized,
+            M: FheMetric<S>, // The `Into` `M` conversion doesn't fail
+            S: FheScheme;
 
-    fn try_set<S, M>(self, value: M) -> Result<Self, BGVError>
-    where
-        Self: Sized,
-        M: FheMetric<S> + TryInto<M, Error=BGVError>;
+        fn try_set<S, M>(self, value: M) -> Result<Self, BGVError>
+        where
+            Self: Sized,
+            M: FheMetric<S> + TryInto<M, Error=BGVError>,
+            S: FheScheme;
 
     // fn set_m<T, E>(self, value: T) -> Result<Self, BGVError>
     // where
